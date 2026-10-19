@@ -2,9 +2,9 @@
   "version": 1,
   "checks": [
     {
-      "kind": "scene",
-      "path": "res://test/test_suite.tscn",
-      "expect": "[game-generic-tests] PASS:",
+      "kind": "script",
+      "path": "res://test/vila_tests.gd",
+      "expect": "[vila-tests] PASS:",
       "profile": "source"
     },
     {

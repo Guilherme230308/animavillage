@@ -1,6 +1,14 @@
 {
   "version": 2,
   "groups": {
+    "game": {
+      "name": "Game",
+      "order": 20
+    },
+    "share": {
+      "name": "Share",
+      "order": 30
+    },
     "template": {
       "name": "Template",
       "order": 0
@@ -8,6 +16,46 @@
   },
   "bundles": {},
   "assets": {
+    "assets/game/hero.png": {
+      "path": "/manus-storage/game/sha256/cbbc9487c9173d0a81cef37c7c5ad89d1c24f6d1e4d807a7bf8957d2bb2bfb09.png",
+      "sha256": "sha256:cbbc9487c9173d0a81cef37c7c5ad89d1c24f6d1e4d807a7bf8957d2bb2bfb09",
+      "size": 22016,
+      "assetType": "image",
+      "groupId": "game",
+      "used": true
+    },
+    "assets/game/scene.png": {
+      "path": "/manus-storage/game/sha256/9f5fb08f987617db05a7eec913b54e5b18c439c4d6a0d5bd419bb87aa3832aa4.png",
+      "sha256": "sha256:9f5fb08f987617db05a7eec913b54e5b18c439c4d6a0d5bd419bb87aa3832aa4",
+      "size": 3408501,
+      "assetType": "image",
+      "groupId": "game",
+      "used": true
+    },
+    "assets/game/walk_mask.png": {
+      "path": "/manus-storage/game/sha256/50cb33f1e25b1c8fda4e760fe09b9a55f0c1f3a3b1a05cafa2e31a1114800933.png",
+      "sha256": "sha256:50cb33f1e25b1c8fda4e760fe09b9a55f0c1f3a3b1a05cafa2e31a1114800933",
+      "size": 2456,
+      "assetType": "image",
+      "groupId": "game",
+      "used": true
+    },
+    "assets/share/favicon.png": {
+      "path": "/manus-storage/game/sha256/d6b34e71128293316035e6d5a9b01d96cf1ed583e932c974a47a9a1dc60aa09d.png",
+      "sha256": "sha256:d6b34e71128293316035e6d5a9b01d96cf1ed583e932c974a47a9a1dc60aa09d",
+      "size": 1962,
+      "assetType": "image",
+      "groupId": "share",
+      "used": true
+    },
+    "assets/share/icon256.png": {
+      "path": "/manus-storage/game/sha256/c4a3b2c3a13cfa99878a1aa634edcc2804f28778acba180f019a422160612df7.png",
+      "sha256": "sha256:c4a3b2c3a13cfa99878a1aa634edcc2804f28778acba180f019a422160612df7",
+      "size": 3372,
+      "assetType": "image",
+      "groupId": "share",
+      "used": true
+    },
     "assets/template/characters/runner.png": {
       "path": "https://d1oupeiobkpcny.cloudfront.net/assets/dashboard/materials/2026/09/06/game-template/game-generic/2026.09.07-minimalist-v1/c88485773d6ff9361e036f37d8ac76fb77b8c3f7c041c3f52c8dd222adc8cc21/assets/characters/runner.png",
       "sha256": "sha256:c88485773d6ff9361e036f37d8ac76fb77b8c3f7c041c3f52c8dd222adc8cc21",
@@ -110,7 +158,7 @@
       "size": 473356,
       "assetType": "image",
       "groupId": "template",
-      "used": true
+      "used": false
     },
     "assets/template/ui/pause_glass.png": {
       "path": "https://d1oupeiobkpcny.cloudfront.net/assets/dashboard/materials/2026/09/06/game-template/game-generic/2026.09.07-minimalist-v1/c88a4725838df85e72c7270865848f275b62c525c5679a2a8b7ecefb1af82d4b/assets/ui/pause_glass.png",

@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 2,
+  "publicationOrigin": "https://vilavista-avkqjwau.manus.game",
+  "title": "Vila Vista",
+  "description": "Caminhe pelos passeios de um condomínio recriado em pixel art retrô, fiel à vista aérea original.",
+  "defaultCaptions": {},
+  "assets": {
+    "favicon": {
+      "digest": "sha256:d6b34e71128293316035e6d5a9b01d96cf1ed583e932c974a47a9a1dc60aa09d",
+      "path": "share/d6b34e71128293316035e6d5a9b01d96cf1ed583e932c974a47a9a1dc60aa09d.png",
+      "mime": "image/png",
+      "width": 64,
+      "height": 64,
+      "sizeBytes": 1962,
+      "sourcePath": "assets/share/favicon.png"
+    }
+  }
+}
