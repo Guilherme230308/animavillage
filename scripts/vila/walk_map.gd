@@ -3,7 +3,7 @@ extends RefCounted
 ## Grade de áreas caminháveis extraída do terreno da imagem do condomínio.
 ## Cada célula cobre CELL x CELL pixels do cenário; branco = passeio.
 
-const CELL := 6
+const CELL := 4
 const MASK_PATH := "res://assets/game/walk_mask.png"
 
 var width := 0

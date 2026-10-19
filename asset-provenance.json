@@ -32,9 +32,9 @@
         "scripts/vila/vila_main.gd"
       ],
       "regions": [],
-      "sha256": "sha256:9f5fb08f987617db05a7eec913b54e5b18c439c4d6a0d5bd419bb87aa3832aa4",
+      "sha256": "sha256:7392a5e9f4eac0e85a72e0e071b45193b462476be97a2bde5ee7c709183a4483",
       "shipped": true,
-      "size": 3408501,
+      "size": 3438299,
       "source": {},
       "status": "present",
       "transformations": [],
@@ -42,6 +42,200 @@
         "scripts/vila/vila_main.gd"
       ],
       "used": true,
+      "usedBy": [],
+      "versions": {
+        "sha256:9f5fb08f987617db05a7eec913b54e5b18c439c4d6a0d5bd419bb87aa3832aa4": {
+          "generator": {},
+          "inputs": [],
+          "license": {},
+          "origin": "unknown",
+          "regions": [],
+          "sha256": "sha256:9f5fb08f987617db05a7eec913b54e5b18c439c4d6a0d5bd419bb87aa3832aa4",
+          "size": 3408501,
+          "source": {},
+          "transformations": [],
+          "usedBy": []
+        }
+      }
+    },
+    "assets/game/tower_01.png": {
+      "declaredUseEvidence": [],
+      "generator": {},
+      "inputs": [],
+      "license": {},
+      "origin": "unknown",
+      "referenceEvidence": [],
+      "regions": [],
+      "sha256": "sha256:144a9078c339e02a6d49018dcfc38f0bf39219a460af135126e7902a9a014f58",
+      "shipped": true,
+      "size": 95148,
+      "source": {},
+      "status": "present",
+      "transformations": [],
+      "useEvidence": [],
+      "used": false,
+      "usedBy": []
+    },
+    "assets/game/tower_02.png": {
+      "declaredUseEvidence": [],
+      "generator": {},
+      "inputs": [],
+      "license": {},
+      "origin": "unknown",
+      "referenceEvidence": [],
+      "regions": [],
+      "sha256": "sha256:697fd384499218de5f79acbbc78117debfb0cdc5f183dd2cf0a13828957c5d9d",
+      "shipped": true,
+      "size": 94776,
+      "source": {},
+      "status": "present",
+      "transformations": [],
+      "useEvidence": [],
+      "used": false,
+      "usedBy": []
+    },
+    "assets/game/tower_03.png": {
+      "declaredUseEvidence": [],
+      "generator": {},
+      "inputs": [],
+      "license": {},
+      "origin": "unknown",
+      "referenceEvidence": [],
+      "regions": [],
+      "sha256": "sha256:fd34d902086f23a17e9a84d85507abcaacc2a289403c0b2e7dc8152ec7eb7f0a",
+      "shipped": true,
+      "size": 93507,
+      "source": {},
+      "status": "present",
+      "transformations": [],
+      "useEvidence": [],
+      "used": false,
+      "usedBy": []
+    },
+    "assets/game/tower_04.png": {
+      "declaredUseEvidence": [],
+      "generator": {},
+      "inputs": [],
+      "license": {},
+      "origin": "unknown",
+      "referenceEvidence": [],
+      "regions": [],
+      "sha256": "sha256:04d2b0e51284bf1ca30c01740698e14816f68efb3a8bba799d29dd80bea0a031",
+      "shipped": true,
+      "size": 96982,
+      "source": {},
+      "status": "present",
+      "transformations": [],
+      "useEvidence": [],
+      "used": false,
+      "usedBy": []
+    },
+    "assets/game/tower_05.png": {
+      "declaredUseEvidence": [],
+      "generator": {},
+      "inputs": [],
+      "license": {},
+      "origin": "unknown",
+      "referenceEvidence": [],
+      "regions": [],
+      "sha256": "sha256:de55bb2c55706eb8fc8332ed85eed499e56ff13a5382adf1da92a412d78a856d",
+      "shipped": true,
+      "size": 93865,
+      "source": {},
+      "status": "present",
+      "transformations": [],
+      "useEvidence": [],
+      "used": false,
+      "usedBy": []
+    },
+    "assets/game/tower_06.png": {
+      "declaredUseEvidence": [],
+      "generator": {},
+      "inputs": [],
+      "license": {},
+      "origin": "unknown",
+      "referenceEvidence": [],
+      "regions": [],
+      "sha256": "sha256:c6d3ff7fdb62800d4b4d5309e3d9d708a652412bce40f62701759695a67f4f89",
+      "shipped": true,
+      "size": 95988,
+      "source": {},
+      "status": "present",
+      "transformations": [],
+      "useEvidence": [],
+      "used": false,
+      "usedBy": []
+    },
+    "assets/game/tower_07.png": {
+      "declaredUseEvidence": [],
+      "generator": {},
+      "inputs": [],
+      "license": {},
+      "origin": "unknown",
+      "referenceEvidence": [],
+      "regions": [],
+      "sha256": "sha256:232ae74727d0baf2cef63e86003269c08fe2a2727f9f7465ecbef8b7179ba69a",
+      "shipped": true,
+      "size": 97071,
+      "source": {},
+      "status": "present",
+      "transformations": [],
+      "useEvidence": [],
+      "used": false,
+      "usedBy": []
+    },
+    "assets/game/tower_08.png": {
+      "declaredUseEvidence": [],
+      "generator": {},
+      "inputs": [],
+      "license": {},
+      "origin": "unknown",
+      "referenceEvidence": [],
+      "regions": [],
+      "sha256": "sha256:d8624acb1624096ba3f6fde2a2ee9e928835639928a8902b7a43b5267270a606",
+      "shipped": true,
+      "size": 110003,
+      "source": {},
+      "status": "present",
+      "transformations": [],
+      "useEvidence": [],
+      "used": false,
+      "usedBy": []
+    },
+    "assets/game/tower_09.png": {
+      "declaredUseEvidence": [],
+      "generator": {},
+      "inputs": [],
+      "license": {},
+      "origin": "unknown",
+      "referenceEvidence": [],
+      "regions": [],
+      "sha256": "sha256:73f81ff2eff0e5b799d560309be50f16ee1131e7348b0c804817a31d02fc1114",
+      "shipped": true,
+      "size": 103223,
+      "source": {},
+      "status": "present",
+      "transformations": [],
+      "useEvidence": [],
+      "used": false,
+      "usedBy": []
+    },
+    "assets/game/tower_10.png": {
+      "declaredUseEvidence": [],
+      "generator": {},
+      "inputs": [],
+      "license": {},
+      "origin": "unknown",
+      "referenceEvidence": [],
+      "regions": [],
+      "sha256": "sha256:bccfdc25e3fd3b8646779c8daaeb896afdf8d159bf5051325d7bc33ba5ad3c2f",
+      "shipped": true,
+      "size": 104201,
+      "source": {},
+      "status": "present",
+      "transformations": [],
+      "useEvidence": [],
+      "used": false,
       "usedBy": []
     },
     "assets/game/walk_mask.png": {
@@ -54,9 +248,9 @@
         "scripts/vila/walk_map.gd"
       ],
       "regions": [],
-      "sha256": "sha256:50cb33f1e25b1c8fda4e760fe09b9a55f0c1f3a3b1a05cafa2e31a1114800933",
+      "sha256": "sha256:d3409a6a560fbc1a770f71b14e791cb683a8944a9f3910f581a701fd513b77b5",
       "shipped": true,
-      "size": 2456,
+      "size": 6707,
       "source": {},
       "status": "present",
       "transformations": [],
@@ -64,7 +258,21 @@
         "scripts/vila/walk_map.gd"
       ],
       "used": true,
-      "usedBy": []
+      "usedBy": [],
+      "versions": {
+        "sha256:50cb33f1e25b1c8fda4e760fe09b9a55f0c1f3a3b1a05cafa2e31a1114800933": {
+          "generator": {},
+          "inputs": [],
+          "license": {},
+          "origin": "unknown",
+          "regions": [],
+          "sha256": "sha256:50cb33f1e25b1c8fda4e760fe09b9a55f0c1f3a3b1a05cafa2e31a1114800933",
+          "size": 2456,
+          "source": {},
+          "transformations": [],
+          "usedBy": []
+        }
+      }
     },
     "assets/share/favicon.png": {
       "declaredUseEvidence": [],
@@ -467,9 +675,9 @@
         ]
       }
     ],
-    "pckSha256": "sha256:c290f54c260c524dc723955f6c868aa14e5780033f9f854b356d3fc7a8911435",
+    "pckSha256": "sha256:b2a4b4e392e45903f0d037628b04443a506def8a7dbe62f8fcc73f343b366352",
     "profile": "release",
-    "sourceFingerprint": "sha256:f7ec034fabe0798db952cc4831e1e9c9ff8a9d9dea23eacd90685d6c01ad41b0"
+    "sourceFingerprint": "sha256:0d3c6b9b8b80026937d0b4a44421440b83333255da8f5df894e75d58e6758731"
   },
   "procedures": {},
   "summary": {
@@ -502,8 +710,8 @@
     },
     "files": {
       "downloaded": 0,
-      "retained": 20,
-      "shipped": 20,
+      "retained": 30,
+      "shipped": 30,
       "used": 7
     },
     "origins": {
@@ -538,8 +746,8 @@
         "used": 2
       },
       "unknown": {
-        "retained": 5,
-        "shipped": 5,
+        "retained": 15,
+        "shipped": 15,
         "used": 5
       }
     },

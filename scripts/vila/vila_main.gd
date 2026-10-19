@@ -2,6 +2,7 @@ extends Control
 ## Vila Vista: caminhada livre pelo condomínio em pixel art.
 
 const SCENE_PATH := "res://assets/game/scene.png"
+const TOWERS_PATH := "res://assets/game/towers.json"
 const SPAWN_HINT := Vector2(630, 790)
 const ZOOM_MIN := 1.25
 const ZOOM_MAX := 4.0
@@ -26,6 +27,7 @@ var _playing := false
 var _paused := false
 var _target_zoom := ZOOM_DEFAULT
 var distance_walked := 0.0
+var _towers: Array[Dictionary] = []
 var touch_mode := false
 var _joystick: TouchJoystick
 var _touch_layer: Control
@@ -86,6 +88,9 @@ func _build_world() -> void:
 	_paths_overlay.visible = false
 	_world.add_child(_paths_overlay)
 
+	_world.y_sort_enabled = true
+	_build_towers()
+
 	_player = Walker.new()
 	_player.walk_map = walk_map
 	_player.position = walk_map.nearest_walkable(SPAWN_HINT, Walker.FOOT_HALF)
@@ -102,6 +107,44 @@ func _build_world() -> void:
 	_camera.limit_bottom = int(size.y)
 	_player.add_child(_camera)
 	_camera.make_current()
+
+
+func _build_towers() -> void:
+	var data: Variant = JSON.parse_string(FileAccess.get_file_as_string(TOWERS_PATH))
+	if typeof(data) != TYPE_ARRAY:
+		push_error("towers.json inválido")
+		return
+	for t: Dictionary in data:
+		var tex := load("res://assets/game/" + String(t["file"])) as Texture2D
+		var holder := Node2D.new()
+		holder.position = Vector2(0, float(t["sort_y"]))
+		var sprite := Sprite2D.new()
+		sprite.texture = tex
+		sprite.centered = false
+		sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		sprite.position = Vector2(float(t["x"]), float(t["y"]) - float(t["sort_y"]))
+		holder.add_child(sprite)
+		_world.add_child(holder)
+		var img := tex.get_image()
+		if img != null and img.is_compressed():
+			img.decompress()
+		_towers.append({"origin": Vector2(float(t["x"]), float(t["y"])), "sort_y": float(t["sort_y"]), "image": img})
+
+
+## Verdadeiro se alguma torre à frente cobre o corpo do personagem.
+func is_occluded(feet: Vector2) -> bool:
+	for t: Dictionary in _towers:
+		if feet.y >= float(t["sort_y"]):
+			continue
+		var img: Image = t["image"]
+		if img == null:
+			continue
+		for probe: Vector2 in [Vector2(0, -6), Vector2(0, -18), Vector2(0, -30)]:
+			var local := feet + probe - (t["origin"] as Vector2)
+			if local.x >= 0 and local.y >= 0 and local.x < img.get_width() and local.y < img.get_height():
+				if img.get_pixel(int(local.x), int(local.y)).a > 0.5:
+					return true
+	return false
 
 
 func _build_paths_texture() -> ImageTexture:
@@ -208,7 +251,7 @@ func _build_ui() -> void:
 	var tbox: VBoxContainer = t[1]
 	tbox.add_child(_label("VILA VISTA", 56, ACCENT))
 	tbox.add_child(_label("Passeie pelo condomínio em pixel art.", 20))
-	tbox.add_child(_label("Os caminhos seguem os passeios reais da imagem:\nprédios, piscinas, jardins e muros bloqueiam a passagem.", 16, Color("cfd8c4")))
+	tbox.add_child(_label("Os caminhos seguem os passeios reais da imagem. Passe por trás das torres, desça a escada do lado oeste até a rua que contorna o condomínio e siga até a área de baixo, com o estacionamento.", 16, Color("cfd8c4")))
 	_controls_label = _label("", 15, Color("cfd8c4"))
 	tbox.add_child(_controls_label)
 	_start_button = _make_button("Começar a caminhar")
@@ -417,6 +460,7 @@ func _process(delta: float) -> void:
 	if _joystick != null and _joystick.is_held():
 		dir = _joystick.vector
 		running = _joystick.running
+	_player.occluded = is_occluded(_player.position)
 	var moved := _player.step(dir, running, delta)
 	distance_walked += moved.length()
 
@@ -426,6 +470,7 @@ func simulate_walk(direction: Vector2, seconds: float, running: bool = false) ->
 	var start := _player.position
 	var t := 0.0
 	while t < seconds:
+		_player.occluded = is_occluded(_player.position)
 		_player.step(direction, running, 1.0 / 60.0)
 		t += 1.0 / 60.0
 	return _player.position - start

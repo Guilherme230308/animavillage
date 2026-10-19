@@ -23,7 +23,7 @@ func _run() -> void:
 	await process_frame
 	var map: WalkMap = main.walk_map
 	_check(map.width > 100 and map.height > 100, "grade de passeios carregada")
-	_check(map.walkable_count() > 3000, "rede de passeios extensa")
+	_check(map.walkable_count() > 25000, "rede de passeios extensa")
 	var player: Walker = main.get("_player")
 	_check(map.is_footprint_walkable(player.position, Walker.FOOT_HALF), "nasce em passeio")
 	_check(bool((main.get("_title_screen") as Control).visible), "abre na tela de título")
@@ -46,10 +46,27 @@ func _run() -> void:
 	_check(after_block.x < before.x or before.x - after_block.x == 0.0, "andou até a borda")
 	_check(map.is_footprint_walkable(player.position, Walker.FOOT_HALF), "bloqueio mantém o personagem no passeio")
 
-	# Pontos sabidamente bloqueados: piscina e telhado de uma torre.
+	# Obstáculos e passagem por trás das torres.
 	_check(not map.is_point_walkable(Vector2(700, 620)), "piscina bloqueada")
-	_check(not map.is_point_walkable(Vector2(840, 180)), "torre bloqueada")
 	_check(not map.is_point_walkable(Vector2(30, 600)), "mata externa bloqueada")
+	for fc: Vector2 in [Vector2(596, 317), Vector2(845, 313), Vector2(451, 452), Vector2(309, 595), Vector2(232, 813), Vector2(357, 953), Vector2(507, 1093), Vector2(719, 1119), Vector2(874, 962), Vector2(1029, 813)]:
+		_check(not map.is_point_walkable(fc), "base da torre bloqueia " + str(fc))
+	_check(map.is_point_walkable(Vector2(600, 160)), "dá para andar atrás da torre")
+	_check(bool(main.call("is_occluded", Vector2(600, 200))), "torre cobre quem passa atrás")
+	_check(not bool(main.call("is_occluded", Vector2(630, 790))), "praça não é coberta")
+
+	# Níveis: o interior só chega à rua pela escada; a rua chega à área de baixo.
+	var stair := Rect2(100, 586, 52, 26)
+	var interior := Vector2(630, 790)
+	var road := Vector2(84, 700)
+	var road_bottom := Vector2(640, 1188)
+	var lower := Vector2(1180, 600)
+	_check(map.is_point_walkable(road) and map.is_point_walkable(road_bottom), "rua perimetral caminhável")
+	_check(_reachable(map, interior, road, Rect2()), "interior chega à rua pela escada")
+	_check(not _reachable(map, interior, road, stair), "sem a escada, o interior não chega à rua")
+	_check(_reachable(map, road, road_bottom, stair), "a rua dá a volta")
+	_check(_reachable(map, road, lower, Rect2()), "a rua termina na área de baixo")
+	_check(not _reachable(map, lower, interior, stair), "área de baixo separada do interior")
 
 	# Controles de toque: arrastar o joystick move o personagem.
 	main.call("_back_to_title")
@@ -100,3 +117,33 @@ func _run() -> void:
 	else:
 		print("[vila-tests] FAILED: %d" % _failures.size())
 		quit(1)
+
+
+## Busca em largura na grade, opcionalmente ignorando um retângulo (ex.: a escada).
+func _reachable(map: WalkMap, from: Vector2, to: Vector2, blocked: Rect2) -> bool:
+	var c := WalkMap.CELL
+	var start := Vector2i(int(from.x / c), int(from.y / c))
+	var goal := Vector2i(int(to.x / c), int(to.y / c))
+	if not map.is_cell_walkable(start.x, start.y) or not map.is_cell_walkable(goal.x, goal.y):
+		return false
+	var seen := PackedByteArray()
+	seen.resize(map.width * map.height)
+	var queue: Array[Vector2i] = [start]
+	seen[start.y * map.width + start.x] = 1
+	var head := 0
+	while head < queue.size():
+		var cur: Vector2i = queue[head]
+		head += 1
+		if cur == goal:
+			return true
+		for dlt: Vector2i in [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]:
+			var n := cur + dlt
+			if not map.is_cell_walkable(n.x, n.y):
+				continue
+			if blocked.size != Vector2.ZERO and blocked.has_point(Vector2((n.x + 0.5) * c, (n.y + 0.5) * c)):
+				continue
+			var idx := n.y * map.width + n.x
+			if seen[idx] == 0:
+				seen[idx] = 1
+				queue.append(n)
+	return false

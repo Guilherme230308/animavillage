@@ -3,7 +3,7 @@
   "engineVersion": "4.7.2.stable.official.ed1daf0bf",
   "inputs": {
     "objectFormat": "sha1",
-    "tree": "db444353bb86d1bdeb233632286b9e843c878134",
+    "tree": "8013d7cd51e1491198919ba9285f50866e7903bf",
     "entries": [
       {
         "path": ".gitignore",
@@ -33,7 +33,7 @@
         "path": "assets.lock.json",
         "type": "file",
         "mode": "100644",
-        "object": "a386ba5b17ef5c917310e8abced70576f5e22ecd"
+        "object": "cb3b25e4e925821e3c92fbca37553cc01425142d"
       },
       {
         "path": "assets/game/hero.png",
@@ -55,7 +55,7 @@
       {
         "path": "assets/game/scene.png",
         "type": "managed",
-        "sha256": "sha256:9f5fb08f987617db05a7eec913b54e5b18c439c4d6a0d5bd419bb87aa3832aa4"
+        "sha256": "sha256:7392a5e9f4eac0e85a72e0e071b45193b462476be97a2bde5ee7c709183a4483"
       },
       {
         "path": "assets/game/scene.png.import",
@@ -64,9 +64,125 @@
         "object": "20ac6d841b7bbfcd19a05666e9c3aec65143becf"
       },
       {
+        "path": "assets/game/tower_01.png",
+        "type": "managed",
+        "sha256": "sha256:144a9078c339e02a6d49018dcfc38f0bf39219a460af135126e7902a9a014f58"
+      },
+      {
+        "path": "assets/game/tower_01.png.import",
+        "type": "file",
+        "mode": "100644",
+        "object": "54582067a225d60027501592c5baf3f15b539a3c"
+      },
+      {
+        "path": "assets/game/tower_02.png",
+        "type": "managed",
+        "sha256": "sha256:697fd384499218de5f79acbbc78117debfb0cdc5f183dd2cf0a13828957c5d9d"
+      },
+      {
+        "path": "assets/game/tower_02.png.import",
+        "type": "file",
+        "mode": "100644",
+        "object": "b7fc691bb8653e679600b2bcde055a9513fc0890"
+      },
+      {
+        "path": "assets/game/tower_03.png",
+        "type": "managed",
+        "sha256": "sha256:fd34d902086f23a17e9a84d85507abcaacc2a289403c0b2e7dc8152ec7eb7f0a"
+      },
+      {
+        "path": "assets/game/tower_03.png.import",
+        "type": "file",
+        "mode": "100644",
+        "object": "aaaa591a0a4368cb5446495c05a2c7b5dd28fcbe"
+      },
+      {
+        "path": "assets/game/tower_04.png",
+        "type": "managed",
+        "sha256": "sha256:04d2b0e51284bf1ca30c01740698e14816f68efb3a8bba799d29dd80bea0a031"
+      },
+      {
+        "path": "assets/game/tower_04.png.import",
+        "type": "file",
+        "mode": "100644",
+        "object": "083d36224d7242924869baac19ce05953d86a6cc"
+      },
+      {
+        "path": "assets/game/tower_05.png",
+        "type": "managed",
+        "sha256": "sha256:de55bb2c55706eb8fc8332ed85eed499e56ff13a5382adf1da92a412d78a856d"
+      },
+      {
+        "path": "assets/game/tower_05.png.import",
+        "type": "file",
+        "mode": "100644",
+        "object": "a8fa3b6d39c6f8700927651815b7e7f5c5897020"
+      },
+      {
+        "path": "assets/game/tower_06.png",
+        "type": "managed",
+        "sha256": "sha256:c6d3ff7fdb62800d4b4d5309e3d9d708a652412bce40f62701759695a67f4f89"
+      },
+      {
+        "path": "assets/game/tower_06.png.import",
+        "type": "file",
+        "mode": "100644",
+        "object": "5dc8c2b7726ec641293704e432410a774c8bcb4a"
+      },
+      {
+        "path": "assets/game/tower_07.png",
+        "type": "managed",
+        "sha256": "sha256:232ae74727d0baf2cef63e86003269c08fe2a2727f9f7465ecbef8b7179ba69a"
+      },
+      {
+        "path": "assets/game/tower_07.png.import",
+        "type": "file",
+        "mode": "100644",
+        "object": "0faf7dd6eca1f2c2c0f7d0d587508287ae1dc586"
+      },
+      {
+        "path": "assets/game/tower_08.png",
+        "type": "managed",
+        "sha256": "sha256:d8624acb1624096ba3f6fde2a2ee9e928835639928a8902b7a43b5267270a606"
+      },
+      {
+        "path": "assets/game/tower_08.png.import",
+        "type": "file",
+        "mode": "100644",
+        "object": "6d23fbf679b0f1e2325f9610ac34fc55aa602cfc"
+      },
+      {
+        "path": "assets/game/tower_09.png",
+        "type": "managed",
+        "sha256": "sha256:73f81ff2eff0e5b799d560309be50f16ee1131e7348b0c804817a31d02fc1114"
+      },
+      {
+        "path": "assets/game/tower_09.png.import",
+        "type": "file",
+        "mode": "100644",
+        "object": "87a9e2b3c7abf2521fcfe4ac9ef56f1950d5d7b6"
+      },
+      {
+        "path": "assets/game/tower_10.png",
+        "type": "managed",
+        "sha256": "sha256:bccfdc25e3fd3b8646779c8daaeb896afdf8d159bf5051325d7bc33ba5ad3c2f"
+      },
+      {
+        "path": "assets/game/tower_10.png.import",
+        "type": "file",
+        "mode": "100644",
+        "object": "ed35909d39a5a77ef8ace47598ce0dd130165fda"
+      },
+      {
+        "path": "assets/game/towers.json",
+        "type": "file",
+        "mode": "100644",
+        "object": "6c4010bb690556334f730e2328ac1921c9d5ab03"
+      },
+      {
         "path": "assets/game/walk_mask.png",
         "type": "managed",
-        "sha256": "sha256:50cb33f1e25b1c8fda4e760fe09b9a55f0c1f3a3b1a05cafa2e31a1114800933"
+        "sha256": "sha256:d3409a6a560fbc1a770f71b14e791cb683a8944a9f3910f581a701fd513b77b5"
       },
       {
         "path": "assets/game/walk_mask.png.import",
@@ -763,7 +879,7 @@
         "path": "scripts/vila/vila_main.gd",
         "type": "file",
         "mode": "100644",
-        "object": "b57f0e35c731ae1796dda5915b72fd944a5ff220"
+        "object": "efcfd4aadfc135c4ba39a4cf0ea38fd8b0d37ba1"
       },
       {
         "path": "scripts/vila/vila_main.gd.uid",
@@ -775,7 +891,7 @@
         "path": "scripts/vila/walk_map.gd",
         "type": "file",
         "mode": "100644",
-        "object": "1596bc9b54b77c2b2ac221620dc68d9fbf73b0fb"
+        "object": "ed00c114fe7a3f79cd6cf22e808984a5d157f829"
       },
       {
         "path": "scripts/vila/walk_map.gd.uid",
@@ -787,7 +903,7 @@
         "path": "scripts/vila/walker.gd",
         "type": "file",
         "mode": "100644",
-        "object": "33573848c5fa0e02760f11dfdbcdec1d2c2856b6"
+        "object": "558ed044d0b3097a2f336ce7838e834ef1951e66"
       },
       {
         "path": "scripts/vila/walker.gd.uid",
@@ -889,7 +1005,7 @@
         "path": "test/vila_tests.gd",
         "type": "file",
         "mode": "100644",
-        "object": "9bab4695132b933f846ebca62361b47bb04ecc01"
+        "object": "e762f7ab988880fbcabf84549e31471055800965"
       },
       {
         "path": "test/vila_tests.gd.uid",
@@ -961,7 +1077,7 @@
         "path": "tools/verify_exported_pack.gd",
         "type": "file",
         "mode": "100644",
-        "object": "cd9aef5988d09c1d09090493472b0d0e64ebbc91"
+        "object": "a38b52d4e9c30bc97171dc52b288822219b9b6ca"
       },
       {
         "path": "tools/verify_exported_pack.gd.uid",
@@ -984,7 +1100,7 @@
     ]
   },
   "build": {
-    "snapshotId": "sha256:6d24866b4b13c951c6246447c11d161e5018493f4139b065380b8ff72244a14d",
+    "snapshotId": "sha256:1cbdcd2afaec71e9b907fdd225abf1c1c03af81117851a0d0352c327c87c5ade",
     "toolchain": {
       "engineVersion": "4.7.2.stable.official.ed1daf0bf",
       "engineDigest": "sha256:8d106cbe6144c2dc7e881d61d2429c1a8a76e6b22ef48bd5e48dcf934953f71e",
@@ -997,21 +1113,21 @@
     "profile": "release",
     "export": {
       "profile": "release",
-      "snapshotId": "sha256:6d24866b4b13c951c6246447c11d161e5018493f4139b065380b8ff72244a14d",
+      "snapshotId": "sha256:1cbdcd2afaec71e9b907fdd225abf1c1c03af81117851a0d0352c327c87c5ade",
       "files": {
         "THIRD_PARTY_NOTICES.txt": "sha256:c729a77bf07eb9745b2d89c3ce4ead3357438366f41743d2755ae35f98509cf9",
         "index.apple-touch-icon.png": "sha256:d2716209a9509d8b7357841254fdfcbbe5ade6b96b01921b9f3f091fd1c9c793",
         "index.audio.position.worklet.js": "sha256:be33985bc7160d6bf9646f259cd86b259cd67b02ccb297ee5c44f8ac84327bc8",
         "index.audio.worklet.js": "sha256:5b476a9c9ce642c0ee4256436d1bc31d9c38f868aca0f9a8e2a57c18d2dec2a3",
-        "index.html": "sha256:77d061ad065f3a2fcfd49378ba2a7994923df2dd1086420fd7047ee4440ceb8d",
+        "index.html": "sha256:5adee64c41deb2bf2d8abb3532e8218826466d1152acc8ec2e97a3ae3d6e94d3",
         "index.icon.png": "sha256:bf74e1751235e01f2350f03af885ea344fa6836d13e6e363d94863756bcbe131",
         "index.js": "sha256:cb28c2d8ffd8981888823f1b6d98cdec4e3e11adf209ad556c22878e6d51c63a",
-        "index.pck": "sha256:c290f54c260c524dc723955f6c868aa14e5780033f9f854b356d3fc7a8911435",
+        "index.pck": "sha256:b2a4b4e392e45903f0d037628b04443a506def8a7dbe62f8fcc73f343b366352",
         "index.png": "sha256:3cb4495c0b98dfbe4b663cbf2b6836473572339beb66d902367893162a70be0e",
         "index.wasm": "sha256:fc74679e3b97f76878947fcd4fbe1268cbfa6188182a2e33bbc3f5dc9bfa57d0",
         "open-source-licenses.html": "sha256:9215f5fdd50039a9b6f3d8f0271cbc21bbdf64b917fb118dd29c8a16b9974e00"
       },
-      "digest": "sha256:4506a450e46699fa701c81f64684723de2d3e09b1f0ac521f71565bb7b1dba86"
+      "digest": "sha256:d26e4df6bf56d828033ae0070115857290a83b0d33ca8b329a5cf9220cc6baba"
     }
   },
   "artifacts": {
@@ -1020,8 +1136,8 @@
       "sha256": "sha256:fc74679e3b97f76878947fcd4fbe1268cbfa6188182a2e33bbc3f5dc9bfa57d0"
     },
     "pck": {
-      "path": "/manus-storage/game/sha256/c290f54c260c524dc723955f6c868aa14e5780033f9f854b356d3fc7a8911435.pck",
-      "sha256": "sha256:c290f54c260c524dc723955f6c868aa14e5780033f9f854b356d3fc7a8911435"
+      "path": "/manus-storage/game/sha256/b2a4b4e392e45903f0d037628b04443a506def8a7dbe62f8fcc73f343b366352.pck",
+      "sha256": "sha256:b2a4b4e392e45903f0d037628b04443a506def8a7dbe62f8fcc73f343b366352"
     }
   },
   "files": {
@@ -1030,7 +1146,7 @@
     "index.apple-touch-icon.png": "sha256:d2716209a9509d8b7357841254fdfcbbe5ade6b96b01921b9f3f091fd1c9c793",
     "index.audio.position.worklet.js": "sha256:be33985bc7160d6bf9646f259cd86b259cd67b02ccb297ee5c44f8ac84327bc8",
     "index.audio.worklet.js": "sha256:5b476a9c9ce642c0ee4256436d1bc31d9c38f868aca0f9a8e2a57c18d2dec2a3",
-    "index.html": "sha256:c383c6479b163bc5d9fb559f30b66c680de4ac0d8300148e7acbb0db2dacb0de",
+    "index.html": "sha256:3e8773faac04fb3d6019314827552b658bb7fa1248469439a82367a2ca054f6c",
     "index.icon.png": "sha256:bf74e1751235e01f2350f03af885ea344fa6836d13e6e363d94863756bcbe131",
     "index.js": "sha256:cb28c2d8ffd8981888823f1b6d98cdec4e3e11adf209ad556c22878e6d51c63a",
     "index.png": "sha256:3cb4495c0b98dfbe4b663cbf2b6836473572339beb66d902367893162a70be0e",

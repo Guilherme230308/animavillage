@@ -8,13 +8,15 @@ const FRAME_H := 40
 const ROWS := {"down": 0, "left": 1, "right": 2, "up": 3}
 const WALK_SPEED := 70.0
 const RUN_SPEED := 125.0
-const FOOT_HALF := Vector2(4.0, 2.5)
+const FOOT_HALF := Vector2(3.0, 2.0)
 
 var walk_map: WalkMap
 var facing := "down"
 var moving := false
 var _sprite: AnimatedSprite2D
 var _shadow: Polygon2D
+var _ghost: AnimatedSprite2D
+var occluded := false
 
 
 func _ready() -> void:
@@ -33,6 +35,15 @@ func _ready() -> void:
 	_sprite.offset = Vector2(0, -FRAME_H / 2.0 + 1)
 	add_child(_sprite)
 	_sprite.play("idle_down")
+	# Silhueta desenhada por cima das torres quando o personagem passa atrás delas.
+	_ghost = AnimatedSprite2D.new()
+	_ghost.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	_ghost.sprite_frames = _sprite.sprite_frames
+	_ghost.offset = _sprite.offset
+	_ghost.z_index = 50
+	_ghost.modulate = Color(0.7, 0.9, 1.0, 0.55)
+	_ghost.visible = false
+	add_child(_ghost)
 
 
 func _build_frames() -> SpriteFrames:
@@ -77,6 +88,12 @@ func step(direction: Vector2, running: bool, delta: float) -> Vector2:
 		_sprite.play(anim)
 	if _sprite != null:
 		_sprite.speed_scale = 1.6 if running else 1.0
+	if _ghost != null:
+		_ghost.visible = occluded
+		if occluded:
+			if _ghost.animation != _sprite.animation:
+				_ghost.play(_sprite.animation)
+			_ghost.frame = _sprite.frame
 	return position - before
 
 

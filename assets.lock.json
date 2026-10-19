@@ -25,17 +25,97 @@
       "used": true
     },
     "assets/game/scene.png": {
-      "path": "/manus-storage/game/sha256/9f5fb08f987617db05a7eec913b54e5b18c439c4d6a0d5bd419bb87aa3832aa4.png",
-      "sha256": "sha256:9f5fb08f987617db05a7eec913b54e5b18c439c4d6a0d5bd419bb87aa3832aa4",
-      "size": 3408501,
+      "path": "/manus-storage/game/sha256/7392a5e9f4eac0e85a72e0e071b45193b462476be97a2bde5ee7c709183a4483.png",
+      "sha256": "sha256:7392a5e9f4eac0e85a72e0e071b45193b462476be97a2bde5ee7c709183a4483",
+      "size": 3438299,
       "assetType": "image",
       "groupId": "game",
       "used": true
     },
+    "assets/game/tower_01.png": {
+      "path": "/manus-storage/game/sha256/144a9078c339e02a6d49018dcfc38f0bf39219a460af135126e7902a9a014f58.png",
+      "sha256": "sha256:144a9078c339e02a6d49018dcfc38f0bf39219a460af135126e7902a9a014f58",
+      "size": 95148,
+      "assetType": "image",
+      "groupId": "game",
+      "used": true
+    },
+    "assets/game/tower_02.png": {
+      "path": "/manus-storage/game/sha256/697fd384499218de5f79acbbc78117debfb0cdc5f183dd2cf0a13828957c5d9d.png",
+      "sha256": "sha256:697fd384499218de5f79acbbc78117debfb0cdc5f183dd2cf0a13828957c5d9d",
+      "size": 94776,
+      "assetType": "image",
+      "groupId": "game",
+      "used": false
+    },
+    "assets/game/tower_03.png": {
+      "path": "/manus-storage/game/sha256/fd34d902086f23a17e9a84d85507abcaacc2a289403c0b2e7dc8152ec7eb7f0a.png",
+      "sha256": "sha256:fd34d902086f23a17e9a84d85507abcaacc2a289403c0b2e7dc8152ec7eb7f0a",
+      "size": 93507,
+      "assetType": "image",
+      "groupId": "game",
+      "used": false
+    },
+    "assets/game/tower_04.png": {
+      "path": "/manus-storage/game/sha256/04d2b0e51284bf1ca30c01740698e14816f68efb3a8bba799d29dd80bea0a031.png",
+      "sha256": "sha256:04d2b0e51284bf1ca30c01740698e14816f68efb3a8bba799d29dd80bea0a031",
+      "size": 96982,
+      "assetType": "image",
+      "groupId": "game",
+      "used": false
+    },
+    "assets/game/tower_05.png": {
+      "path": "/manus-storage/game/sha256/de55bb2c55706eb8fc8332ed85eed499e56ff13a5382adf1da92a412d78a856d.png",
+      "sha256": "sha256:de55bb2c55706eb8fc8332ed85eed499e56ff13a5382adf1da92a412d78a856d",
+      "size": 93865,
+      "assetType": "image",
+      "groupId": "game",
+      "used": false
+    },
+    "assets/game/tower_06.png": {
+      "path": "/manus-storage/game/sha256/c6d3ff7fdb62800d4b4d5309e3d9d708a652412bce40f62701759695a67f4f89.png",
+      "sha256": "sha256:c6d3ff7fdb62800d4b4d5309e3d9d708a652412bce40f62701759695a67f4f89",
+      "size": 95988,
+      "assetType": "image",
+      "groupId": "game",
+      "used": false
+    },
+    "assets/game/tower_07.png": {
+      "path": "/manus-storage/game/sha256/232ae74727d0baf2cef63e86003269c08fe2a2727f9f7465ecbef8b7179ba69a.png",
+      "sha256": "sha256:232ae74727d0baf2cef63e86003269c08fe2a2727f9f7465ecbef8b7179ba69a",
+      "size": 97071,
+      "assetType": "image",
+      "groupId": "game",
+      "used": false
+    },
+    "assets/game/tower_08.png": {
+      "path": "/manus-storage/game/sha256/d8624acb1624096ba3f6fde2a2ee9e928835639928a8902b7a43b5267270a606.png",
+      "sha256": "sha256:d8624acb1624096ba3f6fde2a2ee9e928835639928a8902b7a43b5267270a606",
+      "size": 110003,
+      "assetType": "image",
+      "groupId": "game",
+      "used": false
+    },
+    "assets/game/tower_09.png": {
+      "path": "/manus-storage/game/sha256/73f81ff2eff0e5b799d560309be50f16ee1131e7348b0c804817a31d02fc1114.png",
+      "sha256": "sha256:73f81ff2eff0e5b799d560309be50f16ee1131e7348b0c804817a31d02fc1114",
+      "size": 103223,
+      "assetType": "image",
+      "groupId": "game",
+      "used": false
+    },
+    "assets/game/tower_10.png": {
+      "path": "/manus-storage/game/sha256/bccfdc25e3fd3b8646779c8daaeb896afdf8d159bf5051325d7bc33ba5ad3c2f.png",
+      "sha256": "sha256:bccfdc25e3fd3b8646779c8daaeb896afdf8d159bf5051325d7bc33ba5ad3c2f",
+      "size": 104201,
+      "assetType": "image",
+      "groupId": "game",
+      "used": false
+    },
     "assets/game/walk_mask.png": {
-      "path": "/manus-storage/game/sha256/50cb33f1e25b1c8fda4e760fe09b9a55f0c1f3a3b1a05cafa2e31a1114800933.png",
-      "sha256": "sha256:50cb33f1e25b1c8fda4e760fe09b9a55f0c1f3a3b1a05cafa2e31a1114800933",
-      "size": 2456,
+      "path": "/manus-storage/game/sha256/d3409a6a560fbc1a770f71b14e791cb683a8944a9f3910f581a701fd513b77b5.png",
+      "sha256": "sha256:d3409a6a560fbc1a770f71b14e791cb683a8944a9f3910f581a701fd513b77b5",
+      "size": 6707,
       "assetType": "image",
       "groupId": "game",
       "used": true
