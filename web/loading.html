@@ -17,7 +17,8 @@ Source SHA-256: 38f4c5f927f746b3dfa4c3a5d7edf0b7a3e828e27438418fa54f9e1565289412
   </style>
   <style>
     html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; background: #1a211a; color: #fff1c9; font-family: "Noto Sans SC", sans-serif; }
-    #canvas { display: block; width: 100%; height: 100%; outline: none; }
+    #canvas { display: block; width: 100%; height: 100%; outline: none; touch-action: none; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+    html, body { touch-action: none; overscroll-behavior: none; }
     #loading { position: fixed; inset: 0; display: grid; place-content: center; gap: 16px; padding: max(24px, env(safe-area-inset-top)) max(24px, env(safe-area-inset-right)) max(24px, env(safe-area-inset-bottom)) max(24px, env(safe-area-inset-left)); background: radial-gradient(circle at 50% 40%, #2b3a2c 0%, #1a211a 70%); text-align: center; }
     #loading-icon { width: 96px; height: 96px; justify-self: center; image-rendering: pixelated; }
     h1 { color: #e9a15b; letter-spacing: 0.08em; }

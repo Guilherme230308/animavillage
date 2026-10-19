@@ -26,13 +26,24 @@ var _playing := false
 var _paused := false
 var _target_zoom := ZOOM_DEFAULT
 var distance_walked := 0.0
+var touch_mode := false
+var _joystick: TouchJoystick
+var _touch_layer: Control
+var _touch_buttons: Dictionary = {}
+var _wrap_labels: Array[Label] = []
+var _panels: Array[PanelContainer] = []
+var _controls_label: Label
 
 
 func _ready() -> void:
 	_ensure_actions()
 	walk_map.load_mask()
 	_build_world()
+	touch_mode = DisplayServer.is_touchscreen_available()
 	_build_ui()
+	_build_touch_ui()
+	get_tree().root.size_changed.connect(_relayout)
+	_relayout()
 	_show_title()
 
 
@@ -149,6 +160,7 @@ func _centered_panel() -> Array:
 	var panel := PanelContainer.new()
 	panel.add_theme_stylebox_override("panel", _panel_style())
 	center.add_child(panel)
+	_panels.append(panel)
 	var box := VBoxContainer.new()
 	box.alignment = BoxContainer.ALIGNMENT_CENTER
 	box.add_theme_constant_override("separation", 16)
@@ -163,6 +175,8 @@ func _label(text: String, size: int, color: Color = Color("fff1c9")) -> Label:
 	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	l.add_theme_font_size_override("font_size", size)
 	l.add_theme_color_override("font_color", color)
+	l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_wrap_labels.append(l)
 	return l
 
 
@@ -183,6 +197,8 @@ func _build_ui() -> void:
 	_hud.add_child(hud_panel)
 	_hint_label = _label("", 16)
 	_hint_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+	_hint_label.autowrap_mode = TextServer.AUTOWRAP_OFF
+	_wrap_labels.erase(_hint_label)
 	hud_panel.add_child(_hint_label)
 	_update_hint()
 
@@ -193,7 +209,8 @@ func _build_ui() -> void:
 	tbox.add_child(_label("VILA VISTA", 56, ACCENT))
 	tbox.add_child(_label("Passeie pelo condomínio em pixel art.", 20))
 	tbox.add_child(_label("Os caminhos seguem os passeios reais da imagem:\nprédios, piscinas, jardins e muros bloqueiam a passagem.", 16, Color("cfd8c4")))
-	tbox.add_child(_label("Setas ou WASD: andar   ·   Shift: correr   ·   M: mostrar caminhos\nRoda do mouse ou +/−: zoom   ·   Esc: pausar", 15, Color("cfd8c4")))
+	_controls_label = _label("", 15, Color("cfd8c4"))
+	tbox.add_child(_controls_label)
 	_start_button = _make_button("Começar a caminhar")
 	_start_button.pressed.connect(_start)
 	tbox.add_child(_start_button)
@@ -212,8 +229,115 @@ func _build_ui() -> void:
 
 
 func _update_hint() -> void:
-	var paths := "ligado" if _paths_overlay != null and _paths_overlay.visible else "desligado"
-	_hint_label.text = "Setas/WASD andar · Shift correr · M caminhos (%s) · Esc pausar" % paths
+	var on := _paths_overlay != null and _paths_overlay.visible
+	var paths := "ligado" if on else "desligado"
+	if touch_mode:
+		_hint_label.text = "Arraste à esquerda para andar · até a borda para correr"
+	else:
+		_hint_label.text = "Setas/WASD andar · Shift correr · M caminhos (%s) · Esc pausar" % paths
+	if _touch_buttons.has("paths"):
+		var b: TouchButton = _touch_buttons["paths"]
+		b.text = "Ocultar" if on else "Caminhos"
+		b.queue_redraw()
+	if _controls_label != null:
+		if touch_mode:
+			_controls_label.text = "No celular: toque e arraste na metade esquerda da tela para andar; empurre até a borda para correr. Use os botões à direita para mostrar os caminhos, aproximar ou afastar, e pausar."
+		else:
+			_controls_label.text = "Setas ou WASD: andar  ·  Shift: correr  ·  M: mostrar caminhos\nRoda do mouse ou +/−: zoom  ·  Esc: pausar  ·  No celular, use os controles de toque."
+
+
+func _build_touch_ui() -> void:
+	_touch_layer = Control.new()
+	_touch_layer.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_touch_layer.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(_touch_layer)
+	move_child(_touch_layer, _hud.get_index() + 1)
+	_joystick = TouchJoystick.new()
+	_joystick.touched.connect(_enable_touch_mode)
+	_touch_layer.add_child(_joystick)
+	var defs := [["paths", "Caminhos", Vector2(124, 64)], ["zoom_in", "+", Vector2(64, 64)], ["zoom_out", "−", Vector2(64, 64)], ["pause", "II", Vector2(60, 60)]]
+	for d: Array in defs:
+		var b := TouchButton.new(d[1], d[2])
+		b.font_size = 30 if d[0] in ["zoom_in", "zoom_out"] else 20
+		_touch_layer.add_child(b)
+		_touch_buttons[d[0]] = b
+	(_touch_buttons["paths"] as TouchButton).tapped.connect(_toggle_paths)
+	(_touch_buttons["zoom_in"] as TouchButton).tapped.connect(func() -> void: _zoom_by(1.2))
+	(_touch_buttons["zoom_out"] as TouchButton).tapped.connect(func() -> void: _zoom_by(1.0 / 1.2))
+	(_touch_buttons["pause"] as TouchButton).tapped.connect(_open_pause)
+
+
+func _enable_touch_mode() -> void:
+	if not touch_mode:
+		touch_mode = true
+		_relayout()
+
+
+func _relayout() -> void:
+	var win := get_window()
+	var ws := Vector2(win.size)
+	if ws.x <= 0 or ws.y <= 0:
+		return
+	# Mantém o lado menor da tela com tamanho lógico confortável para o dedo.
+	var short_side := minf(ws.x, ws.y)
+	var base_short := 520.0 if touch_mode or short_side < 520.0 else 720.0
+	var k := base_short / short_side
+	win.content_scale_size = Vector2i(int(round(ws.x * k)), int(round(ws.y * k)))
+	var vs := Vector2(win.content_scale_size)
+	var panel_w := minf(600.0, vs.x - 76.0)
+	for l in _wrap_labels:
+		l.custom_minimum_size.x = panel_w
+	for pc in _panels:
+		var sb := pc.get_theme_stylebox("panel") as StyleBoxFlat
+		if sb != null:
+			sb.set_content_margin_all(28.0 if vs.x > 700.0 else 16.0)
+	_hint_label.add_theme_font_size_override("font_size", 14 if vs.x < 700.0 else 16)
+	_layout_touch_buttons(vs)
+	_update_hint()
+	_refresh_touch_visibility()
+
+
+func _layout_touch_buttons(vs: Vector2) -> void:
+	if _touch_buttons.is_empty():
+		return
+	var m := 24.0
+	var paths: TouchButton = _touch_buttons["paths"]
+	var zin: TouchButton = _touch_buttons["zoom_in"]
+	var zout: TouchButton = _touch_buttons["zoom_out"]
+	var pause: TouchButton = _touch_buttons["pause"]
+	paths.position = Vector2(vs.x - m - paths.size.x, vs.y - m - paths.size.y)
+	zin.position = Vector2(vs.x - m - zin.size.x, paths.position.y - 16 - zin.size.y)
+	zout.position = Vector2(zin.position.x - 14 - zout.size.x, zin.position.y)
+	pause.position = Vector2(vs.x - m - pause.size.x, m)
+	for b in _touch_buttons.values():
+		(b as TouchButton).queue_redraw()
+	_joystick.queue_redraw()
+
+
+func _refresh_touch_visibility() -> void:
+	if _touch_layer == null:
+		return
+	_touch_layer.visible = touch_mode and _playing and not _paused
+	if not _touch_layer.visible and _joystick != null:
+		_joystick.release()
+
+
+func _toggle_paths() -> void:
+	_paths_overlay.visible = not _paths_overlay.visible
+	_update_hint()
+
+
+func _zoom_by(f: float) -> void:
+	_target_zoom = clamp(_target_zoom * f, ZOOM_MIN, ZOOM_MAX)
+
+
+func _open_pause() -> void:
+	if not _playing or _paused:
+		return
+	_paused = true
+	_pause_screen.visible = true
+	_resume_button.grab_focus()
+	_refresh_touch_visibility()
 
 
 func _show_title() -> void:
@@ -223,6 +347,7 @@ func _show_title() -> void:
 	_pause_screen.visible = false
 	_hud.visible = false
 	_target_zoom = 1.6
+	_refresh_touch_visibility()
 	_start_button.call_deferred("grab_focus")
 
 
@@ -233,11 +358,13 @@ func _start() -> void:
 	_pause_screen.visible = false
 	_hud.visible = true
 	_target_zoom = ZOOM_DEFAULT
+	_refresh_touch_visibility()
 
 
 func _resume() -> void:
 	_paused = false
 	_pause_screen.visible = false
+	_refresh_touch_visibility()
 
 
 func _back_to_title() -> void:
@@ -247,15 +374,18 @@ func _back_to_title() -> void:
 	_show_title()
 
 
+func _input(event: InputEvent) -> void:
+	if event is InputEventScreenTouch and not touch_mode:
+		_enable_touch_mode()
+
+
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("pause"):
 		if _playing:
 			if _paused:
 				_resume()
 			else:
-				_paused = true
-				_pause_screen.visible = true
-				_resume_button.grab_focus()
+				_open_pause()
 			get_viewport().set_input_as_handled()
 		return
 	if not _playing or _paused:
@@ -264,8 +394,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			get_viewport().set_input_as_handled()
 		return
 	if event.is_action_pressed("toggle_paths"):
-		_paths_overlay.visible = not _paths_overlay.visible
-		_update_hint()
+		_toggle_paths()
 	elif event.is_action_pressed("zoom_in"):
 		_target_zoom = clamp(_target_zoom * 1.2, ZOOM_MIN, ZOOM_MAX)
 	elif event.is_action_pressed("zoom_out"):
@@ -284,7 +413,11 @@ func _process(delta: float) -> void:
 		_player.step(Vector2.ZERO, false, delta)
 		return
 	var dir := Input.get_vector("move_left", "move_right", "move_up", "move_down")
-	var moved := _player.step(dir, Input.is_action_pressed("run"), delta)
+	var running := Input.is_action_pressed("run")
+	if _joystick != null and _joystick.is_held():
+		dir = _joystick.vector
+		running = _joystick.running
+	var moved := _player.step(dir, running, delta)
 	distance_walked += moved.length()
 
 

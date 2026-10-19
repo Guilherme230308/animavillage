@@ -51,6 +51,47 @@ func _run() -> void:
 	_check(not map.is_point_walkable(Vector2(840, 180)), "torre bloqueada")
 	_check(not map.is_point_walkable(Vector2(30, 600)), "mata externa bloqueada")
 
+	# Controles de toque: arrastar o joystick move o personagem.
+	main.call("_back_to_title")
+	main.call("_start")
+	main.call("_enable_touch_mode")
+	await process_frame
+	var joy: TouchJoystick = main.get("_joystick")
+	_check(bool((main.get("_touch_layer") as Control).visible), "controles de toque visíveis")
+	var vs := root.get_visible_rect().size
+	var origin := Vector2(vs.x * 0.2, vs.y * 0.7)
+	var press := InputEventScreenTouch.new()
+	press.index = 0
+	press.position = origin
+	press.pressed = true
+	joy._input(press)
+	await process_frame
+	_check(joy.is_held(), "joystick capturou o toque")
+	var tstart := (main.get("_player") as Walker).position
+	var moved_any := 0.0
+	for dir2: Vector2 in [Vector2.RIGHT, Vector2.DOWN, Vector2.LEFT, Vector2.UP]:
+		var drag := InputEventScreenDrag.new()
+		drag.index = 0
+		drag.position = origin + dir2 * 65.0
+		joy._input(drag)
+		_check(joy.running, "empurrar até a borda ativa corrida")
+		for i in 30:
+			await process_frame
+		moved_any += (main.get("_player") as Walker).position.distance_to(tstart)
+		tstart = (main.get("_player") as Walker).position
+	var up := InputEventScreenTouch.new()
+	up.index = 0
+	up.position = origin
+	up.pressed = false
+	joy._input(up)
+	await process_frame
+	_check(not joy.is_held() and joy.vector == Vector2.ZERO, "soltar o dedo para o personagem")
+	_check(moved_any > 3.0, "toque move o personagem")
+	_check(map.is_footprint_walkable((main.get("_player") as Walker).position, Walker.FOOT_HALF), "toque mantém no passeio")
+	var paths_btn: TouchButton = (main.get("_touch_buttons") as Dictionary)["paths"]
+	paths_btn.tapped.emit()
+	_check(bool((main.get("_paths_overlay") as Sprite2D).visible), "botão de caminhos funciona")
+
 	main.queue_free()
 	await process_frame
 	if _failures.is_empty():
