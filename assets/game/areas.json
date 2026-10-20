@@ -1,236 +1,296 @@
 {
-  "oeste": {
-    "title": "Rua lateral — quadras",
-    "bg": "res://assets/game/areas/oeste/bg.png",
-    "walk": "res://assets/game/areas/oeste/walk.png",
-    "towers": "",
-    "exits": [
-      {
-        "rect": [
-          1700,
-          245,
-          30,
-          95
-        ],
-        "to": "estacionamento",
-        "spawn": "oeste",
-        "dir": [
-          1,
-          0
-        ]
-      },
-      {
-        "rect": [
-          500,
-          1600,
-          170,
-          32
-        ],
-        "to": "fundos",
-        "spawn": "norte"
-      },
-      {
-        "rect": [
-          676,
-          1338,
-          14,
-          46
-        ],
-        "to": "condominio",
-        "spawn": "escada",
-        "dir": [
-          1,
-          0
-        ]
-      }
+ "oeste": {
+  "title": "Rua lateral — quadras",
+  "bg": "res://assets/game/areas/oeste/bg.png",
+  "walk": "res://assets/game/areas/oeste/walk.png",
+  "towers": "",
+  "exits": [
+   {
+    "rect": [
+     1700,
+     245,
+     30,
+     95
     ],
-    "spawns": {
-      "leste": [
-        1650,
-        290
-      ],
-      "sul": [
-        590,
-        1558
-      ],
-      "escada": [
-        594,
-        1362
-      ]
-    },
-    "stairs": [
-      {
-        "rect": [
-          604,
-          1330,
-          690,
-          1392
-        ],
-        "down": [
-          -1,
-          0
-        ]
-      }
+    "to": "estacionamento",
+    "spawn": "sul",
+    "dir": [
+     1,
+     0
     ]
-  },
-  "fundos": {
-    "title": "Rua dos fundos",
-    "bg": "res://assets/game/areas/fundos/bg.png",
-    "walk": "res://assets/game/areas/fundos/walk.png",
-    "towers": "",
-    "exits": [
-      {
-        "rect": [
-          450,
-          0,
-          180,
-          32
-        ],
-        "to": "oeste",
-        "spawn": "sul"
-      },
-      {
-        "rect": [
-          2330,
-          1070,
-          40,
-          120
-        ],
-        "to": "direita",
-        "spawn": "oeste",
-        "dir": [
-          1,
-          0
-        ]
-      }
+   },
+   {
+    "rect": [
+     500,
+     1600,
+     170,
+     32
     ],
-    "spawns": {
-      "norte": [
-        530,
-        78
-      ],
-      "leste": [
-        2258,
-        1130
-      ]
-    }
-  },
-  "direita": {
-    "title": "Rua lateral direita",
-    "bg": "res://assets/game/areas/direita/bg.png",
-    "walk": "res://assets/game/areas/direita/walk.png",
-    "towers": "",
-    "exits": [
-      {
-        "rect": [
-          0,
-          1270,
-          32,
-          120
-        ],
-        "to": "fundos",
-        "spawn": "leste"
-      },
-      {
-        "rect": [
-          1880,
-          0,
-          170,
-          32
-        ],
-        "to": "estacionamento",
-        "spawn": "sul"
-      }
+    "to": "fundos",
+    "spawn": "norte"
+   },
+   {
+    "rect": [
+     676,
+     1338,
+     14,
+     46
     ],
-    "spawns": {
-      "oeste": [
-        58,
-        1330
-      ],
-      "norte": [
-        1966,
-        70
-      ]
-    }
-  },
-  "estacionamento": {
-    "title": "Estacionamento",
-    "bg": "res://assets/game/areas/estacionamento/bg.png",
-    "walk": "res://assets/game/areas/estacionamento/walk.png",
-    "towers": "",
-    "exits": [
-      {
-        "rect": [
-          0,
-          200,
-          32,
-          220
-        ],
-        "to": "oeste",
-        "spawn": "leste"
-      },
-      {
-        "rect": [
-          556,
-          0,
-          124,
-          30
-        ],
-        "to": "direita",
-        "spawn": "norte"
-      }
-    ],
-    "spawns": {
-      "oeste": [
-        58,
-        330
-      ],
-      "sul": [
-        618,
-        66
-      ]
-    }
-  },
-  "condominio": {
-    "title": "Térreo",
-    "bg": "res://assets/game/areas/condominio/bg.png",
-    "walk": "res://assets/game/areas/condominio/walk.png",
-    "towers": "res://assets/game/areas/condominio/towers.json",
-    "exits": [
-      {
-        "rect": [
-          100,
-          586,
-          12,
-          26
-        ],
-        "to": "oeste",
-        "spawn": "escada"
-      }
-    ],
-    "spawns": {
-      "inicio": [
-        630,
-        790
-      ],
-      "escada": [
-        140,
-        599
-      ]
-    },
-    "stairs": [
-      {
-        "rect": [
-          100,
-          586,
-          152,
-          612
-        ],
-        "down": [
-          -1,
-          0
-        ]
-      }
+    "to": "condominio",
+    "spawn": "escada",
+    "dir": [
+     1,
+     0
     ]
+   }
+  ],
+  "spawns": {
+   "leste": [
+    1650,
+    290
+   ],
+   "sul": [
+    590,
+    1558
+   ],
+   "escada": [
+    594,
+    1362
+   ]
+  },
+  "stairs": [
+   {
+    "rect": [
+     604,
+     1330,
+     690,
+     1392
+    ],
+    "down": [
+     -1,
+     0
+    ]
+   }
+  ]
+ },
+ "fundos": {
+  "title": "Rua dos fundos",
+  "bg": "res://assets/game/areas/fundos/bg.png",
+  "walk": "res://assets/game/areas/fundos/walk.png",
+  "towers": "",
+  "exits": [
+   {
+    "rect": [
+     450,
+     0,
+     180,
+     32
+    ],
+    "to": "oeste",
+    "spawn": "sul"
+   },
+   {
+    "rect": [
+     2330,
+     1070,
+     40,
+     120
+    ],
+    "to": "direita",
+    "spawn": "oeste",
+    "dir": [
+     1,
+     0
+    ]
+   }
+  ],
+  "spawns": {
+   "norte": [
+    530,
+    78
+   ],
+   "leste": [
+    2258,
+    1130
+   ]
   }
+ },
+ "direita": {
+  "title": "Rua lateral direita",
+  "bg": "res://assets/game/areas/direita/bg.png",
+  "walk": "res://assets/game/areas/direita/walk.png",
+  "towers": "",
+  "exits": [
+   {
+    "rect": [
+     0,
+     1270,
+     32,
+     120
+    ],
+    "to": "fundos",
+    "spawn": "leste"
+   },
+   {
+    "rect": [
+     1880,
+     0,
+     170,
+     32
+    ],
+    "to": "estacionamento",
+    "spawn": "sudeste"
+   }
+  ],
+  "spawns": {
+   "oeste": [
+    58,
+    1330
+   ],
+   "norte": [
+    1966,
+    70
+   ]
+  }
+ },
+ "estacionamento": {
+  "title": "Estacionamento",
+  "bg": "res://assets/game/areas/estacionamento/bg.png",
+  "walk": "res://assets/game/areas/estacionamento/walk.png",
+  "towers": "",
+  "exits": [
+   {
+    "rect": [
+     556,
+     0,
+     124,
+     30
+    ],
+    "to": "oeste",
+    "spawn": "leste"
+   },
+   {
+    "rect": [
+     0,
+     1944,
+     32,
+     40
+    ],
+    "to": "direita",
+    "spawn": "norte"
+   },
+   {
+    "rect": [
+     36,
+     338,
+     26,
+     48
+    ],
+    "to": "condominio",
+    "spawn": "elev_vermelho",
+    "elevator": "vermelho"
+   },
+   {
+    "rect": [
+     492,
+     519,
+     28,
+     28
+    ],
+    "to": "condominio",
+    "spawn": "elev_azul",
+    "elevator": "azul"
+   }
+  ],
+  "spawns": {
+   "sul": [
+    618,
+    66
+   ],
+   "sudeste": [
+    945,
+    1100
+   ],
+   "elev_vermelho": [
+    102,
+    338
+   ],
+   "elev_azul": [
+    542,
+    502
+   ]
+  }
+ },
+ "condominio": {
+  "title": "Térreo",
+  "bg": "res://assets/game/areas/condominio/bg.png",
+  "walk": "res://assets/game/areas/condominio/walk.png",
+  "towers": "res://assets/game/areas/condominio/towers.json",
+  "exits": [
+   {
+    "rect": [
+     100,
+     586,
+     12,
+     26
+    ],
+    "to": "oeste",
+    "spawn": "escada"
+   },
+   {
+    "rect": [
+     728,
+     450,
+     24,
+     32
+    ],
+    "to": "estacionamento",
+    "spawn": "elev_vermelho",
+    "elevator": "vermelho"
+   },
+   {
+    "rect": [
+     934,
+     690,
+     24,
+     24
+    ],
+    "to": "estacionamento",
+    "spawn": "elev_azul",
+    "elevator": "azul"
+   }
+  ],
+  "spawns": {
+   "inicio": [
+    630,
+    790
+   ],
+   "escada": [
+    140,
+    599
+   ],
+   "elev_vermelho": [
+    702,
+    470
+   ],
+   "elev_azul": [
+    926,
+    738
+   ]
+  },
+  "stairs": [
+   {
+    "rect": [
+     100,
+     586,
+     152,
+     612
+    ],
+    "down": [
+     -1,
+     0
+    ]
+   }
+  ]
+ }
 }

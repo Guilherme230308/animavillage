@@ -33,17 +33,17 @@
       "used": true
     },
     "assets/game/areas/condominio/bg.png": {
-      "path": "/manus-storage/game/sha256/7392a5e9f4eac0e85a72e0e071b45193b462476be97a2bde5ee7c709183a4483.png",
-      "sha256": "sha256:7392a5e9f4eac0e85a72e0e071b45193b462476be97a2bde5ee7c709183a4483",
-      "size": 3438299,
+      "path": "/manus-storage/game/sha256/a264f54a3e5c4aa0ba6d94d89d9645616bb010a92c6cd86effc3cd515ed92773.png",
+      "sha256": "sha256:a264f54a3e5c4aa0ba6d94d89d9645616bb010a92c6cd86effc3cd515ed92773",
+      "size": 3166696,
       "assetType": "image",
       "groupId": "game",
       "used": true
     },
     "assets/game/areas/condominio/minimap.png": {
-      "path": "/manus-storage/game/sha256/83aefdd6e16fe1fd65e0f1c83081e740f93f337fd340c5c9c06e52e0462763f4.png",
-      "sha256": "sha256:83aefdd6e16fe1fd65e0f1c83081e740f93f337fd340c5c9c06e52e0462763f4",
-      "size": 4059,
+      "path": "/manus-storage/game/sha256/48feee3cf29c083df05b8ea5e7f5b3b31fc2a4079ccf66fa66f76e3de640cf03.png",
+      "sha256": "sha256:48feee3cf29c083df05b8ea5e7f5b3b31fc2a4079ccf66fa66f76e3de640cf03",
+      "size": 1619,
       "assetType": "image",
       "groupId": "game",
       "used": false
@@ -129,9 +129,9 @@
       "used": false
     },
     "assets/game/areas/condominio/walk.png": {
-      "path": "/manus-storage/game/sha256/2c06a7e6160a8fe3fa018c7f333c5e10015efde9b525193d04613fb10dcd90c6.png",
-      "sha256": "sha256:2c06a7e6160a8fe3fa018c7f333c5e10015efde9b525193d04613fb10dcd90c6",
-      "size": 3816,
+      "path": "/manus-storage/game/sha256/2df9d825d7dc58c5c6b8c7ed17e5cce8640f91bb3d489300787bf28017b701b3.png",
+      "sha256": "sha256:2df9d825d7dc58c5c6b8c7ed17e5cce8640f91bb3d489300787bf28017b701b3",
+      "size": 3839,
       "assetType": "image",
       "groupId": "game",
       "used": true
@@ -145,49 +145,49 @@
       "used": true
     },
     "assets/game/areas/direita/bg.png": {
-      "path": "/manus-storage/game/sha256/8d31d44e1b0bf8471ff31510ef059455d182e64628834db25cbb783bd6bab408.png",
-      "sha256": "sha256:8d31d44e1b0bf8471ff31510ef059455d182e64628834db25cbb783bd6bab408",
-      "size": 6172576,
+      "path": "/manus-storage/game/sha256/a147bdb32b62d88b902fc9084c938d411af97597a4f6da49f542048fa4db0cbb.png",
+      "sha256": "sha256:a147bdb32b62d88b902fc9084c938d411af97597a4f6da49f542048fa4db0cbb",
+      "size": 9847710,
       "assetType": "image",
       "groupId": "game",
       "used": true
     },
     "assets/game/areas/direita/minimap.png": {
-      "path": "/manus-storage/game/sha256/c9d9306008081b7c1b0185beb3694abac35efe24f3766eaa804db8cc49cbead6.png",
-      "sha256": "sha256:c9d9306008081b7c1b0185beb3694abac35efe24f3766eaa804db8cc49cbead6",
-      "size": 1158,
+      "path": "/manus-storage/game/sha256/de127a688191848d32f5a98bbf630d6ffd55b9fb1f0ec775d78166512aab2db8.png",
+      "sha256": "sha256:de127a688191848d32f5a98bbf630d6ffd55b9fb1f0ec775d78166512aab2db8",
+      "size": 1063,
       "assetType": "image",
       "groupId": "game",
       "used": false
     },
     "assets/game/areas/direita/walk.png": {
-      "path": "/manus-storage/game/sha256/1c97f79590651f77911dd0f329c00a681d8aff3801e52ed8b1ce64cf7b9fe857.png",
-      "sha256": "sha256:1c97f79590651f77911dd0f329c00a681d8aff3801e52ed8b1ce64cf7b9fe857",
-      "size": 2311,
+      "path": "/manus-storage/game/sha256/c6266581366802381d01163793fccbd982931d19f57f2b4db68a59a9250aaa9e.png",
+      "sha256": "sha256:c6266581366802381d01163793fccbd982931d19f57f2b4db68a59a9250aaa9e",
+      "size": 3583,
       "assetType": "image",
       "groupId": "game",
       "used": false
     },
     "assets/game/areas/estacionamento/bg.png": {
-      "path": "/manus-storage/game/sha256/48af7639a9f8c9bc8ab3ad400deb0f39cd302bdecd92eb791bb1b11ae5d9c502.png",
-      "sha256": "sha256:48af7639a9f8c9bc8ab3ad400deb0f39cd302bdecd92eb791bb1b11ae5d9c502",
-      "size": 7075534,
+      "path": "/manus-storage/game/sha256/a1f1781d12704f08215c47f9e01cd2de45067587e42c95165bf18da3ed5e9cfd.png",
+      "sha256": "sha256:a1f1781d12704f08215c47f9e01cd2de45067587e42c95165bf18da3ed5e9cfd",
+      "size": 5946650,
       "assetType": "image",
       "groupId": "game",
       "used": true
     },
     "assets/game/areas/estacionamento/minimap.png": {
-      "path": "/manus-storage/game/sha256/f04c031d2df3b26f55b78d2195bd6f41d6bae1c8c86e508dab37584cfe7dc667.png",
-      "sha256": "sha256:f04c031d2df3b26f55b78d2195bd6f41d6bae1c8c86e508dab37584cfe7dc667",
-      "size": 2529,
+      "path": "/manus-storage/game/sha256/0371f4e35965c07a17f6ed35f6c3f070db3096363ff7bbb04453afc6cbcde024.png",
+      "sha256": "sha256:0371f4e35965c07a17f6ed35f6c3f070db3096363ff7bbb04453afc6cbcde024",
+      "size": 1952,
       "assetType": "image",
       "groupId": "game",
       "used": false
     },
     "assets/game/areas/estacionamento/walk.png": {
-      "path": "/manus-storage/game/sha256/ded58dbed6462f55cfb56f3fe4e77f2db9fa47527381b8601ac6b2f4aacd6b05.png",
-      "sha256": "sha256:ded58dbed6462f55cfb56f3fe4e77f2db9fa47527381b8601ac6b2f4aacd6b05",
-      "size": 3743,
+      "path": "/manus-storage/game/sha256/5927bb273ffdc63046611112c78b89379b154378d83550266143589b77ec7fc2.png",
+      "sha256": "sha256:5927bb273ffdc63046611112c78b89379b154378d83550266143589b77ec7fc2",
+      "size": 4168,
       "assetType": "image",
       "groupId": "game",
       "used": true
@@ -201,9 +201,9 @@
       "used": true
     },
     "assets/game/areas/fundos/minimap.png": {
-      "path": "/manus-storage/game/sha256/126b3ff4ee7e018dd9716e77cf87b74ce8b4e9ce60b08560d21bd2d1c80188a5.png",
-      "sha256": "sha256:126b3ff4ee7e018dd9716e77cf87b74ce8b4e9ce60b08560d21bd2d1c80188a5",
-      "size": 1176,
+      "path": "/manus-storage/game/sha256/afd19ec4f08133d25776211aa4f47b505559226fad89e056ce9fb940ae45edcf.png",
+      "sha256": "sha256:afd19ec4f08133d25776211aa4f47b505559226fad89e056ce9fb940ae45edcf",
+      "size": 981,
       "assetType": "image",
       "groupId": "game",
       "used": false
@@ -225,9 +225,9 @@
       "used": true
     },
     "assets/game/areas/oeste/minimap.png": {
-      "path": "/manus-storage/game/sha256/02342a0d1382c670e39acaa6eb3c52d9461e8df69aee47f692a86af8a5d34249.png",
-      "sha256": "sha256:02342a0d1382c670e39acaa6eb3c52d9461e8df69aee47f692a86af8a5d34249",
-      "size": 1191,
+      "path": "/manus-storage/game/sha256/faaf3398a02716676d03f88fec08d236e4c69cab434f02e5ee7ba29e8a3f1424.png",
+      "sha256": "sha256:faaf3398a02716676d03f88fec08d236e4c69cab434f02e5ee7ba29e8a3f1424",
+      "size": 1145,
       "assetType": "image",
       "groupId": "game",
       "used": false

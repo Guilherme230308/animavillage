@@ -54,9 +54,9 @@
         "assets/game/areas.json"
       ],
       "regions": [],
-      "sha256": "sha256:7392a5e9f4eac0e85a72e0e071b45193b462476be97a2bde5ee7c709183a4483",
+      "sha256": "sha256:a264f54a3e5c4aa0ba6d94d89d9645616bb010a92c6cd86effc3cd515ed92773",
       "shipped": true,
-      "size": 3438299,
+      "size": 3166696,
       "source": {},
       "status": "present",
       "transformations": [],
@@ -64,7 +64,21 @@
         "assets/game/areas.json"
       ],
       "used": true,
-      "usedBy": []
+      "usedBy": [],
+      "versions": {
+        "sha256:7392a5e9f4eac0e85a72e0e071b45193b462476be97a2bde5ee7c709183a4483": {
+          "generator": {},
+          "inputs": [],
+          "license": {},
+          "origin": "unknown",
+          "regions": [],
+          "sha256": "sha256:7392a5e9f4eac0e85a72e0e071b45193b462476be97a2bde5ee7c709183a4483",
+          "size": 3438299,
+          "source": {},
+          "transformations": [],
+          "usedBy": []
+        }
+      }
     },
     "assets/game/areas/condominio/minimap.png": {
       "declaredUseEvidence": [],
@@ -74,9 +88,9 @@
       "origin": "unknown",
       "referenceEvidence": [],
       "regions": [],
-      "sha256": "sha256:83aefdd6e16fe1fd65e0f1c83081e740f93f337fd340c5c9c06e52e0462763f4",
+      "sha256": "sha256:48feee3cf29c083df05b8ea5e7f5b3b31fc2a4079ccf66fa66f76e3de640cf03",
       "shipped": true,
-      "size": 4059,
+      "size": 1619,
       "source": {},
       "status": "present",
       "transformations": [],
@@ -84,6 +98,18 @@
       "used": false,
       "usedBy": [],
       "versions": {
+        "sha256:83aefdd6e16fe1fd65e0f1c83081e740f93f337fd340c5c9c06e52e0462763f4": {
+          "generator": {},
+          "inputs": [],
+          "license": {},
+          "origin": "unknown",
+          "regions": [],
+          "sha256": "sha256:83aefdd6e16fe1fd65e0f1c83081e740f93f337fd340c5c9c06e52e0462763f4",
+          "size": 4059,
+          "source": {},
+          "transformations": [],
+          "usedBy": []
+        },
         "sha256:851e7d770a7cb4178904a9f146007bd390fd92fed6a20ea08f95a5d3b86be1d5": {
           "generator": {},
           "inputs": [],
@@ -92,6 +118,18 @@
           "regions": [],
           "sha256": "sha256:851e7d770a7cb4178904a9f146007bd390fd92fed6a20ea08f95a5d3b86be1d5",
           "size": 3582,
+          "source": {},
+          "transformations": [],
+          "usedBy": []
+        },
+        "sha256:fc2a875ddb8b773b9fd93ca7ba69e8f30c1eea415362bb2b3390949492c1e5ba": {
+          "generator": {},
+          "inputs": [],
+          "license": {},
+          "origin": "unknown",
+          "regions": [],
+          "sha256": "sha256:fc2a875ddb8b773b9fd93ca7ba69e8f30c1eea415362bb2b3390949492c1e5ba",
+          "size": 4083,
           "source": {},
           "transformations": [],
           "usedBy": []
@@ -288,9 +326,9 @@
         "assets/game/areas.json"
       ],
       "regions": [],
-      "sha256": "sha256:2c06a7e6160a8fe3fa018c7f333c5e10015efde9b525193d04613fb10dcd90c6",
+      "sha256": "sha256:2df9d825d7dc58c5c6b8c7ed17e5cce8640f91bb3d489300787bf28017b701b3",
       "shipped": true,
-      "size": 3816,
+      "size": 3839,
       "source": {},
       "status": "present",
       "transformations": [],
@@ -308,6 +346,18 @@
           "regions": [],
           "sha256": "sha256:1649a6acfbd64a2ad0e8a867d1476e79135e446d60a661aebe0160b7b88b953e",
           "size": 5245,
+          "source": {},
+          "transformations": [],
+          "usedBy": []
+        },
+        "sha256:2c06a7e6160a8fe3fa018c7f333c5e10015efde9b525193d04613fb10dcd90c6": {
+          "generator": {},
+          "inputs": [],
+          "license": {},
+          "origin": "unknown",
+          "regions": [],
+          "sha256": "sha256:2c06a7e6160a8fe3fa018c7f333c5e10015efde9b525193d04613fb10dcd90c6",
+          "size": 3816,
           "source": {},
           "transformations": [],
           "usedBy": []
@@ -370,9 +420,9 @@
         "assets/game/areas.json"
       ],
       "regions": [],
-      "sha256": "sha256:8d31d44e1b0bf8471ff31510ef059455d182e64628834db25cbb783bd6bab408",
+      "sha256": "sha256:a147bdb32b62d88b902fc9084c938d411af97597a4f6da49f542048fa4db0cbb",
       "shipped": true,
-      "size": 6172576,
+      "size": 9847710,
       "source": {},
       "status": "present",
       "transformations": [],
@@ -382,6 +432,18 @@
       "used": true,
       "usedBy": [],
       "versions": {
+        "sha256:8d31d44e1b0bf8471ff31510ef059455d182e64628834db25cbb783bd6bab408": {
+          "generator": {},
+          "inputs": [],
+          "license": {},
+          "origin": "unknown",
+          "regions": [],
+          "sha256": "sha256:8d31d44e1b0bf8471ff31510ef059455d182e64628834db25cbb783bd6bab408",
+          "size": 6172576,
+          "source": {},
+          "transformations": [],
+          "usedBy": []
+        },
         "sha256:f83135555801b93653113090a688cdcbe87aaab45c15d9d3c0efc17cc857f961": {
           "generator": {},
           "inputs": [],
@@ -404,15 +466,53 @@
       "origin": "unknown",
       "referenceEvidence": [],
       "regions": [],
-      "sha256": "sha256:c9d9306008081b7c1b0185beb3694abac35efe24f3766eaa804db8cc49cbead6",
+      "sha256": "sha256:de127a688191848d32f5a98bbf630d6ffd55b9fb1f0ec775d78166512aab2db8",
       "shipped": true,
-      "size": 1158,
+      "size": 1063,
       "source": {},
       "status": "present",
       "transformations": [],
       "useEvidence": [],
       "used": false,
-      "usedBy": []
+      "usedBy": [],
+      "versions": {
+        "sha256:8ef2491130131d1740215606d40bc1176686fa3ca49806ec0d38ae9c87152a05": {
+          "generator": {},
+          "inputs": [],
+          "license": {},
+          "origin": "unknown",
+          "regions": [],
+          "sha256": "sha256:8ef2491130131d1740215606d40bc1176686fa3ca49806ec0d38ae9c87152a05",
+          "size": 1080,
+          "source": {},
+          "transformations": [],
+          "usedBy": []
+        },
+        "sha256:c9d9306008081b7c1b0185beb3694abac35efe24f3766eaa804db8cc49cbead6": {
+          "generator": {},
+          "inputs": [],
+          "license": {},
+          "origin": "unknown",
+          "regions": [],
+          "sha256": "sha256:c9d9306008081b7c1b0185beb3694abac35efe24f3766eaa804db8cc49cbead6",
+          "size": 1158,
+          "source": {},
+          "transformations": [],
+          "usedBy": []
+        },
+        "sha256:d61f0aed98d830b7a26dff2a091173e6b483703d5d2a30617b6a9f8aca60b125": {
+          "generator": {},
+          "inputs": [],
+          "license": {},
+          "origin": "unknown",
+          "regions": [],
+          "sha256": "sha256:d61f0aed98d830b7a26dff2a091173e6b483703d5d2a30617b6a9f8aca60b125",
+          "size": 1189,
+          "source": {},
+          "transformations": [],
+          "usedBy": []
+        }
+      }
     },
     "assets/game/areas/direita/walk.png": {
       "declaredUseEvidence": [],
@@ -424,9 +524,9 @@
         "assets/game/areas.json"
       ],
       "regions": [],
-      "sha256": "sha256:1c97f79590651f77911dd0f329c00a681d8aff3801e52ed8b1ce64cf7b9fe857",
+      "sha256": "sha256:c6266581366802381d01163793fccbd982931d19f57f2b4db68a59a9250aaa9e",
       "shipped": true,
-      "size": 2311,
+      "size": 3583,
       "source": {},
       "status": "present",
       "transformations": [],
@@ -436,6 +536,18 @@
       "used": true,
       "usedBy": [],
       "versions": {
+        "sha256:1c97f79590651f77911dd0f329c00a681d8aff3801e52ed8b1ce64cf7b9fe857": {
+          "generator": {},
+          "inputs": [],
+          "license": {},
+          "origin": "unknown",
+          "regions": [],
+          "sha256": "sha256:1c97f79590651f77911dd0f329c00a681d8aff3801e52ed8b1ce64cf7b9fe857",
+          "size": 2311,
+          "source": {},
+          "transformations": [],
+          "usedBy": []
+        },
         "sha256:9d7e363b013663062e0f0f32a6bdefbc156ea1cc05eaa33a16d60454b0646fe9": {
           "generator": {},
           "inputs": [],
@@ -472,9 +584,9 @@
         "assets/game/areas.json"
       ],
       "regions": [],
-      "sha256": "sha256:48af7639a9f8c9bc8ab3ad400deb0f39cd302bdecd92eb791bb1b11ae5d9c502",
+      "sha256": "sha256:a1f1781d12704f08215c47f9e01cd2de45067587e42c95165bf18da3ed5e9cfd",
       "shipped": true,
-      "size": 7075534,
+      "size": 5946650,
       "source": {},
       "status": "present",
       "transformations": [],
@@ -492,6 +604,30 @@
           "regions": [],
           "sha256": "sha256:2fdf8d403c7e752a7cb510c05843f3466fd1926d3e2d8b2a420c472765a3c144",
           "size": 7494856,
+          "source": {},
+          "transformations": [],
+          "usedBy": []
+        },
+        "sha256:48af7639a9f8c9bc8ab3ad400deb0f39cd302bdecd92eb791bb1b11ae5d9c502": {
+          "generator": {},
+          "inputs": [],
+          "license": {},
+          "origin": "unknown",
+          "regions": [],
+          "sha256": "sha256:48af7639a9f8c9bc8ab3ad400deb0f39cd302bdecd92eb791bb1b11ae5d9c502",
+          "size": 7075534,
+          "source": {},
+          "transformations": [],
+          "usedBy": []
+        },
+        "sha256:974e6a89262c0889b6bfd4d0419d4be978d5adcd766857ba0305ef1ad8d96df3": {
+          "generator": {},
+          "inputs": [],
+          "license": {},
+          "origin": "unknown",
+          "regions": [],
+          "sha256": "sha256:974e6a89262c0889b6bfd4d0419d4be978d5adcd766857ba0305ef1ad8d96df3",
+          "size": 5947538,
           "source": {},
           "transformations": [],
           "usedBy": []
@@ -530,9 +666,9 @@
       "origin": "unknown",
       "referenceEvidence": [],
       "regions": [],
-      "sha256": "sha256:f04c031d2df3b26f55b78d2195bd6f41d6bae1c8c86e508dab37584cfe7dc667",
+      "sha256": "sha256:0371f4e35965c07a17f6ed35f6c3f070db3096363ff7bbb04453afc6cbcde024",
       "shipped": true,
-      "size": 2529,
+      "size": 1952,
       "source": {},
       "status": "present",
       "transformations": [],
@@ -552,6 +688,42 @@
           "transformations": [],
           "usedBy": []
         },
+        "sha256:7c07be85614eb72d8f2556702762f08082410e308a06008da7aa9bc59b331b5d": {
+          "generator": {},
+          "inputs": [],
+          "license": {},
+          "origin": "unknown",
+          "regions": [],
+          "sha256": "sha256:7c07be85614eb72d8f2556702762f08082410e308a06008da7aa9bc59b331b5d",
+          "size": 2607,
+          "source": {},
+          "transformations": [],
+          "usedBy": []
+        },
+        "sha256:aae3edabfb4f5edccb71f751385747b568cbd1832a42cda4702795fa393417f3": {
+          "generator": {},
+          "inputs": [],
+          "license": {},
+          "origin": "unknown",
+          "regions": [],
+          "sha256": "sha256:aae3edabfb4f5edccb71f751385747b568cbd1832a42cda4702795fa393417f3",
+          "size": 2614,
+          "source": {},
+          "transformations": [],
+          "usedBy": []
+        },
+        "sha256:b3d313ffa10a92f6c45c5fe6df3150b5f1e9e01b3485f24ea6803c50d8f75eef": {
+          "generator": {},
+          "inputs": [],
+          "license": {},
+          "origin": "unknown",
+          "regions": [],
+          "sha256": "sha256:b3d313ffa10a92f6c45c5fe6df3150b5f1e9e01b3485f24ea6803c50d8f75eef",
+          "size": 2642,
+          "source": {},
+          "transformations": [],
+          "usedBy": []
+        },
         "sha256:bed3938ea6ff343dca7279b0e93a7364eda8b38a57a17117e6862005ad6057df": {
           "generator": {},
           "inputs": [],
@@ -560,6 +732,30 @@
           "regions": [],
           "sha256": "sha256:bed3938ea6ff343dca7279b0e93a7364eda8b38a57a17117e6862005ad6057df",
           "size": 2513,
+          "source": {},
+          "transformations": [],
+          "usedBy": []
+        },
+        "sha256:e06c91886f1e5b632d74487062faee855872fd195395b1feef920b26938e923e": {
+          "generator": {},
+          "inputs": [],
+          "license": {},
+          "origin": "unknown",
+          "regions": [],
+          "sha256": "sha256:e06c91886f1e5b632d74487062faee855872fd195395b1feef920b26938e923e",
+          "size": 2612,
+          "source": {},
+          "transformations": [],
+          "usedBy": []
+        },
+        "sha256:f04c031d2df3b26f55b78d2195bd6f41d6bae1c8c86e508dab37584cfe7dc667": {
+          "generator": {},
+          "inputs": [],
+          "license": {},
+          "origin": "unknown",
+          "regions": [],
+          "sha256": "sha256:f04c031d2df3b26f55b78d2195bd6f41d6bae1c8c86e508dab37584cfe7dc667",
+          "size": 2529,
           "source": {},
           "transformations": [],
           "usedBy": []
@@ -576,9 +772,9 @@
         "assets/game/areas.json"
       ],
       "regions": [],
-      "sha256": "sha256:ded58dbed6462f55cfb56f3fe4e77f2db9fa47527381b8601ac6b2f4aacd6b05",
+      "sha256": "sha256:5927bb273ffdc63046611112c78b89379b154378d83550266143589b77ec7fc2",
       "shipped": true,
-      "size": 3743,
+      "size": 4168,
       "source": {},
       "status": "present",
       "transformations": [],
@@ -596,6 +792,18 @@
           "regions": [],
           "sha256": "sha256:21db82110241028f67cb1518042263bdbc0346291df2c8f8f9b9a97ebd779882",
           "size": 2685,
+          "source": {},
+          "transformations": [],
+          "usedBy": []
+        },
+        "sha256:2908a902a14cfd2691d32c63fe30380612f5f7e1b9904be2e3c79efc662d25d4": {
+          "generator": {},
+          "inputs": [],
+          "license": {},
+          "origin": "unknown",
+          "regions": [],
+          "sha256": "sha256:2908a902a14cfd2691d32c63fe30380612f5f7e1b9904be2e3c79efc662d25d4",
+          "size": 4131,
           "source": {},
           "transformations": [],
           "usedBy": []
@@ -624,6 +832,30 @@
           "transformations": [],
           "usedBy": []
         },
+        "sha256:6c1969e7f6f4d4f79123b152fd1110b608b4f614838616e568fdacfb39f3ead2": {
+          "generator": {},
+          "inputs": [],
+          "license": {},
+          "origin": "unknown",
+          "regions": [],
+          "sha256": "sha256:6c1969e7f6f4d4f79123b152fd1110b608b4f614838616e568fdacfb39f3ead2",
+          "size": 4167,
+          "source": {},
+          "transformations": [],
+          "usedBy": []
+        },
+        "sha256:9a66ebee2fd4610569768cf0bf9c03026709393da27b528c8be444b8448177a5": {
+          "generator": {},
+          "inputs": [],
+          "license": {},
+          "origin": "unknown",
+          "regions": [],
+          "sha256": "sha256:9a66ebee2fd4610569768cf0bf9c03026709393da27b528c8be444b8448177a5",
+          "size": 4120,
+          "source": {},
+          "transformations": [],
+          "usedBy": []
+        },
         "sha256:aada1b3232bb34e698e7398105c7c64901fb1daaea7d285cbf0d6ec81a981e68": {
           "generator": {},
           "inputs": [],
@@ -632,6 +864,18 @@
           "regions": [],
           "sha256": "sha256:aada1b3232bb34e698e7398105c7c64901fb1daaea7d285cbf0d6ec81a981e68",
           "size": 4269,
+          "source": {},
+          "transformations": [],
+          "usedBy": []
+        },
+        "sha256:ded58dbed6462f55cfb56f3fe4e77f2db9fa47527381b8601ac6b2f4aacd6b05": {
+          "generator": {},
+          "inputs": [],
+          "license": {},
+          "origin": "unknown",
+          "regions": [],
+          "sha256": "sha256:ded58dbed6462f55cfb56f3fe4e77f2db9fa47527381b8601ac6b2f4aacd6b05",
+          "size": 3743,
           "source": {},
           "transformations": [],
           "usedBy": []
@@ -694,15 +938,29 @@
       "origin": "unknown",
       "referenceEvidence": [],
       "regions": [],
-      "sha256": "sha256:126b3ff4ee7e018dd9716e77cf87b74ce8b4e9ce60b08560d21bd2d1c80188a5",
+      "sha256": "sha256:afd19ec4f08133d25776211aa4f47b505559226fad89e056ce9fb940ae45edcf",
       "shipped": true,
-      "size": 1176,
+      "size": 981,
       "source": {},
       "status": "present",
       "transformations": [],
       "useEvidence": [],
       "used": false,
-      "usedBy": []
+      "usedBy": [],
+      "versions": {
+        "sha256:126b3ff4ee7e018dd9716e77cf87b74ce8b4e9ce60b08560d21bd2d1c80188a5": {
+          "generator": {},
+          "inputs": [],
+          "license": {},
+          "origin": "unknown",
+          "regions": [],
+          "sha256": "sha256:126b3ff4ee7e018dd9716e77cf87b74ce8b4e9ce60b08560d21bd2d1c80188a5",
+          "size": 1176,
+          "source": {},
+          "transformations": [],
+          "usedBy": []
+        }
+      }
     },
     "assets/game/areas/fundos/walk.png": {
       "declaredUseEvidence": [],
@@ -796,15 +1054,29 @@
       "origin": "unknown",
       "referenceEvidence": [],
       "regions": [],
-      "sha256": "sha256:02342a0d1382c670e39acaa6eb3c52d9461e8df69aee47f692a86af8a5d34249",
+      "sha256": "sha256:faaf3398a02716676d03f88fec08d236e4c69cab434f02e5ee7ba29e8a3f1424",
       "shipped": true,
-      "size": 1191,
+      "size": 1145,
       "source": {},
       "status": "present",
       "transformations": [],
       "useEvidence": [],
       "used": false,
-      "usedBy": []
+      "usedBy": [],
+      "versions": {
+        "sha256:02342a0d1382c670e39acaa6eb3c52d9461e8df69aee47f692a86af8a5d34249": {
+          "generator": {},
+          "inputs": [],
+          "license": {},
+          "origin": "unknown",
+          "regions": [],
+          "sha256": "sha256:02342a0d1382c670e39acaa6eb3c52d9461e8df69aee47f692a86af8a5d34249",
+          "size": 1191,
+          "source": {},
+          "transformations": [],
+          "usedBy": []
+        }
+      }
     },
     "assets/game/areas/oeste/walk.png": {
       "declaredUseEvidence": [],
@@ -1719,9 +1991,9 @@
         ]
       }
     ],
-    "pckSha256": "sha256:e24ddd3b9dc15b1f39887032183f35e8c91f1d6e36181cdef49c22a5ad7df444",
+    "pckSha256": "sha256:27326bb34c2285e50bfbd9b25aef1ae95c0f938a3e4ea6b1636b9ff556260ce8",
     "profile": "release",
-    "sourceFingerprint": "sha256:9a97b4ef5278635eb34fd826e80dc3ac0e46979e21c1924dd55e33d5d4b7fe03"
+    "sourceFingerprint": "sha256:c80d5a98a4fe6d06e6eb4f086385b893ade9fea9073faa10f95f015ec51026b0"
   },
   "procedures": {},
   "summary": {

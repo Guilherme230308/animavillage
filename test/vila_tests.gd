@@ -108,11 +108,11 @@ func _run() -> void:
 		_check(found, "%s liga com %s" % [order[i], order[i + 1]])
 	# Caminhada real (mesmo movimento do jogador) até cada saída, trocando de tela.
 	for route: Array in [["condominio", "inicio", "oeste"], ["oeste", "escada", "estacionamento"], ["oeste", "escada", "fundos"],
-			["fundos", "norte", "direita"], ["direita", "oeste", "estacionamento"], ["estacionamento", "oeste", "direita"],
-			["estacionamento", "sul", "oeste"], ["direita", "norte", "fundos"], ["fundos", "leste", "oeste"], ["oeste", "leste", "condominio"]]:
+			["fundos", "norte", "direita"], ["direita", "oeste", "estacionamento"], ["estacionamento", "sul", "direita"], ["estacionamento", "sul", "oeste"],
+			["direita", "norte", "fundos"], ["fundos", "leste", "oeste"], ["oeste", "leste", "condominio"]]:
 		_check(await _walk_route(main, route[0], route[1], route[2]), "caminhando: %s -> %s" % [route[0], route[2]])
 	# Clicar para andar: a rota contorna obstáculos e leva até a saída clicada, trocando de tela.
-	for route: Array in [["direita", "oeste", "estacionamento"], ["estacionamento", "sul", "oeste"], ["condominio", "inicio", "oeste"], ["fundos", "norte", "direita"]]:
+	for route: Array in [["direita", "oeste", "estacionamento"], ["estacionamento", "sul", "oeste"], ["estacionamento", "sul", "direita"], ["condominio", "inicio", "oeste"], ["fundos", "norte", "direita"]]:
 		main.call("load_area", route[0], route[1])
 		var er := Rect2()
 		for e: Dictionary in (main.get("areas")[route[0]]["exits"] as Array):
@@ -126,6 +126,20 @@ func _run() -> void:
 	_check((main.get("_player") as Walker).position.distance_to(Vector2(1540, 862)) < 40.0, "clique chega à via do Ânima Clube")
 	var mm: Minimap = main.get("_minimap")
 	_check(mm != null and mm.title == "Estacionamento" and mm.size.x > 100.0, "minimapa mostra a tela atual")
+	main.call("load_area", "estacionamento", "sul")
+	_check(not main.walk_map.is_point_walkable(Vector2(30, 310)) and not main.walk_map.is_point_walkable(Vector2(10, 330)), "sem passagem pela esquerda do estacionamento")
+	var left_exit := false
+	for ex2: Dictionary in (main.areas as Dictionary)["estacionamento"]["exits"]:
+		if ex2["to"] == "oeste":
+			left_exit = true
+	_check(left_exit, "estacionamento liga com a rua lateral esquerda pelo topo")
+	var arr: Array = (main.areas as Dictionary)["estacionamento"]["spawns"]["sul"]
+	_check(Vector2(float(arr[0]), float(arr[1])).distance_to(Vector2(618, 66)) < 1.0, "pela rua lateral esquerda chega no círculo amarelo (topo)")
+	var arr2: Array = (main.areas as Dictionary)["estacionamento"]["spawns"]["sudeste"]
+	_check(Vector2(float(arr2[0]), float(arr2[1])).distance_to(Vector2(945, 1100)) < 1.0, "pela rua lateral direita chega no círculo vermelho (sudeste)")
+	for ex3: Dictionary in (main.areas as Dictionary)["direita"]["exits"]:
+		if ex3["to"] == "estacionamento":
+			_check(ex3["spawn"] == "sudeste", "rua lateral direita leva ao círculo vermelho")
 	main.call("load_area", "condominio", "inicio")
 	map = main.walk_map
 
@@ -484,11 +498,31 @@ func _adventure_tests(main: Node) -> void:
 	_check(mm.dots.size() == (adv.get("_coin_nodes") as Array).size() + (adv.get("_gun_nodes") as Array).size() + (adv.get("_scorp_nodes") as Array).size(), "minimapa marca moedas, Nerfs e escorpiões")
 	# Nome da tela e nova ligação estacionamento → rua direita.
 	_check(String(main.areas["condominio"]["title"]) == "Térreo", "tela principal se chama Térreo")
+	_check(main.floor_of("condominio") == 2 and main.floor_of("oeste") == 0 and main.floor_of("estacionamento") == 0, "Térreo fica 2 andares acima das ruas e do estacionamento")
+	_check(String(main.area_hud_text("condominio")).contains("2 andares acima da rua"), "painel indica que o Térreo é 2 andares acima")
+	_check(String(main.area_hud_text("fundos")).contains("nível da rua"), "painel indica o nível da rua")
+	# Elevadores: vermelho e azul ligam o Térreo ao estacionamento nos dois sentidos.
+	for k: String in ["vermelho", "azul"]:
+		for pair: Array in [["condominio", "estacionamento"], ["estacionamento", "condominio"]]:
+			var found := false
+			for e2: Dictionary in main.areas[pair[0]]["exits"]:
+				if String(e2.get("elevator", "")) == k and String(e2["to"]) == pair[1] and String(e2["spawn"]) == "elev_" + k:
+					found = true
+			_check(found, "elevador %s leva de %s para %s" % [k, pair[0], pair[1]])
+			_check((main.areas[pair[1]]["spawns"] as Dictionary).has("elev_" + k), "chegada do elevador %s em %s" % [k, pair[1]])
+	var lot_red: Array = main.areas["estacionamento"]["spawns"]["elev_vermelho"]
+	_check(Vector2(float(lot_red[0]), float(lot_red[1])).distance_to(Vector2(53, 358)) < 90.0, "elevador vermelho do estacionamento fica na lateral esquerda")
+	var lot_blue: Array = main.areas["estacionamento"]["spawns"]["elev_azul"]
+	_check(Vector2(float(lot_blue[0]), float(lot_blue[1])).distance_to(Vector2(506, 533)) < 90.0, "elevador azul do estacionamento fica na faixa de pedestres")
+	var t_red: Array = main.areas["condominio"]["spawns"]["elev_vermelho"]
+	_check(Vector2(float(t_red[0]), float(t_red[1])).distance_to(Vector2(738, 466)) < 90.0, "elevador vermelho do Térreo fica no ponto marcado")
+	var t_blue: Array = main.areas["condominio"]["spawns"]["elev_azul"]
+	_check(Vector2(float(t_blue[0]), float(t_blue[1])).distance_to(Vector2(944, 700)) < 90.0, "elevador azul do Térreo fica no ponto marcado")
 	var ex_ok := false
 	for e: Dictionary in main.areas["estacionamento"]["exits"]:
-		if String(e["to"]) == "direita" and int((e["rect"] as Array)[1]) == 0 and int((e["rect"] as Array)[0]) > 450 and int((e["rect"] as Array)[0]) < 700:
+		if String(e["to"]) == "oeste" and int((e["rect"] as Array)[1]) == 0 and int((e["rect"] as Array)[0]) > 450 and int((e["rect"] as Array)[0]) < 700:
 			ex_ok = true
-	_check(ex_ok, "estacionamento liga à rua direita pela borda de cima")
+	_check(ex_ok, "estacionamento liga à rua esquerda pela borda de cima")
 	# Troca de personagem sem reiniciar.
 	adv.health = 70
 	var pos_before: Vector2 = player.position
@@ -533,12 +567,26 @@ func _adventure_tests(main: Node) -> void:
 		player.step(Vector2.ZERO, false, 1.0 / 60.0)
 	_check(absf(spr.scale.x - 1.0) < 0.02 and absf(spr.position.y) < 0.5, "fora da escada volta ao normal")
 	# Carros do estacionamento bloqueiam.
-	main.load_area("estacionamento", "oeste")
+	main.load_area("estacionamento", "sul")
 	var car_ok := true
 	for cp: Vector2 in [Vector2(716, 526), Vector2(766, 570), Vector2(825, 638), Vector2(902, 715)]:
 		if main.walk_map.is_point_walkable(cp):
 			car_ok = false
 	_check(car_ok, "carros estacionados não são caminháveis")
+	var gaps_ok := true
+	for gpt: Vector2 in [Vector2(813.5, 624.0), Vector2(839.0, 651.5), Vector2(787.5, 590.0)]:
+		if not main.walk_map.is_footprint_walkable(gpt, Walker.FOOT_HALF):
+			gaps_ok = false
+	_check(gaps_ok, "dá para passar entre os carros")
+	_check(main.walk_map.is_footprint_walkable(Vector2(659, 525), Walker.FOOT_HALF), "entrada do estacionamento ao lado das vagas")
+	_check(main.walk_map.is_footprint_walkable(Vector2(900, 560), Walker.FOOT_HALF), "corredor das vagas é caminhável")
+	var bl_to := ""
+	for ex: Dictionary in (main.areas as Dictionary)["estacionamento"]["exits"]:
+		var r: Array = ex["rect"]
+		if int(r[0]) == 0 and int(r[1]) == 1944:
+			bl_to = String(ex["to"])
+	_check(bl_to == "direita", "canto inferior esquerdo do estacionamento leva à rua lateral direita")
+	_check(main.walk_map.is_footprint_walkable(Vector2(58, 1962), Walker.FOOT_HALF), "saída inferior esquerda é alcançável")
 	main.load_area("condominio", "inicio")
 	# ---------------- Armas novas
 	adv.new_game()

@@ -44,6 +44,9 @@ var _fade: ColorRect
 var _area_banner: Label
 var _area_banner_tween: Tween
 var _transitioning := false
+
+## Andares acima do nível da rua (o Térreo fica 2 andares acima das ruas e do estacionamento).
+const FLOORS := {"condominio": 2}
 var _area_label: Label
 var character := "sophia"
 var _character_buttons: Dictionary = {}
@@ -171,7 +174,7 @@ func load_area(id: String, spawn: String) -> void:
 		_minimap.set_area(load(mm_path) as Texture2D, size, a["exits"], String(a["title"]))
 		_relayout()
 	if _area_label != null:
-		_area_label.text = String(a["title"])
+		_area_label.text = area_hud_text(id)
 	if _hint_label != null:
 		_update_hint()
 	if adventure != null:
@@ -190,6 +193,9 @@ func _build_exit_signs(a: Dictionary, size: Vector2) -> void:
 	for e: Dictionary in a["exits"]:
 		var r: Array = e["rect"]
 		var rect := Rect2(float(r[0]), float(r[1]), float(r[2]), float(r[3]))
+		if e.has("elevator"):
+			_build_elevator_marker(e, rect, size)
+			continue
 		var c := rect.get_center()
 		var dir := Vector2.LEFT
 		if e.has("dir"):
@@ -242,6 +248,50 @@ func _build_exit_signs(a: Dictionary, size: Vector2) -> void:
 		tw.parallel().tween_property(outline, "position", Vector2.ZERO, 0.5).set_trans(Tween.TRANS_SINE)
 
 
+## Marcador de elevador: brilho pulsante no local e o nome do destino.
+func _build_elevator_marker(e: Dictionary, rect: Rect2, size: Vector2) -> void:
+	var node := Node2D.new()
+	node.position = rect.get_center()
+	node.z_index = 30
+	var radius := maxf(rect.size.x, rect.size.y) * 0.9 + 14.0
+	var grad := Gradient.new()
+	grad.offsets = PackedFloat32Array([0.0, 0.45, 1.0])
+	grad.colors = PackedColorArray([Color(1.0, 0.97, 0.78, 0.85), Color(0.75, 0.93, 1.0, 0.35), Color(0.75, 0.93, 1.0, 0.0)])
+	var tex := GradientTexture2D.new()
+	tex.gradient = grad
+	tex.fill = GradientTexture2D.FILL_RADIAL
+	tex.fill_from = Vector2(0.5, 0.5)
+	tex.fill_to = Vector2(1.0, 0.5)
+	tex.width = 128
+	tex.height = 128
+	var glow := Sprite2D.new()
+	glow.texture = tex
+	glow.scale = Vector2.ONE * (radius * 2.0 / 128.0)
+	var mat := CanvasItemMaterial.new()
+	mat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+	glow.material = mat
+	node.add_child(glow)
+	var lbl := Label.new()
+	var dest := String((areas[String(e["to"])] as Dictionary)["title"])
+	lbl.text = "Elevador %s" % dest
+	lbl.add_theme_font_size_override("font_size", 13)
+	lbl.add_theme_color_override("font_color", Color(1.0, 0.97, 0.85))
+	lbl.add_theme_constant_override("outline_size", 5)
+	lbl.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.9))
+	lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	lbl.size = Vector2(190, 22)
+	lbl.position = Vector2(-95, -radius - 22)
+	lbl.position.x = clampf(lbl.position.x, 4.0 - node.position.x, size.x - 4.0 - node.position.x - lbl.size.x)
+	lbl.position.y = clampf(lbl.position.y, 4.0 - node.position.y, size.y - 24.0 - node.position.y)
+	node.add_child(lbl)
+	_ground.add_child(node)
+	_area_nodes.append(node)
+	var base := glow.scale
+	var tw := node.create_tween().set_loops()
+	tw.tween_property(glow, "scale", base * 1.18, 0.8).set_trans(Tween.TRANS_SINE)
+	tw.tween_property(glow, "scale", base * 0.9, 0.8).set_trans(Tween.TRANS_SINE)
+
+
 ## Saída em que o personagem está pisando, se houver.
 func exit_at(p: Vector2) -> Dictionary:
 	for e: Dictionary in (areas[current_area] as Dictionary)["exits"]:
@@ -251,17 +301,50 @@ func exit_at(p: Vector2) -> Dictionary:
 	return {}
 
 
+func floor_of(id: String) -> int:
+	return int(FLOORS.get(id, 0))
+
+
+## Título da tela com a indicação de andar, usado no painel superior.
+func area_hud_text(id: String) -> String:
+	var title := String((areas[id] as Dictionary)["title"])
+	var f := floor_of(id)
+	if f > 0:
+		return "%s · %d andares acima da rua" % [title, f]
+	return "%s · nível da rua" % title
+
+
 func _go_through(e: Dictionary, animate: bool = true) -> void:
 	if not animate:
 		load_area(String(e["to"]), String(e["spawn"]))
 		return
 	_transitioning = true
+	var delta := floor_of(String(e["to"])) - floor_of(current_area)
 	var tw := create_tween()
-	tw.tween_property(_fade, "color:a", 1.0, 0.22)
-	tw.tween_callback(func() -> void:
-		load_area(String(e["to"]), String(e["spawn"]))
-		_show_banner(String((areas[current_area] as Dictionary)["title"])))
-	tw.tween_property(_fade, "color:a", 0.0, 0.28)
+	if delta != 0:
+		# Escada entre o Térreo e a rua: escurece mais devagar e avisa quantos andares.
+		var word := "Descendo" if delta < 0 else "Subindo"
+		if e.has("elevator"):
+			word = "Elevador descendo" if delta < 0 else "Elevador subindo"
+		var n := absi(delta)
+		tw.tween_property(_fade, "color:a", 1.0, 0.45)
+		tw.tween_callback(func() -> void:
+			if _area_banner_tween != null:
+				_area_banner_tween.kill()
+			_area_banner.text = "%s %s…" % [word, "dois andares" if n == 2 else "%d andares" % n]
+			_area_banner.modulate.a = 1.0
+			_area_banner.visible = true)
+		tw.tween_interval(0.7)
+		tw.tween_callback(func() -> void:
+			load_area(String(e["to"]), String(e["spawn"]))
+			_show_banner(String((areas[current_area] as Dictionary)["title"])))
+		tw.tween_property(_fade, "color:a", 0.0, 0.55)
+	else:
+		tw.tween_property(_fade, "color:a", 1.0, 0.22)
+		tw.tween_callback(func() -> void:
+			load_area(String(e["to"]), String(e["spawn"]))
+			_show_banner(String((areas[current_area] as Dictionary)["title"])))
+		tw.tween_property(_fade, "color:a", 0.0, 0.28)
 	tw.tween_callback(func() -> void: _transitioning = false)
 
 
@@ -413,7 +496,7 @@ func _build_ui() -> void:
 	var hud_box := VBoxContainer.new()
 	hud_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	hud_panel.add_child(hud_box)
-	_area_label = _label(String((areas[current_area] as Dictionary)["title"]), 18, ACCENT)
+	_area_label = _label(area_hud_text(current_area), 18, ACCENT)
 	_area_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
 	_area_label.autowrap_mode = TextServer.AUTOWRAP_OFF
 	_wrap_labels.erase(_area_label)
@@ -523,6 +606,8 @@ func _build_ui() -> void:
 	_fade.set_anchors_preset(Control.PRESET_FULL_RECT)
 	_fade.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_fade)
+	if _area_banner != null:
+		move_child(_area_banner, get_child_count() - 1)
 
 
 func _update_hint() -> void:
@@ -567,8 +652,8 @@ func _build_touch_ui() -> void:
 	_touch_layer.add_child(shoot)
 	_touch_buttons["shoot"] = shoot
 	shoot.tapped.connect(func() -> void: adventure.shoot())
-	var swap_w := TouchButton.new("Trocar", Vector2(84, 60))
-	swap_w.font_size = 17
+	var swap_w := TouchButton.new("Trocar Arma", Vector2(124, 60))
+	swap_w.font_size = 16
 	_touch_layer.add_child(swap_w)
 	_touch_buttons["weapon"] = swap_w
 	swap_w.tapped.connect(func() -> void: adventure.cycle_weapon())

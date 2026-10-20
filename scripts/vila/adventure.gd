@@ -434,7 +434,7 @@ func tick(delta: float) -> void:
 			cartridges += CARTRIDGES_PER_PICKUP
 			if first:
 				weapon = "espalhadora"
-				_show_toast("Espalhadora! 5 dardos em leque, de perto. +%d cartuchos (%s troca de arma)" % [CARTRIDGES_PER_PICKUP, "Trocar" if main.touch_mode else "1/2/3 ou Q"], 3.0)
+				_show_toast("Espalhadora! 5 dardos em leque, de perto. +%d cartuchos (%s troca de arma)" % [CARTRIDGES_PER_PICKUP, "Trocar Arma" if main.touch_mode else "1/2/3 ou Q"], 3.0)
 			else:
 				_show_toast("Espalhadora: +%d cartuchos" % CARTRIDGES_PER_PICKUP, 1.6)
 			_refresh_stats()
