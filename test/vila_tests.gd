@@ -763,7 +763,7 @@ func _rain_rule_tests(main: Node, adv: Adventure, player: Walker) -> void:
 	_check(is_equal_approx(player.speed_scale, Adventure.PUDDLE_SLOW) and player.slip_brake == 0.0, "na poça da grama anda 30% mais devagar e não escorrega")
 	var full := _walk_dist(player, grass, Vector2.LEFT, 8, 1.0)
 	var slow := _walk_dist(player, grass, Vector2.LEFT, 8, Adventure.PUDDLE_SLOW)
-	_check(full > 4.0 and slow / full > 0.62 and slow / full < 0.78, "o passo na poça fica em 70% (%.1f/%.1f)" % [slow, full])
+	_check(full > 4.0 and slow / full > 0.62 and slow / full < 0.78, "o passo na poça fica em 70%% (%.1f/%.1f)" % [slow, full])
 	var outside := grass + Vector2(36, 0)
 	if not wm.is_footprint_walkable(outside, Scorpion.HALF):
 		outside = grass + Vector2(-36, 0)
