@@ -173,14 +173,20 @@ func darts_per_gun() -> int:
 	return int(PHASES[phase]["darts"])
 
 
-func new_game() -> void:
+func new_game(level: int = 0) -> void:
 	darts = 0
 	weapon = "nerf"
 	has_soaker = false
 	water = 0.0
 	has_spreader = false
 	cartridges = 0
-	start_phase(0)
+	start_phase(clampi(level, 0, PHASES.size() - 1))
+
+
+## Volta ao início do nível atual, com os dardos que havia ao começar.
+func restart_phase() -> void:
+	darts = _darts_at_phase_start
+	start_phase(phase)
 
 
 func start_phase(idx: int) -> void:
@@ -1336,7 +1342,7 @@ func _build_ui() -> void:
 		darts = _darts_at_phase_start
 		start_phase(phase))
 	b2.add_child(_over_button)
-	var back: Button = main._make_button("Voltar ao início")
+	var back: Button = main._make_button("Menu inicial")
 	back.pressed.connect(func() -> void: main._back_to_title())
 	b2.add_child(back)
 
@@ -1349,7 +1355,7 @@ func _build_ui() -> void:
 	_win_button = main._make_button("Jogar de novo")
 	_win_button.pressed.connect(func() -> void: new_game())
 	b3.add_child(_win_button)
-	var back2: Button = main._make_button("Voltar ao início")
+	var back2: Button = main._make_button("Menu inicial")
 	back2.pressed.connect(func() -> void: main._back_to_title())
 	b3.add_child(back2)
 	_hide_overlays()

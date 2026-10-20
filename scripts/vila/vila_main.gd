@@ -49,6 +49,9 @@ const FLOORS := {"condominio": 2}
 var _area_label: Label
 var character := "sophia"
 var _character_buttons: Dictionary = {}
+## Teste: ao escolher a Sophia, escolhe-se o nível.
+var _level_screen: Control
+var _level_buttons: Array[Button] = []
 var _char_grid: GridContainer
 var _char_previews: Array[TextureRect] = []
 var touch_mode := false
@@ -586,10 +589,32 @@ func _build_ui() -> void:
 		var b := _make_button(String(c["name"]))
 		b.custom_minimum_size = Vector2(140, 46)
 		var cid := String(c["id"])
-		b.pressed.connect(func() -> void: _start(cid))
+		if cid == "sophia":
+			b.pressed.connect(_show_level_picker)
+		else:
+			b.pressed.connect(func() -> void: _start(cid))
 		card.add_child(b)
 		_character_buttons[cid] = b
 	_start_button = _character_buttons["sophia"]
+	# Escolha de nível (modo de teste, só com a Sophia)
+	var lv := _centered_panel()
+	_level_screen = lv[0]
+	var lbox: VBoxContainer = lv[1]
+	lbox.add_child(_label("Sophia · modo de teste", 30, ACCENT))
+	lbox.add_child(_label("Escolha o nível para jogar:", 18, Color("cfd8c4")))
+	for i in Adventure.PHASES.size():
+		var lb := _make_button(String(Adventure.PHASES[i]["name"]))
+		lb.custom_minimum_size = Vector2(300, 44)
+		var li := i
+		lb.pressed.connect(func() -> void: _start("sophia", li))
+		lbox.add_child(lb)
+		_level_buttons.append(lb)
+	var lback := _make_button("Voltar")
+	lback.pressed.connect(func() -> void:
+		_level_screen.visible = false
+		_start_button.grab_focus())
+	lbox.add_child(lback)
+	_level_screen.visible = false
 
 	# Pausa
 	var p := _centered_panel()
@@ -614,9 +639,12 @@ func _build_ui() -> void:
 		sb.pressed.connect(func() -> void: swap_character(sid))
 		swap.add_child(sb)
 		_swap_buttons[sid] = sb
-	var restart := _make_button("Voltar ao início")
-	restart.pressed.connect(_back_to_title)
+	var restart := _make_button("Voltar ao início da fase")
+	restart.pressed.connect(restart_phase)
 	pbox.add_child(restart)
+	var to_menu := _make_button("Menu inicial")
+	to_menu.pressed.connect(_back_to_title)
+	pbox.add_child(to_menu)
 
 	_minimap = Minimap.new()
 	_minimap.open_requested.connect(open_map)
@@ -803,6 +831,8 @@ func _show_title() -> void:
 	_paused = false
 	_title_screen.visible = true
 	_pause_screen.visible = false
+	if _level_screen != null:
+		_level_screen.visible = false
 	_hud.visible = false
 	_target_zoom = ZOOM_MIN
 	_camera.zoom = Vector2.ONE * ZOOM_MIN
@@ -810,7 +840,23 @@ func _show_title() -> void:
 	_start_button.call_deferred("grab_focus")
 
 
-func _start(char_id: String = "") -> void:
+func _show_level_picker() -> void:
+	_level_screen.visible = true
+	_level_buttons[0].call_deferred("grab_focus")
+
+
+## Recomeça o nível atual do zero (moedas, vida e itens), voltando ao ponto de partida.
+func restart_phase() -> void:
+	if adventure == null or not _playing:
+		return
+	_resume()
+	clear_move()
+	adventure.restart_phase()
+
+
+func _start(char_id: String = "", level: int = 0) -> void:
+	if _level_screen != null:
+		_level_screen.visible = false
 	if char_id != "":
 		select_character(char_id)
 	_playing = true
@@ -820,7 +866,7 @@ func _start(char_id: String = "") -> void:
 	_hud.visible = true
 	_target_zoom = ZOOM_MIN
 	_camera.zoom = Vector2.ONE * ZOOM_MIN
-	adventure.new_game()
+	adventure.new_game(level)
 	_refresh_touch_visibility()
 
 

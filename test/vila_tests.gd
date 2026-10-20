@@ -40,6 +40,22 @@ func _run() -> void:
 	_check(not bool((main.get("_title_screen") as Control).visible), "escolher personagem inicia o jogo")
 	main.call("_back_to_title")
 	(cbuttons["sophia"] as Button).pressed.emit()
+	_check(bool((main.get("_level_screen") as Control).visible), "Sophia abre a escolha de nível")
+	var lvb: Array = main.get("_level_buttons")
+	_check(lvb.size() == Adventure.PHASES.size(), "a escolha mostra os %d níveis" % Adventure.PHASES.size())
+	(lvb[2] as Button).pressed.emit()
+	var adv0: Adventure = main.get("adventure")
+	_check(adv0.phase == 2 and not bool((main.get("_level_screen") as Control).visible), "escolher o nível 3 começa no nível 3")
+	adv0.coins_got = 3
+	adv0.health = 40
+	player.position += Vector2(30, 0)
+	main.call("_open_pause")
+	main.call("restart_phase")
+	_check(adv0.phase == 2 and adv0.coins_got == 0 and adv0.health == 100 and not bool(main.get("_paused")), "voltar ao início da fase recomeça o mesmo nível")
+	main.call("_back_to_title")
+	(cbuttons["sophia"] as Button).pressed.emit()
+	(lvb[0] as Button).pressed.emit()
+	_check(adv0.phase == 0, "escolher o nível 1 começa no nível 1")
 	_check(String(main.get("character")) == "sophia" and player.sheet_path.ends_with("sophia.png"), "jogar com Sophia usa a Sophia")
 
 	# Caminhar em cada direção nunca sai do passeio, e em pelo menos uma direção se move.
