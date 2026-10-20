@@ -1,5 +1,405 @@
 {
   "assets": {
+    "assets/game/areas/condominio/bg.png": {
+      "declaredUseEvidence": [],
+      "generator": {},
+      "inputs": [],
+      "license": {},
+      "origin": "unknown",
+      "referenceEvidence": [
+        "assets/game/areas.json"
+      ],
+      "regions": [],
+      "sha256": "sha256:7392a5e9f4eac0e85a72e0e071b45193b462476be97a2bde5ee7c709183a4483",
+      "shipped": true,
+      "size": 3438299,
+      "source": {},
+      "status": "present",
+      "transformations": [],
+      "useEvidence": [
+        "assets/game/areas.json"
+      ],
+      "used": true,
+      "usedBy": []
+    },
+    "assets/game/areas/condominio/tower_01.png": {
+      "declaredUseEvidence": [],
+      "generator": {},
+      "inputs": [],
+      "license": {},
+      "origin": "unknown",
+      "referenceEvidence": [],
+      "regions": [],
+      "sha256": "sha256:144a9078c339e02a6d49018dcfc38f0bf39219a460af135126e7902a9a014f58",
+      "shipped": true,
+      "size": 95148,
+      "source": {},
+      "status": "present",
+      "transformations": [],
+      "useEvidence": [],
+      "used": false,
+      "usedBy": []
+    },
+    "assets/game/areas/condominio/tower_02.png": {
+      "declaredUseEvidence": [],
+      "generator": {},
+      "inputs": [],
+      "license": {},
+      "origin": "unknown",
+      "referenceEvidence": [],
+      "regions": [],
+      "sha256": "sha256:697fd384499218de5f79acbbc78117debfb0cdc5f183dd2cf0a13828957c5d9d",
+      "shipped": true,
+      "size": 94776,
+      "source": {},
+      "status": "present",
+      "transformations": [],
+      "useEvidence": [],
+      "used": false,
+      "usedBy": []
+    },
+    "assets/game/areas/condominio/tower_03.png": {
+      "declaredUseEvidence": [],
+      "generator": {},
+      "inputs": [],
+      "license": {},
+      "origin": "unknown",
+      "referenceEvidence": [],
+      "regions": [],
+      "sha256": "sha256:fd34d902086f23a17e9a84d85507abcaacc2a289403c0b2e7dc8152ec7eb7f0a",
+      "shipped": true,
+      "size": 93507,
+      "source": {},
+      "status": "present",
+      "transformations": [],
+      "useEvidence": [],
+      "used": false,
+      "usedBy": []
+    },
+    "assets/game/areas/condominio/tower_04.png": {
+      "declaredUseEvidence": [],
+      "generator": {},
+      "inputs": [],
+      "license": {},
+      "origin": "unknown",
+      "referenceEvidence": [],
+      "regions": [],
+      "sha256": "sha256:04d2b0e51284bf1ca30c01740698e14816f68efb3a8bba799d29dd80bea0a031",
+      "shipped": true,
+      "size": 96982,
+      "source": {},
+      "status": "present",
+      "transformations": [],
+      "useEvidence": [],
+      "used": false,
+      "usedBy": []
+    },
+    "assets/game/areas/condominio/tower_05.png": {
+      "declaredUseEvidence": [],
+      "generator": {},
+      "inputs": [],
+      "license": {},
+      "origin": "unknown",
+      "referenceEvidence": [],
+      "regions": [],
+      "sha256": "sha256:de55bb2c55706eb8fc8332ed85eed499e56ff13a5382adf1da92a412d78a856d",
+      "shipped": true,
+      "size": 93865,
+      "source": {},
+      "status": "present",
+      "transformations": [],
+      "useEvidence": [],
+      "used": false,
+      "usedBy": []
+    },
+    "assets/game/areas/condominio/tower_06.png": {
+      "declaredUseEvidence": [],
+      "generator": {},
+      "inputs": [],
+      "license": {},
+      "origin": "unknown",
+      "referenceEvidence": [],
+      "regions": [],
+      "sha256": "sha256:c6d3ff7fdb62800d4b4d5309e3d9d708a652412bce40f62701759695a67f4f89",
+      "shipped": true,
+      "size": 95988,
+      "source": {},
+      "status": "present",
+      "transformations": [],
+      "useEvidence": [],
+      "used": false,
+      "usedBy": []
+    },
+    "assets/game/areas/condominio/tower_07.png": {
+      "declaredUseEvidence": [],
+      "generator": {},
+      "inputs": [],
+      "license": {},
+      "origin": "unknown",
+      "referenceEvidence": [],
+      "regions": [],
+      "sha256": "sha256:232ae74727d0baf2cef63e86003269c08fe2a2727f9f7465ecbef8b7179ba69a",
+      "shipped": true,
+      "size": 97071,
+      "source": {},
+      "status": "present",
+      "transformations": [],
+      "useEvidence": [],
+      "used": false,
+      "usedBy": []
+    },
+    "assets/game/areas/condominio/tower_08.png": {
+      "declaredUseEvidence": [],
+      "generator": {},
+      "inputs": [],
+      "license": {},
+      "origin": "unknown",
+      "referenceEvidence": [],
+      "regions": [],
+      "sha256": "sha256:d8624acb1624096ba3f6fde2a2ee9e928835639928a8902b7a43b5267270a606",
+      "shipped": true,
+      "size": 110003,
+      "source": {},
+      "status": "present",
+      "transformations": [],
+      "useEvidence": [],
+      "used": false,
+      "usedBy": []
+    },
+    "assets/game/areas/condominio/tower_09.png": {
+      "declaredUseEvidence": [],
+      "generator": {},
+      "inputs": [],
+      "license": {},
+      "origin": "unknown",
+      "referenceEvidence": [],
+      "regions": [],
+      "sha256": "sha256:73f81ff2eff0e5b799d560309be50f16ee1131e7348b0c804817a31d02fc1114",
+      "shipped": true,
+      "size": 103223,
+      "source": {},
+      "status": "present",
+      "transformations": [],
+      "useEvidence": [],
+      "used": false,
+      "usedBy": []
+    },
+    "assets/game/areas/condominio/tower_10.png": {
+      "declaredUseEvidence": [],
+      "generator": {},
+      "inputs": [],
+      "license": {},
+      "origin": "unknown",
+      "referenceEvidence": [],
+      "regions": [],
+      "sha256": "sha256:bccfdc25e3fd3b8646779c8daaeb896afdf8d159bf5051325d7bc33ba5ad3c2f",
+      "shipped": true,
+      "size": 104201,
+      "source": {},
+      "status": "present",
+      "transformations": [],
+      "useEvidence": [],
+      "used": false,
+      "usedBy": []
+    },
+    "assets/game/areas/condominio/walk.png": {
+      "declaredUseEvidence": [],
+      "generator": {},
+      "inputs": [],
+      "license": {},
+      "origin": "unknown",
+      "referenceEvidence": [
+        "assets/game/areas.json"
+      ],
+      "regions": [],
+      "sha256": "sha256:e43d19c87cbe527e74cbf957c29f9c3753540ab6f9998c96695b74720e374c28",
+      "shipped": true,
+      "size": 5029,
+      "source": {},
+      "status": "present",
+      "transformations": [],
+      "useEvidence": [
+        "assets/game/areas.json"
+      ],
+      "used": true,
+      "usedBy": []
+    },
+    "assets/game/areas/direita/bg.png": {
+      "declaredUseEvidence": [],
+      "generator": {},
+      "inputs": [],
+      "license": {},
+      "origin": "unknown",
+      "referenceEvidence": [
+        "assets/game/areas.json"
+      ],
+      "regions": [],
+      "sha256": "sha256:f83135555801b93653113090a688cdcbe87aaab45c15d9d3c0efc17cc857f961",
+      "shipped": true,
+      "size": 7236323,
+      "source": {},
+      "status": "present",
+      "transformations": [],
+      "useEvidence": [
+        "assets/game/areas.json"
+      ],
+      "used": true,
+      "usedBy": []
+    },
+    "assets/game/areas/direita/walk.png": {
+      "declaredUseEvidence": [],
+      "generator": {},
+      "inputs": [],
+      "license": {},
+      "origin": "unknown",
+      "referenceEvidence": [
+        "assets/game/areas.json"
+      ],
+      "regions": [],
+      "sha256": "sha256:ad07c1a08ba5bb1c7abf723ac74ee928a725507634a65a3dfc69e50238540519",
+      "shipped": true,
+      "size": 2166,
+      "source": {},
+      "status": "present",
+      "transformations": [],
+      "useEvidence": [
+        "assets/game/areas.json"
+      ],
+      "used": true,
+      "usedBy": []
+    },
+    "assets/game/areas/estacionamento/bg.png": {
+      "declaredUseEvidence": [],
+      "generator": {},
+      "inputs": [],
+      "license": {},
+      "origin": "unknown",
+      "referenceEvidence": [
+        "assets/game/areas.json"
+      ],
+      "regions": [],
+      "sha256": "sha256:2fdf8d403c7e752a7cb510c05843f3466fd1926d3e2d8b2a420c472765a3c144",
+      "shipped": true,
+      "size": 7494856,
+      "source": {},
+      "status": "present",
+      "transformations": [],
+      "useEvidence": [
+        "assets/game/areas.json"
+      ],
+      "used": true,
+      "usedBy": []
+    },
+    "assets/game/areas/estacionamento/walk.png": {
+      "declaredUseEvidence": [],
+      "generator": {},
+      "inputs": [],
+      "license": {},
+      "origin": "unknown",
+      "referenceEvidence": [
+        "assets/game/areas.json"
+      ],
+      "regions": [],
+      "sha256": "sha256:65dea30d318d93fe75168547312961b296b75137c2b92c4db2200bce27db0f6c",
+      "shipped": true,
+      "size": 2676,
+      "source": {},
+      "status": "present",
+      "transformations": [],
+      "useEvidence": [
+        "assets/game/areas.json"
+      ],
+      "used": true,
+      "usedBy": []
+    },
+    "assets/game/areas/fundos/bg.png": {
+      "declaredUseEvidence": [],
+      "generator": {},
+      "inputs": [],
+      "license": {},
+      "origin": "unknown",
+      "referenceEvidence": [
+        "assets/game/areas.json"
+      ],
+      "regions": [],
+      "sha256": "sha256:81ef92bcf00a2fe794f91366162626c5ee46936d5e1a04ede507a82f7dc3f8ec",
+      "shipped": true,
+      "size": 6675721,
+      "source": {},
+      "status": "present",
+      "transformations": [],
+      "useEvidence": [
+        "assets/game/areas.json"
+      ],
+      "used": true,
+      "usedBy": []
+    },
+    "assets/game/areas/fundos/walk.png": {
+      "declaredUseEvidence": [],
+      "generator": {},
+      "inputs": [],
+      "license": {},
+      "origin": "unknown",
+      "referenceEvidence": [
+        "assets/game/areas.json"
+      ],
+      "regions": [],
+      "sha256": "sha256:a8a071b09b03c60d2edb85bca4a68add1716ad79519fc3ac58a80ebb00d2c3c1",
+      "shipped": true,
+      "size": 2200,
+      "source": {},
+      "status": "present",
+      "transformations": [],
+      "useEvidence": [
+        "assets/game/areas.json"
+      ],
+      "used": true,
+      "usedBy": []
+    },
+    "assets/game/areas/oeste/bg.png": {
+      "declaredUseEvidence": [],
+      "generator": {},
+      "inputs": [],
+      "license": {},
+      "origin": "unknown",
+      "referenceEvidence": [
+        "assets/game/areas.json"
+      ],
+      "regions": [],
+      "sha256": "sha256:a7c258f4bc7728322f94389b4ed45938182178cf34127adf264264ad2ce177a3",
+      "shipped": true,
+      "size": 7332057,
+      "source": {},
+      "status": "present",
+      "transformations": [],
+      "useEvidence": [
+        "assets/game/areas.json"
+      ],
+      "used": true,
+      "usedBy": []
+    },
+    "assets/game/areas/oeste/walk.png": {
+      "declaredUseEvidence": [],
+      "generator": {},
+      "inputs": [],
+      "license": {},
+      "origin": "unknown",
+      "referenceEvidence": [
+        "assets/game/areas.json"
+      ],
+      "regions": [],
+      "sha256": "sha256:a1420f9ef00927df2fcae2f11c4297b31e9dd592dd78e6951cb3e0262549ccd7",
+      "shipped": true,
+      "size": 2139,
+      "source": {},
+      "status": "present",
+      "transformations": [],
+      "useEvidence": [
+        "assets/game/areas.json"
+      ],
+      "used": true,
+      "usedBy": []
+    },
     "assets/game/hero.png": {
       "declaredUseEvidence": [],
       "generator": {},
@@ -28,9 +428,7 @@
       "inputs": [],
       "license": {},
       "origin": "unknown",
-      "referenceEvidence": [
-        "scripts/vila/vila_main.gd"
-      ],
+      "referenceEvidence": [],
       "regions": [],
       "sha256": "sha256:7392a5e9f4eac0e85a72e0e071b45193b462476be97a2bde5ee7c709183a4483",
       "shipped": true,
@@ -38,10 +436,8 @@
       "source": {},
       "status": "present",
       "transformations": [],
-      "useEvidence": [
-        "scripts/vila/vila_main.gd"
-      ],
-      "used": true,
+      "useEvidence": [],
+      "used": false,
       "usedBy": [],
       "versions": {
         "sha256:9f5fb08f987617db05a7eec913b54e5b18c439c4d6a0d5bd419bb87aa3832aa4": {
@@ -675,9 +1071,9 @@
         ]
       }
     ],
-    "pckSha256": "sha256:b2a4b4e392e45903f0d037628b04443a506def8a7dbe62f8fcc73f343b366352",
+    "pckSha256": "sha256:031e26ba517605896aa54de403472c2c4134265ce489edb383a4b62d238b1045",
     "profile": "release",
-    "sourceFingerprint": "sha256:0d3c6b9b8b80026937d0b4a44421440b83333255da8f5df894e75d58e6758731"
+    "sourceFingerprint": "sha256:a7463f33d893fe6d3a0e60582c392efe6328f3999f42bd76fd7422cf214153a3"
   },
   "procedures": {},
   "summary": {
@@ -710,9 +1106,9 @@
     },
     "files": {
       "downloaded": 0,
-      "retained": 30,
-      "shipped": 30,
-      "used": 7
+      "retained": 50,
+      "shipped": 50,
+      "used": 16
     },
     "origins": {
       "ai": {
@@ -746,9 +1142,9 @@
         "used": 2
       },
       "unknown": {
-        "retained": 15,
-        "shipped": 15,
-        "used": 5
+        "retained": 35,
+        "shipped": 35,
+        "used": 14
       }
     },
     "packs": {

@@ -15,7 +15,7 @@ func _check(ok: bool, label: String) -> void:
 
 func _verify() -> void:
 	_check(ProjectSettings.get_setting("application/config/name") == "Vila Vista", "exported identity")
-	for path: String in ["res://assets/game/scene.png", "res://assets/game/walk_mask.png", "res://assets/game/hero.png", "res://assets/game/towers.json", "res://assets/game/tower_01.png"]:
+	for path: String in ["res://assets/game/areas.json", "res://assets/game/hero.png", "res://assets/game/areas/condominio/bg.png", "res://assets/game/areas/condominio/walk.png", "res://assets/game/areas/condominio/towers.json", "res://assets/game/areas/condominio/tower_01.png", "res://assets/game/areas/oeste/bg.png", "res://assets/game/areas/fundos/bg.png", "res://assets/game/areas/direita/bg.png", "res://assets/game/areas/estacionamento/bg.png", "res://assets/game/areas/estacionamento/walk.png"]:
 		_check(ResourceLoader.exists(path), "pack resource: " + path)
 	_check(not ResourceLoader.exists("res://test/vila_tests.gd"), "tests excluded")
 	_check(not ResourceLoader.exists("res://tools/capture_native.gd"), "native capture tool excluded")
@@ -28,7 +28,7 @@ func _verify() -> void:
 		await process_frame
 		_check(bool((main.get("_title_screen") as Control).visible), "pack boots to title")
 		var map: WalkMap = main.walk_map
-		_check(map.walkable_count() > 25000, "pack walk mask loaded")
+		_check(map.walkable_count() > 15000, "pack walk mask loaded")
 		main.call("_start")
 		var moved: Vector2 = main.call("simulate_walk", Vector2.RIGHT, 1.0, false)
 		moved += main.call("simulate_walk", Vector2.DOWN, 1.0, false)

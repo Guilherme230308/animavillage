@@ -1,9 +1,9 @@
 extends Control
 ## Vila Vista: caminhada livre pelo condomínio em pixel art.
 
-const SCENE_PATH := "res://assets/game/scene.png"
-const TOWERS_PATH := "res://assets/game/towers.json"
-const SPAWN_HINT := Vector2(630, 790)
+const AREAS_PATH := "res://assets/game/areas.json"
+const START_AREA := "condominio"
+const START_SPAWN := "inicio"
 const ZOOM_MIN := 1.25
 const ZOOM_MAX := 4.0
 const ZOOM_DEFAULT := 2.25
@@ -28,6 +28,15 @@ var _paused := false
 var _target_zoom := ZOOM_DEFAULT
 var distance_walked := 0.0
 var _towers: Array[Dictionary] = []
+var areas: Dictionary = {}
+var current_area := ""
+var _ground: Node2D
+var _area_nodes: Array[Node] = []
+var _fade: ColorRect
+var _area_banner: Label
+var _area_banner_tween: Tween
+var _transitioning := false
+var _area_label: Label
 var touch_mode := false
 var _joystick: TouchJoystick
 var _touch_layer: Control
@@ -39,7 +48,7 @@ var _controls_label: Label
 
 func _ready() -> void:
 	_ensure_actions()
-	walk_map.load_mask()
+	areas = JSON.parse_string(FileAccess.get_file_as_string(AREAS_PATH))
 	_build_world()
 	touch_mode = DisplayServer.is_touchscreen_available()
 	_build_ui()
@@ -74,48 +83,106 @@ func _build_world() -> void:
 	_world = Node2D.new()
 	_sub_viewport.add_child(_world)
 
-	var scene_sprite := Sprite2D.new()
-	scene_sprite.texture = load(SCENE_PATH)
-	scene_sprite.centered = false
-	scene_sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	_world.add_child(scene_sprite)
-
-	_paths_overlay = Sprite2D.new()
-	_paths_overlay.texture = _build_paths_texture()
-	_paths_overlay.centered = false
-	_paths_overlay.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	_paths_overlay.scale = Vector2(WalkMap.CELL, WalkMap.CELL)
-	_paths_overlay.visible = false
-	_world.add_child(_paths_overlay)
-
+	_ground = Node2D.new()
+	_ground.z_index = -10
+	_world.add_child(_ground)
 	_world.y_sort_enabled = true
-	_build_towers()
 
 	_player = Walker.new()
 	_player.walk_map = walk_map
-	_player.position = walk_map.nearest_walkable(SPAWN_HINT, Walker.FOOT_HALF)
 	_world.add_child(_player)
 
 	_camera = Camera2D.new()
 	_camera.zoom = Vector2.ONE * ZOOM_DEFAULT
 	_camera.position_smoothing_enabled = true
 	_camera.position_smoothing_speed = 7.0
-	var size := (scene_sprite.texture as Texture2D).get_size()
+	_player.add_child(_camera)
+	_camera.make_current()
+	load_area(START_AREA, START_SPAWN)
+
+
+## Troca a tela atual: cenário, máscara de caminhos, torres e posição de chegada.
+func load_area(id: String, spawn: String) -> void:
+	var a: Dictionary = areas[id]
+	for n in _area_nodes:
+		n.queue_free()
+	_area_nodes.clear()
+	_towers.clear()
+	current_area = id
+	var tex := load(String(a["bg"])) as Texture2D
+	var bg := Sprite2D.new()
+	bg.texture = tex
+	bg.centered = false
+	bg.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	_ground.add_child(bg)
+	_area_nodes.append(bg)
+	walk_map.load_mask(String(a["walk"]))
+	var was_visible := _paths_overlay != null and _paths_overlay.visible
+	_paths_overlay = Sprite2D.new()
+	_paths_overlay.texture = _build_paths_texture()
+	_paths_overlay.centered = false
+	_paths_overlay.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	_paths_overlay.scale = Vector2(WalkMap.CELL, WalkMap.CELL)
+	_paths_overlay.visible = was_visible
+	_ground.add_child(_paths_overlay)
+	_area_nodes.append(_paths_overlay)
+	if String(a.get("towers", "")) != "":
+		_build_towers(String(a["towers"]))
+	var size := tex.get_size()
 	_camera.limit_left = 0
 	_camera.limit_top = 0
 	_camera.limit_right = int(size.x)
 	_camera.limit_bottom = int(size.y)
-	_player.add_child(_camera)
-	_camera.make_current()
+	var sp: Array = (a["spawns"] as Dictionary)[spawn]
+	_player.position = walk_map.nearest_walkable(Vector2(float(sp[0]), float(sp[1])), Walker.FOOT_HALF)
+	_camera.reset_smoothing()
+	if _area_label != null:
+		_area_label.text = String(a["title"])
+	if _hint_label != null:
+		_update_hint()
 
 
-func _build_towers() -> void:
-	var data: Variant = JSON.parse_string(FileAccess.get_file_as_string(TOWERS_PATH))
+## Saída em que o personagem está pisando, se houver.
+func exit_at(p: Vector2) -> Dictionary:
+	for e: Dictionary in (areas[current_area] as Dictionary)["exits"]:
+		var r: Array = e["rect"]
+		if Rect2(float(r[0]), float(r[1]), float(r[2]), float(r[3])).has_point(p):
+			return e
+	return {}
+
+
+func _go_through(e: Dictionary, animate: bool = true) -> void:
+	if not animate:
+		load_area(String(e["to"]), String(e["spawn"]))
+		return
+	_transitioning = true
+	var tw := create_tween()
+	tw.tween_property(_fade, "color:a", 1.0, 0.22)
+	tw.tween_callback(func() -> void:
+		load_area(String(e["to"]), String(e["spawn"]))
+		_show_banner(String((areas[current_area] as Dictionary)["title"])))
+	tw.tween_property(_fade, "color:a", 0.0, 0.28)
+	tw.tween_callback(func() -> void: _transitioning = false)
+
+
+func _show_banner(text: String) -> void:
+	_area_banner.text = text
+	if _area_banner_tween != null:
+		_area_banner_tween.kill()
+	_area_banner.modulate.a = 1.0
+	_area_banner.visible = true
+	_area_banner_tween = create_tween()
+	_area_banner_tween.tween_interval(1.6)
+	_area_banner_tween.tween_property(_area_banner, "modulate:a", 0.0, 0.6)
+
+
+func _build_towers(path: String) -> void:
+	var data: Variant = JSON.parse_string(FileAccess.get_file_as_string(path))
 	if typeof(data) != TYPE_ARRAY:
 		push_error("towers.json inválido")
 		return
 	for t: Dictionary in data:
-		var tex := load("res://assets/game/" + String(t["file"])) as Texture2D
+		var tex := load(path.get_base_dir() + "/" + String(t["file"])) as Texture2D
 		var holder := Node2D.new()
 		holder.position = Vector2(0, float(t["sort_y"]))
 		var sprite := Sprite2D.new()
@@ -125,6 +192,7 @@ func _build_towers() -> void:
 		sprite.position = Vector2(float(t["x"]), float(t["y"]) - float(t["sort_y"]))
 		holder.add_child(sprite)
 		_world.add_child(holder)
+		_area_nodes.append(holder)
 		var img := tex.get_image()
 		if img != null and img.is_compressed():
 			img.decompress()
@@ -242,8 +310,28 @@ func _build_ui() -> void:
 	_hint_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
 	_hint_label.autowrap_mode = TextServer.AUTOWRAP_OFF
 	_wrap_labels.erase(_hint_label)
-	hud_panel.add_child(_hint_label)
+	var hud_box := VBoxContainer.new()
+	hud_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	hud_panel.add_child(hud_box)
+	_area_label = _label(String((areas[current_area] as Dictionary)["title"]), 18, ACCENT)
+	_area_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+	_area_label.autowrap_mode = TextServer.AUTOWRAP_OFF
+	_wrap_labels.erase(_area_label)
+	hud_box.add_child(_area_label)
+	hud_box.add_child(_hint_label)
 	_update_hint()
+
+	_area_banner = _label("", 34, Color("fff1c9"))
+	_wrap_labels.erase(_area_banner)
+	_area_banner.autowrap_mode = TextServer.AUTOWRAP_OFF
+	_area_banner.set_anchors_preset(Control.PRESET_TOP_WIDE)
+	_area_banner.offset_top = 90
+	_area_banner.add_theme_constant_override("outline_size", 8)
+	_area_banner.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.85))
+	_area_banner.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	_area_banner.visible = false
+	_area_banner.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(_area_banner)
 
 	# Título
 	var t := _centered_panel()
@@ -251,7 +339,7 @@ func _build_ui() -> void:
 	var tbox: VBoxContainer = t[1]
 	tbox.add_child(_label("VILA VISTA", 56, ACCENT))
 	tbox.add_child(_label("Passeie pelo condomínio em pixel art.", 20))
-	tbox.add_child(_label("Os caminhos seguem os passeios reais da imagem. Passe por trás das torres, desça a escada do lado oeste até a rua que contorna o condomínio e siga até a área de baixo, com o estacionamento.", 16, Color("cfd8c4")))
+	tbox.add_child(_label("Os caminhos seguem os passeios reais da imagem e passam por trás das torres. Desça a escada do lado oeste para sair à rua: a rua lateral das quadras, a rua dos fundos, a rua lateral direita e o estacionamento são telas próprias.", 16, Color("cfd8c4")))
 	_controls_label = _label("", 15, Color("cfd8c4"))
 	tbox.add_child(_controls_label)
 	_start_button = _make_button("Começar a caminhar")
@@ -269,6 +357,12 @@ func _build_ui() -> void:
 	var restart := _make_button("Voltar ao início")
 	restart.pressed.connect(_back_to_title)
 	pbox.add_child(restart)
+
+	_fade = ColorRect.new()
+	_fade.color = Color(0, 0, 0, 0)
+	_fade.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_fade.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(_fade)
 
 
 func _update_hint() -> void:
@@ -411,8 +505,7 @@ func _resume() -> void:
 
 
 func _back_to_title() -> void:
-	_player.position = walk_map.nearest_walkable(SPAWN_HINT, Walker.FOOT_HALF)
-	_camera.reset_smoothing()
+	load_area(START_AREA, START_SPAWN)
 	distance_walked = 0.0
 	_show_title()
 
@@ -460,9 +553,14 @@ func _process(delta: float) -> void:
 	if _joystick != null and _joystick.is_held():
 		dir = _joystick.vector
 		running = _joystick.running
-	_player.occluded = is_occluded(_player.position)
+	if _transitioning:
+		_player.step(Vector2.ZERO, false, delta)
+		return
 	var moved := _player.step(dir, running, delta)
 	distance_walked += moved.length()
+	var e := exit_at(_player.position)
+	if not e.is_empty():
+		_go_through(e)
 
 
 ## Usado pelos testes automatizados.
@@ -470,7 +568,9 @@ func simulate_walk(direction: Vector2, seconds: float, running: bool = false) ->
 	var start := _player.position
 	var t := 0.0
 	while t < seconds:
-		_player.occluded = is_occluded(_player.position)
 		_player.step(direction, running, 1.0 / 60.0)
+		var e := exit_at(_player.position)
+		if not e.is_empty():
+			_go_through(e, false)
 		t += 1.0 / 60.0
 	return _player.position - start

@@ -16,6 +16,166 @@
   },
   "bundles": {},
   "assets": {
+    "assets/game/areas/condominio/bg.png": {
+      "path": "/manus-storage/game/sha256/7392a5e9f4eac0e85a72e0e071b45193b462476be97a2bde5ee7c709183a4483.png",
+      "sha256": "sha256:7392a5e9f4eac0e85a72e0e071b45193b462476be97a2bde5ee7c709183a4483",
+      "size": 3438299,
+      "assetType": "image",
+      "groupId": "game",
+      "used": true
+    },
+    "assets/game/areas/condominio/tower_01.png": {
+      "path": "/manus-storage/game/sha256/144a9078c339e02a6d49018dcfc38f0bf39219a460af135126e7902a9a014f58.png",
+      "sha256": "sha256:144a9078c339e02a6d49018dcfc38f0bf39219a460af135126e7902a9a014f58",
+      "size": 95148,
+      "assetType": "image",
+      "groupId": "game",
+      "used": true
+    },
+    "assets/game/areas/condominio/tower_02.png": {
+      "path": "/manus-storage/game/sha256/697fd384499218de5f79acbbc78117debfb0cdc5f183dd2cf0a13828957c5d9d.png",
+      "sha256": "sha256:697fd384499218de5f79acbbc78117debfb0cdc5f183dd2cf0a13828957c5d9d",
+      "size": 94776,
+      "assetType": "image",
+      "groupId": "game",
+      "used": false
+    },
+    "assets/game/areas/condominio/tower_03.png": {
+      "path": "/manus-storage/game/sha256/fd34d902086f23a17e9a84d85507abcaacc2a289403c0b2e7dc8152ec7eb7f0a.png",
+      "sha256": "sha256:fd34d902086f23a17e9a84d85507abcaacc2a289403c0b2e7dc8152ec7eb7f0a",
+      "size": 93507,
+      "assetType": "image",
+      "groupId": "game",
+      "used": false
+    },
+    "assets/game/areas/condominio/tower_04.png": {
+      "path": "/manus-storage/game/sha256/04d2b0e51284bf1ca30c01740698e14816f68efb3a8bba799d29dd80bea0a031.png",
+      "sha256": "sha256:04d2b0e51284bf1ca30c01740698e14816f68efb3a8bba799d29dd80bea0a031",
+      "size": 96982,
+      "assetType": "image",
+      "groupId": "game",
+      "used": false
+    },
+    "assets/game/areas/condominio/tower_05.png": {
+      "path": "/manus-storage/game/sha256/de55bb2c55706eb8fc8332ed85eed499e56ff13a5382adf1da92a412d78a856d.png",
+      "sha256": "sha256:de55bb2c55706eb8fc8332ed85eed499e56ff13a5382adf1da92a412d78a856d",
+      "size": 93865,
+      "assetType": "image",
+      "groupId": "game",
+      "used": false
+    },
+    "assets/game/areas/condominio/tower_06.png": {
+      "path": "/manus-storage/game/sha256/c6d3ff7fdb62800d4b4d5309e3d9d708a652412bce40f62701759695a67f4f89.png",
+      "sha256": "sha256:c6d3ff7fdb62800d4b4d5309e3d9d708a652412bce40f62701759695a67f4f89",
+      "size": 95988,
+      "assetType": "image",
+      "groupId": "game",
+      "used": false
+    },
+    "assets/game/areas/condominio/tower_07.png": {
+      "path": "/manus-storage/game/sha256/232ae74727d0baf2cef63e86003269c08fe2a2727f9f7465ecbef8b7179ba69a.png",
+      "sha256": "sha256:232ae74727d0baf2cef63e86003269c08fe2a2727f9f7465ecbef8b7179ba69a",
+      "size": 97071,
+      "assetType": "image",
+      "groupId": "game",
+      "used": false
+    },
+    "assets/game/areas/condominio/tower_08.png": {
+      "path": "/manus-storage/game/sha256/d8624acb1624096ba3f6fde2a2ee9e928835639928a8902b7a43b5267270a606.png",
+      "sha256": "sha256:d8624acb1624096ba3f6fde2a2ee9e928835639928a8902b7a43b5267270a606",
+      "size": 110003,
+      "assetType": "image",
+      "groupId": "game",
+      "used": false
+    },
+    "assets/game/areas/condominio/tower_09.png": {
+      "path": "/manus-storage/game/sha256/73f81ff2eff0e5b799d560309be50f16ee1131e7348b0c804817a31d02fc1114.png",
+      "sha256": "sha256:73f81ff2eff0e5b799d560309be50f16ee1131e7348b0c804817a31d02fc1114",
+      "size": 103223,
+      "assetType": "image",
+      "groupId": "game",
+      "used": false
+    },
+    "assets/game/areas/condominio/tower_10.png": {
+      "path": "/manus-storage/game/sha256/bccfdc25e3fd3b8646779c8daaeb896afdf8d159bf5051325d7bc33ba5ad3c2f.png",
+      "sha256": "sha256:bccfdc25e3fd3b8646779c8daaeb896afdf8d159bf5051325d7bc33ba5ad3c2f",
+      "size": 104201,
+      "assetType": "image",
+      "groupId": "game",
+      "used": false
+    },
+    "assets/game/areas/condominio/walk.png": {
+      "path": "/manus-storage/game/sha256/e43d19c87cbe527e74cbf957c29f9c3753540ab6f9998c96695b74720e374c28.png",
+      "sha256": "sha256:e43d19c87cbe527e74cbf957c29f9c3753540ab6f9998c96695b74720e374c28",
+      "size": 5029,
+      "assetType": "image",
+      "groupId": "game",
+      "used": true
+    },
+    "assets/game/areas/direita/bg.png": {
+      "path": "/manus-storage/game/sha256/f83135555801b93653113090a688cdcbe87aaab45c15d9d3c0efc17cc857f961.png",
+      "sha256": "sha256:f83135555801b93653113090a688cdcbe87aaab45c15d9d3c0efc17cc857f961",
+      "size": 7236323,
+      "assetType": "image",
+      "groupId": "game",
+      "used": true
+    },
+    "assets/game/areas/direita/walk.png": {
+      "path": "/manus-storage/game/sha256/ad07c1a08ba5bb1c7abf723ac74ee928a725507634a65a3dfc69e50238540519.png",
+      "sha256": "sha256:ad07c1a08ba5bb1c7abf723ac74ee928a725507634a65a3dfc69e50238540519",
+      "size": 2166,
+      "assetType": "image",
+      "groupId": "game",
+      "used": false
+    },
+    "assets/game/areas/estacionamento/bg.png": {
+      "path": "/manus-storage/game/sha256/2fdf8d403c7e752a7cb510c05843f3466fd1926d3e2d8b2a420c472765a3c144.png",
+      "sha256": "sha256:2fdf8d403c7e752a7cb510c05843f3466fd1926d3e2d8b2a420c472765a3c144",
+      "size": 7494856,
+      "assetType": "image",
+      "groupId": "game",
+      "used": true
+    },
+    "assets/game/areas/estacionamento/walk.png": {
+      "path": "/manus-storage/game/sha256/65dea30d318d93fe75168547312961b296b75137c2b92c4db2200bce27db0f6c.png",
+      "sha256": "sha256:65dea30d318d93fe75168547312961b296b75137c2b92c4db2200bce27db0f6c",
+      "size": 2676,
+      "assetType": "image",
+      "groupId": "game",
+      "used": true
+    },
+    "assets/game/areas/fundos/bg.png": {
+      "path": "/manus-storage/game/sha256/81ef92bcf00a2fe794f91366162626c5ee46936d5e1a04ede507a82f7dc3f8ec.png",
+      "sha256": "sha256:81ef92bcf00a2fe794f91366162626c5ee46936d5e1a04ede507a82f7dc3f8ec",
+      "size": 6675721,
+      "assetType": "image",
+      "groupId": "game",
+      "used": true
+    },
+    "assets/game/areas/fundos/walk.png": {
+      "path": "/manus-storage/game/sha256/a8a071b09b03c60d2edb85bca4a68add1716ad79519fc3ac58a80ebb00d2c3c1.png",
+      "sha256": "sha256:a8a071b09b03c60d2edb85bca4a68add1716ad79519fc3ac58a80ebb00d2c3c1",
+      "size": 2200,
+      "assetType": "image",
+      "groupId": "game",
+      "used": false
+    },
+    "assets/game/areas/oeste/bg.png": {
+      "path": "/manus-storage/game/sha256/a7c258f4bc7728322f94389b4ed45938182178cf34127adf264264ad2ce177a3.png",
+      "sha256": "sha256:a7c258f4bc7728322f94389b4ed45938182178cf34127adf264264ad2ce177a3",
+      "size": 7332057,
+      "assetType": "image",
+      "groupId": "game",
+      "used": true
+    },
+    "assets/game/areas/oeste/walk.png": {
+      "path": "/manus-storage/game/sha256/a1420f9ef00927df2fcae2f11c4297b31e9dd592dd78e6951cb3e0262549ccd7.png",
+      "sha256": "sha256:a1420f9ef00927df2fcae2f11c4297b31e9dd592dd78e6951cb3e0262549ccd7",
+      "size": 2139,
+      "assetType": "image",
+      "groupId": "game",
+      "used": false
+    },
     "assets/game/hero.png": {
       "path": "/manus-storage/game/sha256/cbbc9487c9173d0a81cef37c7c5ad89d1c24f6d1e4d807a7bf8957d2bb2bfb09.png",
       "sha256": "sha256:cbbc9487c9173d0a81cef37c7c5ad89d1c24f6d1e4d807a7bf8957d2bb2bfb09",
@@ -30,7 +190,7 @@
       "size": 3438299,
       "assetType": "image",
       "groupId": "game",
-      "used": true
+      "used": false
     },
     "assets/game/tower_01.png": {
       "path": "/manus-storage/game/sha256/144a9078c339e02a6d49018dcfc38f0bf39219a460af135126e7902a9a014f58.png",
@@ -38,7 +198,7 @@
       "size": 95148,
       "assetType": "image",
       "groupId": "game",
-      "used": true
+      "used": false
     },
     "assets/game/tower_02.png": {
       "path": "/manus-storage/game/sha256/697fd384499218de5f79acbbc78117debfb0cdc5f183dd2cf0a13828957c5d9d.png",

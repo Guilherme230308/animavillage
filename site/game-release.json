@@ -3,7 +3,7 @@
   "engineVersion": "4.7.2.stable.official.ed1daf0bf",
   "inputs": {
     "objectFormat": "sha1",
-    "tree": "8013d7cd51e1491198919ba9285f50866e7903bf",
+    "tree": "731f6b0d0184f0537bf948e4247a252f0be87069",
     "entries": [
       {
         "path": ".gitignore",
@@ -33,7 +33,239 @@
         "path": "assets.lock.json",
         "type": "file",
         "mode": "100644",
-        "object": "cb3b25e4e925821e3c92fbca37553cc01425142d"
+        "object": "f1544f5b493d9c330d4d90e8415f38e200221352"
+      },
+      {
+        "path": "assets/game/areas.json",
+        "type": "file",
+        "mode": "100644",
+        "object": "470276af46133f571f292b4b6e2fcce193ec5c71"
+      },
+      {
+        "path": "assets/game/areas/condominio/bg.png",
+        "type": "managed",
+        "sha256": "sha256:7392a5e9f4eac0e85a72e0e071b45193b462476be97a2bde5ee7c709183a4483"
+      },
+      {
+        "path": "assets/game/areas/condominio/bg.png.import",
+        "type": "file",
+        "mode": "100644",
+        "object": "886a8caef591b143ffcd0257aff736dbb7447691"
+      },
+      {
+        "path": "assets/game/areas/condominio/tower_01.png",
+        "type": "managed",
+        "sha256": "sha256:144a9078c339e02a6d49018dcfc38f0bf39219a460af135126e7902a9a014f58"
+      },
+      {
+        "path": "assets/game/areas/condominio/tower_01.png.import",
+        "type": "file",
+        "mode": "100644",
+        "object": "dbac952a394be52c979ccdde251f2e0238238db0"
+      },
+      {
+        "path": "assets/game/areas/condominio/tower_02.png",
+        "type": "managed",
+        "sha256": "sha256:697fd384499218de5f79acbbc78117debfb0cdc5f183dd2cf0a13828957c5d9d"
+      },
+      {
+        "path": "assets/game/areas/condominio/tower_02.png.import",
+        "type": "file",
+        "mode": "100644",
+        "object": "d309ab6547c3027ef40347c2e8d7c6af07827ad2"
+      },
+      {
+        "path": "assets/game/areas/condominio/tower_03.png",
+        "type": "managed",
+        "sha256": "sha256:fd34d902086f23a17e9a84d85507abcaacc2a289403c0b2e7dc8152ec7eb7f0a"
+      },
+      {
+        "path": "assets/game/areas/condominio/tower_03.png.import",
+        "type": "file",
+        "mode": "100644",
+        "object": "00a070062ee29e1b55ec8721544994206e0408a8"
+      },
+      {
+        "path": "assets/game/areas/condominio/tower_04.png",
+        "type": "managed",
+        "sha256": "sha256:04d2b0e51284bf1ca30c01740698e14816f68efb3a8bba799d29dd80bea0a031"
+      },
+      {
+        "path": "assets/game/areas/condominio/tower_04.png.import",
+        "type": "file",
+        "mode": "100644",
+        "object": "69a44123950c94e3ed64f8c640f07dce1d51f60b"
+      },
+      {
+        "path": "assets/game/areas/condominio/tower_05.png",
+        "type": "managed",
+        "sha256": "sha256:de55bb2c55706eb8fc8332ed85eed499e56ff13a5382adf1da92a412d78a856d"
+      },
+      {
+        "path": "assets/game/areas/condominio/tower_05.png.import",
+        "type": "file",
+        "mode": "100644",
+        "object": "3f21589bc3b8bfc6d51a35c37b1fabbf1407e594"
+      },
+      {
+        "path": "assets/game/areas/condominio/tower_06.png",
+        "type": "managed",
+        "sha256": "sha256:c6d3ff7fdb62800d4b4d5309e3d9d708a652412bce40f62701759695a67f4f89"
+      },
+      {
+        "path": "assets/game/areas/condominio/tower_06.png.import",
+        "type": "file",
+        "mode": "100644",
+        "object": "90d25aea7e9143806789ad45731aa00f8cbd15b0"
+      },
+      {
+        "path": "assets/game/areas/condominio/tower_07.png",
+        "type": "managed",
+        "sha256": "sha256:232ae74727d0baf2cef63e86003269c08fe2a2727f9f7465ecbef8b7179ba69a"
+      },
+      {
+        "path": "assets/game/areas/condominio/tower_07.png.import",
+        "type": "file",
+        "mode": "100644",
+        "object": "ae139b67bd14fc92939e86accf9e8c33fbc1b056"
+      },
+      {
+        "path": "assets/game/areas/condominio/tower_08.png",
+        "type": "managed",
+        "sha256": "sha256:d8624acb1624096ba3f6fde2a2ee9e928835639928a8902b7a43b5267270a606"
+      },
+      {
+        "path": "assets/game/areas/condominio/tower_08.png.import",
+        "type": "file",
+        "mode": "100644",
+        "object": "4e43506662af730db9c97aa8edab576df45ef364"
+      },
+      {
+        "path": "assets/game/areas/condominio/tower_09.png",
+        "type": "managed",
+        "sha256": "sha256:73f81ff2eff0e5b799d560309be50f16ee1131e7348b0c804817a31d02fc1114"
+      },
+      {
+        "path": "assets/game/areas/condominio/tower_09.png.import",
+        "type": "file",
+        "mode": "100644",
+        "object": "06571bd72e2c4d623e9d28463edbb34223f3d81f"
+      },
+      {
+        "path": "assets/game/areas/condominio/tower_10.png",
+        "type": "managed",
+        "sha256": "sha256:bccfdc25e3fd3b8646779c8daaeb896afdf8d159bf5051325d7bc33ba5ad3c2f"
+      },
+      {
+        "path": "assets/game/areas/condominio/tower_10.png.import",
+        "type": "file",
+        "mode": "100644",
+        "object": "8fe721f9af8a41fc940cddcc442b9d94de523b3b"
+      },
+      {
+        "path": "assets/game/areas/condominio/towers.json",
+        "type": "file",
+        "mode": "100644",
+        "object": "a7901fba74345e8f96a4a02053cc124225fd2c36"
+      },
+      {
+        "path": "assets/game/areas/condominio/walk.png",
+        "type": "managed",
+        "sha256": "sha256:e43d19c87cbe527e74cbf957c29f9c3753540ab6f9998c96695b74720e374c28"
+      },
+      {
+        "path": "assets/game/areas/condominio/walk.png.import",
+        "type": "file",
+        "mode": "100644",
+        "object": "693fddc6cc99b92e9bf715278387972fea6982ba"
+      },
+      {
+        "path": "assets/game/areas/direita/bg.png",
+        "type": "managed",
+        "sha256": "sha256:f83135555801b93653113090a688cdcbe87aaab45c15d9d3c0efc17cc857f961"
+      },
+      {
+        "path": "assets/game/areas/direita/bg.png.import",
+        "type": "file",
+        "mode": "100644",
+        "object": "32ddb2b0fcbdbc4bcb78c085f2aa5c19336faefc"
+      },
+      {
+        "path": "assets/game/areas/direita/walk.png",
+        "type": "managed",
+        "sha256": "sha256:ad07c1a08ba5bb1c7abf723ac74ee928a725507634a65a3dfc69e50238540519"
+      },
+      {
+        "path": "assets/game/areas/direita/walk.png.import",
+        "type": "file",
+        "mode": "100644",
+        "object": "6c65ea1fefb8aca07ae75f08bc3d94f26dcb0796"
+      },
+      {
+        "path": "assets/game/areas/estacionamento/bg.png",
+        "type": "managed",
+        "sha256": "sha256:2fdf8d403c7e752a7cb510c05843f3466fd1926d3e2d8b2a420c472765a3c144"
+      },
+      {
+        "path": "assets/game/areas/estacionamento/bg.png.import",
+        "type": "file",
+        "mode": "100644",
+        "object": "676610c42411af1f6c63fe1029a4e57ecd9afdfa"
+      },
+      {
+        "path": "assets/game/areas/estacionamento/walk.png",
+        "type": "managed",
+        "sha256": "sha256:65dea30d318d93fe75168547312961b296b75137c2b92c4db2200bce27db0f6c"
+      },
+      {
+        "path": "assets/game/areas/estacionamento/walk.png.import",
+        "type": "file",
+        "mode": "100644",
+        "object": "79c77381bff3bc8e1d767c55f1c4f75a1d2a5463"
+      },
+      {
+        "path": "assets/game/areas/fundos/bg.png",
+        "type": "managed",
+        "sha256": "sha256:81ef92bcf00a2fe794f91366162626c5ee46936d5e1a04ede507a82f7dc3f8ec"
+      },
+      {
+        "path": "assets/game/areas/fundos/bg.png.import",
+        "type": "file",
+        "mode": "100644",
+        "object": "b8276fe5b862828c81ec1c602e3ebad1de3ba4f2"
+      },
+      {
+        "path": "assets/game/areas/fundos/walk.png",
+        "type": "managed",
+        "sha256": "sha256:a8a071b09b03c60d2edb85bca4a68add1716ad79519fc3ac58a80ebb00d2c3c1"
+      },
+      {
+        "path": "assets/game/areas/fundos/walk.png.import",
+        "type": "file",
+        "mode": "100644",
+        "object": "ffdac2022c7b5c3d61f7b7225f83e1985e107c22"
+      },
+      {
+        "path": "assets/game/areas/oeste/bg.png",
+        "type": "managed",
+        "sha256": "sha256:a7c258f4bc7728322f94389b4ed45938182178cf34127adf264264ad2ce177a3"
+      },
+      {
+        "path": "assets/game/areas/oeste/bg.png.import",
+        "type": "file",
+        "mode": "100644",
+        "object": "2b152d7b7b144c44d01465f9bf812fc89fb21d5f"
+      },
+      {
+        "path": "assets/game/areas/oeste/walk.png",
+        "type": "managed",
+        "sha256": "sha256:a1420f9ef00927df2fcae2f11c4297b31e9dd592dd78e6951cb3e0262549ccd7"
+      },
+      {
+        "path": "assets/game/areas/oeste/walk.png.import",
+        "type": "file",
+        "mode": "100644",
+        "object": "f73872f0eb2fd0695630e560954fda9771278b7d"
       },
       {
         "path": "assets/game/hero.png",
@@ -61,7 +293,7 @@
         "path": "assets/game/scene.png.import",
         "type": "file",
         "mode": "100644",
-        "object": "20ac6d841b7bbfcd19a05666e9c3aec65143becf"
+        "object": "e1086a534be5c39598ff5905879df8f7a787e5aa"
       },
       {
         "path": "assets/game/tower_01.png",
@@ -174,12 +406,6 @@
         "object": "ed35909d39a5a77ef8ace47598ce0dd130165fda"
       },
       {
-        "path": "assets/game/towers.json",
-        "type": "file",
-        "mode": "100644",
-        "object": "6c4010bb690556334f730e2328ac1921c9d5ab03"
-      },
-      {
         "path": "assets/game/walk_mask.png",
         "type": "managed",
         "sha256": "sha256:d3409a6a560fbc1a770f71b14e791cb683a8944a9f3910f581a701fd513b77b5"
@@ -188,7 +414,7 @@
         "path": "assets/game/walk_mask.png.import",
         "type": "file",
         "mode": "100644",
-        "object": "8ae55590146ba82ebdedabf11d69730de35c9c2e"
+        "object": "eb8218a43e8ae11e7b84f59b8f02bdcbe8cd722f"
       },
       {
         "path": "assets/share/favicon.png",
@@ -879,7 +1105,7 @@
         "path": "scripts/vila/vila_main.gd",
         "type": "file",
         "mode": "100644",
-        "object": "efcfd4aadfc135c4ba39a4cf0ea38fd8b0d37ba1"
+        "object": "08b1ffa706e622b80f75511dcaca11189456c0e4"
       },
       {
         "path": "scripts/vila/vila_main.gd.uid",
@@ -903,7 +1129,7 @@
         "path": "scripts/vila/walker.gd",
         "type": "file",
         "mode": "100644",
-        "object": "558ed044d0b3097a2f336ce7838e834ef1951e66"
+        "object": "3e5e96431adec790c0d9474609e3ee53cdb0306c"
       },
       {
         "path": "scripts/vila/walker.gd.uid",
@@ -1005,7 +1231,7 @@
         "path": "test/vila_tests.gd",
         "type": "file",
         "mode": "100644",
-        "object": "e762f7ab988880fbcabf84549e31471055800965"
+        "object": "ef30166806659a90936bfcde2c910ad3f8890d49"
       },
       {
         "path": "test/vila_tests.gd.uid",
@@ -1077,7 +1303,7 @@
         "path": "tools/verify_exported_pack.gd",
         "type": "file",
         "mode": "100644",
-        "object": "a38b52d4e9c30bc97171dc52b288822219b9b6ca"
+        "object": "e1da48ef2e52f2552a475a52230b7384d46ab798"
       },
       {
         "path": "tools/verify_exported_pack.gd.uid",
@@ -1100,7 +1326,7 @@
     ]
   },
   "build": {
-    "snapshotId": "sha256:1cbdcd2afaec71e9b907fdd225abf1c1c03af81117851a0d0352c327c87c5ade",
+    "snapshotId": "sha256:f68f6b50210b9e4efe63cd8d50b74981f79b9b601bc6e7b7b9e05e20bbee6284",
     "toolchain": {
       "engineVersion": "4.7.2.stable.official.ed1daf0bf",
       "engineDigest": "sha256:8d106cbe6144c2dc7e881d61d2429c1a8a76e6b22ef48bd5e48dcf934953f71e",
@@ -1113,21 +1339,21 @@
     "profile": "release",
     "export": {
       "profile": "release",
-      "snapshotId": "sha256:1cbdcd2afaec71e9b907fdd225abf1c1c03af81117851a0d0352c327c87c5ade",
+      "snapshotId": "sha256:f68f6b50210b9e4efe63cd8d50b74981f79b9b601bc6e7b7b9e05e20bbee6284",
       "files": {
         "THIRD_PARTY_NOTICES.txt": "sha256:c729a77bf07eb9745b2d89c3ce4ead3357438366f41743d2755ae35f98509cf9",
         "index.apple-touch-icon.png": "sha256:d2716209a9509d8b7357841254fdfcbbe5ade6b96b01921b9f3f091fd1c9c793",
         "index.audio.position.worklet.js": "sha256:be33985bc7160d6bf9646f259cd86b259cd67b02ccb297ee5c44f8ac84327bc8",
         "index.audio.worklet.js": "sha256:5b476a9c9ce642c0ee4256436d1bc31d9c38f868aca0f9a8e2a57c18d2dec2a3",
-        "index.html": "sha256:5adee64c41deb2bf2d8abb3532e8218826466d1152acc8ec2e97a3ae3d6e94d3",
+        "index.html": "sha256:c76fc3b40ad3b9856f1fbc85523ebe12c0fd907f636cd95926ee619f2b147175",
         "index.icon.png": "sha256:bf74e1751235e01f2350f03af885ea344fa6836d13e6e363d94863756bcbe131",
         "index.js": "sha256:cb28c2d8ffd8981888823f1b6d98cdec4e3e11adf209ad556c22878e6d51c63a",
-        "index.pck": "sha256:b2a4b4e392e45903f0d037628b04443a506def8a7dbe62f8fcc73f343b366352",
+        "index.pck": "sha256:031e26ba517605896aa54de403472c2c4134265ce489edb383a4b62d238b1045",
         "index.png": "sha256:3cb4495c0b98dfbe4b663cbf2b6836473572339beb66d902367893162a70be0e",
         "index.wasm": "sha256:fc74679e3b97f76878947fcd4fbe1268cbfa6188182a2e33bbc3f5dc9bfa57d0",
         "open-source-licenses.html": "sha256:9215f5fdd50039a9b6f3d8f0271cbc21bbdf64b917fb118dd29c8a16b9974e00"
       },
-      "digest": "sha256:d26e4df6bf56d828033ae0070115857290a83b0d33ca8b329a5cf9220cc6baba"
+      "digest": "sha256:f3fa3f3c54193c6c14e95212c5e5c1cc58d60eaf58448d80344424c89507c838"
     }
   },
   "artifacts": {
@@ -1136,8 +1362,8 @@
       "sha256": "sha256:fc74679e3b97f76878947fcd4fbe1268cbfa6188182a2e33bbc3f5dc9bfa57d0"
     },
     "pck": {
-      "path": "/manus-storage/game/sha256/b2a4b4e392e45903f0d037628b04443a506def8a7dbe62f8fcc73f343b366352.pck",
-      "sha256": "sha256:b2a4b4e392e45903f0d037628b04443a506def8a7dbe62f8fcc73f343b366352"
+      "path": "/manus-storage/game/sha256/031e26ba517605896aa54de403472c2c4134265ce489edb383a4b62d238b1045.pck",
+      "sha256": "sha256:031e26ba517605896aa54de403472c2c4134265ce489edb383a4b62d238b1045"
     }
   },
   "files": {
@@ -1146,7 +1372,7 @@
     "index.apple-touch-icon.png": "sha256:d2716209a9509d8b7357841254fdfcbbe5ade6b96b01921b9f3f091fd1c9c793",
     "index.audio.position.worklet.js": "sha256:be33985bc7160d6bf9646f259cd86b259cd67b02ccb297ee5c44f8ac84327bc8",
     "index.audio.worklet.js": "sha256:5b476a9c9ce642c0ee4256436d1bc31d9c38f868aca0f9a8e2a57c18d2dec2a3",
-    "index.html": "sha256:3e8773faac04fb3d6019314827552b658bb7fa1248469439a82367a2ca054f6c",
+    "index.html": "sha256:6e1b214b7506c70c1a48d5c9d11f228cdfbbf53fa9f90bc64f3eab70f0389676",
     "index.icon.png": "sha256:bf74e1751235e01f2350f03af885ea344fa6836d13e6e363d94863756bcbe131",
     "index.js": "sha256:cb28c2d8ffd8981888823f1b6d98cdec4e3e11adf209ad556c22878e6d51c63a",
     "index.png": "sha256:3cb4495c0b98dfbe4b663cbf2b6836473572339beb66d902367893162a70be0e",

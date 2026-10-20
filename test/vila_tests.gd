@@ -23,7 +23,7 @@ func _run() -> void:
 	await process_frame
 	var map: WalkMap = main.walk_map
 	_check(map.width > 100 and map.height > 100, "grade de passeios carregada")
-	_check(map.walkable_count() > 25000, "rede de passeios extensa")
+	_check(map.walkable_count() > 15000, "rede de passeios extensa")
 	var player: Walker = main.get("_player")
 	_check(map.is_footprint_walkable(player.position, Walker.FOOT_HALF), "nasce em passeio")
 	_check(bool((main.get("_title_screen") as Control).visible), "abre na tela de título")
@@ -46,27 +46,49 @@ func _run() -> void:
 	_check(after_block.x < before.x or before.x - after_block.x == 0.0, "andou até a borda")
 	_check(map.is_footprint_walkable(player.position, Walker.FOOT_HALF), "bloqueio mantém o personagem no passeio")
 
-	# Obstáculos e passagem por trás das torres.
+	# Torres: a base (prédio) bloqueia; o chão logo atrás é caminhável e fica escondido.
 	_check(not map.is_point_walkable(Vector2(700, 620)), "piscina bloqueada")
 	_check(not map.is_point_walkable(Vector2(30, 600)), "mata externa bloqueada")
 	for fc: Vector2 in [Vector2(596, 317), Vector2(845, 313), Vector2(451, 452), Vector2(309, 595), Vector2(232, 813), Vector2(357, 953), Vector2(507, 1093), Vector2(719, 1119), Vector2(874, 962), Vector2(1029, 813)]:
 		_check(not map.is_point_walkable(fc), "base da torre bloqueia " + str(fc))
-	_check(map.is_point_walkable(Vector2(600, 160)), "dá para andar atrás da torre")
-	_check(bool(main.call("is_occluded", Vector2(600, 200))), "torre cobre quem passa atrás")
+	for mid: Vector2 in [Vector2(596, 260), Vector2(845, 260), Vector2(1029, 760), Vector2(232, 760)]:
+		_check(not map.is_point_walkable(mid), "não atravessa o meio da torre " + str(mid))
+	var behind := _first_walkable_behind(main, map)
+	_check(behind != Vector2.INF, "existe chão caminhável atrás de uma torre")
+	if behind != Vector2.INF:
+		_check(bool(main.call("is_occluded", behind)), "torre fica na frente de quem passa atrás")
 	_check(not bool(main.call("is_occluded", Vector2(630, 790))), "praça não é coberta")
+	_check(not map.is_point_walkable(Vector2(84, 700)), "rua não faz parte da tela do condomínio")
 
-	# Níveis: o interior só chega à rua pela escada; a rua chega à área de baixo.
-	var stair := Rect2(100, 586, 52, 26)
-	var interior := Vector2(630, 790)
-	var road := Vector2(84, 700)
-	var road_bottom := Vector2(640, 1188)
-	var lower := Vector2(1180, 600)
-	_check(map.is_point_walkable(road) and map.is_point_walkable(road_bottom), "rua perimetral caminhável")
-	_check(_reachable(map, interior, road, Rect2()), "interior chega à rua pela escada")
-	_check(not _reachable(map, interior, road, stair), "sem a escada, o interior não chega à rua")
-	_check(_reachable(map, road, road_bottom, stair), "a rua dá a volta")
-	_check(_reachable(map, road, lower, Rect2()), "a rua termina na área de baixo")
-	_check(not _reachable(map, lower, interior, stair), "área de baixo separada do interior")
+	# Telas separadas: cada saída leva a uma chegada válida e todas as saídas são alcançáveis.
+	var areas: Dictionary = main.get("areas")
+	for id: String in ["condominio", "oeste", "fundos", "direita", "estacionamento"]:
+		_check(areas.has(id), "área existe: " + id)
+	for id: String in areas:
+		main.call("load_area", id, (areas[id]["spawns"] as Dictionary).keys()[0])
+		var amap: WalkMap = main.walk_map
+		for sp_name: String in areas[id]["spawns"]:
+			var sp: Array = areas[id]["spawns"][sp_name]
+			var spv := Vector2(float(sp[0]), float(sp[1]))
+			_check(amap.is_footprint_walkable(spv, Walker.FOOT_HALF), "chegada caminhável %s/%s" % [id, sp_name])
+			_check(main.call("exit_at", spv).is_empty(), "chegada fora de saída %s/%s" % [id, sp_name])
+			for e: Dictionary in areas[id]["exits"]:
+				_check(_reach_rect(amap, spv, e["rect"]), "%s/%s alcança saída para %s" % [id, sp_name, e["to"]])
+		for e: Dictionary in areas[id]["exits"]:
+			_check(areas.has(e["to"]) and (areas[e["to"]]["spawns"] as Dictionary).has(e["spawn"]), "saída %s -> %s/%s válida" % [id, e["to"], e["spawn"]])
+	# Percurso real: descer a escada do condomínio leva à rua lateral.
+	main.call("load_area", "condominio", "escada")
+	main.call("simulate_walk", Vector2.LEFT, 3.0, false)
+	_check(String(main.get("current_area")) == "oeste", "descer a escada abre a rua lateral")
+	var order := ["oeste", "fundos", "direita", "estacionamento", "oeste"]
+	for i in range(order.size() - 1):
+		var found := false
+		for e: Dictionary in areas[order[i]]["exits"]:
+			if e["to"] == order[i + 1]:
+				found = true
+		_check(found, "%s liga com %s" % [order[i], order[i + 1]])
+	main.call("load_area", "condominio", "inicio")
+	map = main.walk_map
 
 	# Controles de toque: arrastar o joystick move o personagem.
 	main.call("_back_to_title")
@@ -145,5 +167,38 @@ func _reachable(map: WalkMap, from: Vector2, to: Vector2, blocked: Rect2) -> boo
 			var idx := n.y * map.width + n.x
 			if seen[idx] == 0:
 				seen[idx] = 1
+				queue.append(n)
+	return false
+
+
+func _first_walkable_behind(main: Node, map: WalkMap) -> Vector2:
+	for y in range(100, 1150, 4):
+		for x in range(120, 1150, 4):
+			var p := Vector2(x + 2, y + 2)
+			if map.is_footprint_walkable(p, Walker.FOOT_HALF) and bool(main.call("is_occluded", p)):
+				return p
+	return Vector2.INF
+
+
+func _reach_rect(map: WalkMap, from: Vector2, rect: Array) -> bool:
+	var r := Rect2(float(rect[0]), float(rect[1]), float(rect[2]), float(rect[3]))
+	var c := WalkMap.CELL
+	var start := Vector2i(int(from.x / c), int(from.y / c))
+	if not map.is_cell_walkable(start.x, start.y):
+		return false
+	var seen := PackedByteArray()
+	seen.resize(map.width * map.height)
+	var queue: Array[Vector2i] = [start]
+	seen[start.y * map.width + start.x] = 1
+	var head := 0
+	while head < queue.size():
+		var cur: Vector2i = queue[head]
+		head += 1
+		if r.has_point(Vector2((cur.x + 0.5) * c, (cur.y + 0.5) * c)):
+			return true
+		for dlt: Vector2i in [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]:
+			var n := cur + dlt
+			if map.is_cell_walkable(n.x, n.y) and seen[n.y * map.width + n.x] == 0:
+				seen[n.y * map.width + n.x] = 1
 				queue.append(n)
 	return false

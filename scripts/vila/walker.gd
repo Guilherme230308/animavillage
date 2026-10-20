@@ -15,8 +15,6 @@ var facing := "down"
 var moving := false
 var _sprite: AnimatedSprite2D
 var _shadow: Polygon2D
-var _ghost: AnimatedSprite2D
-var occluded := false
 
 
 func _ready() -> void:
@@ -35,15 +33,6 @@ func _ready() -> void:
 	_sprite.offset = Vector2(0, -FRAME_H / 2.0 + 1)
 	add_child(_sprite)
 	_sprite.play("idle_down")
-	# Silhueta desenhada por cima das torres quando o personagem passa atrás delas.
-	_ghost = AnimatedSprite2D.new()
-	_ghost.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	_ghost.sprite_frames = _sprite.sprite_frames
-	_ghost.offset = _sprite.offset
-	_ghost.z_index = 50
-	_ghost.modulate = Color(0.7, 0.9, 1.0, 0.55)
-	_ghost.visible = false
-	add_child(_ghost)
 
 
 func _build_frames() -> SpriteFrames:
@@ -88,12 +77,6 @@ func step(direction: Vector2, running: bool, delta: float) -> Vector2:
 		_sprite.play(anim)
 	if _sprite != null:
 		_sprite.speed_scale = 1.6 if running else 1.0
-	if _ghost != null:
-		_ghost.visible = occluded
-		if occluded:
-			if _ghost.animation != _sprite.animation:
-				_ghost.play(_sprite.animation)
-			_ghost.frame = _sprite.frame
 	return position - before
 
 
