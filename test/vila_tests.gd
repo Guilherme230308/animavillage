@@ -480,7 +480,7 @@ func _adventure_tests(main: Node) -> void:
 	for d: Array in mm.dots:
 		kinds[String(d[1])] = true
 	_check(mm.show_legend and int(mm.counts["moeda"]) == (adv.get("_coin_nodes") as Array).size(), "minimapa conta as moedas da tela")
-	_check(int(mm.counts["moeda_total"]) == _count(adv, "coins") and int(mm.counts["arma_total"]) == _count(adv, "guns"), "minimapa mostra o total do nível")
+	_check(int(mm.counts["moeda_total"]) == _count(adv, "coins") and int(mm.counts["arma_total"]) == _count(adv, "guns") + _count(adv, "soakers") + _count(adv, "spreaders"), "minimapa mostra o total do nível")
 	_check(mm.dots.size() == (adv.get("_coin_nodes") as Array).size() + (adv.get("_gun_nodes") as Array).size() + (adv.get("_scorp_nodes") as Array).size(), "minimapa marca moedas, Nerfs e escorpiões")
 	# Nome da tela e nova ligação estacionamento → rua direita.
 	_check(String(main.areas["condominio"]["title"]) == "Térreo", "tela principal se chama Térreo")
@@ -508,5 +508,142 @@ func _adventure_tests(main: Node) -> void:
 	_check(ms.current_tab() == "estacionamento" and (ms.get("_map") as Minimap).dots.size() == (md["dots"] as Array).size(), "mapa troca de cenário e mostra os itens dele")
 	ms.close()
 	_check(not ms.is_open() and not bool(main.get("_paused")), "Voltar fecha o mapa e retoma o jogo")
+	# Escada: mais devagar e a personagem desce visualmente.
+	main.load_area("condominio", "inicio")
+	var st_r := Rect2(100, 586, 52, 26)
+	player.position = Vector2(146, 599)
+	_check(player.on_stairs() and player.stair_progress() < 0.3, "topo da escada reconhecido (%.2f)" % player.stair_progress())
+	var p0: Vector2 = player.position
+	for i in 6:
+		player.step(Vector2.LEFT, false, 1.0 / 60.0)
+	var on_d := player.position.distance_to(p0)
+	player.position = Vector2(630, 790)
+	p0 = player.position
+	for i in 6:
+		player.step(Vector2.LEFT, false, 1.0 / 60.0)
+	var off_d := player.position.distance_to(p0)
+	_check(on_d > 0.0 and on_d < off_d * 0.7, "na escada anda mais devagar (%.1f vs %.1f)" % [on_d, off_d])
+	player.position = Vector2(104, 599)
+	for i in 40:
+		player.step(Vector2.ZERO, false, 1.0 / 60.0)
+	var spr: AnimatedSprite2D = player.get("_sprite")
+	_check(player.stair_progress() > 0.8 and spr.scale.x < 0.92 and spr.position.y > 3.0, "no pé da escada a personagem fica mais baixa e menor")
+	player.position = Vector2(630, 790)
+	for i in 40:
+		player.step(Vector2.ZERO, false, 1.0 / 60.0)
+	_check(absf(spr.scale.x - 1.0) < 0.02 and absf(spr.position.y) < 0.5, "fora da escada volta ao normal")
+	# Carros do estacionamento bloqueiam.
+	main.load_area("estacionamento", "oeste")
+	var car_ok := true
+	for cp: Vector2 in [Vector2(716, 526), Vector2(766, 570), Vector2(825, 638), Vector2(902, 715)]:
+		if main.walk_map.is_point_walkable(cp):
+			car_ok = false
+	_check(car_ok, "carros estacionados não são caminháveis")
+	main.load_area("condominio", "inicio")
+	# ---------------- Armas novas
+	adv.new_game()
+	var tot_so := 0
+	var tot_sp := 0
+	var in_terreo := 0
+	for aid: String in adv.soakers:
+		tot_so += (adv.soakers[aid] as Array).size()
+		if aid == "condominio":
+			in_terreo += (adv.soakers[aid] as Array).size()
+	for aid: String in adv.spreaders:
+		tot_sp += (adv.spreaders[aid] as Array).size()
+		if aid == "condominio":
+			in_terreo += (adv.spreaders[aid] as Array).size()
+	_check(tot_so == 1 and tot_sp == 0 and in_terreo == 0, "nível 1: 1 Super Soaker, 0 Espalhadora, fora do Térreo (%d/%d)" % [tot_so, tot_sp])
+	adv.start_phase(3)
+	tot_so = 0
+	tot_sp = 0
+	for aid: String in adv.soakers:
+		tot_so += (adv.soakers[aid] as Array).size()
+	for aid: String in adv.spreaders:
+		tot_sp += (adv.spreaders[aid] as Array).size()
+	_check(tot_so == 1 and tot_sp == 2, "nível 4: 1 Super Soaker e 2 Espalhadoras (%d/%d)" % [tot_so, tot_sp])
+	adv.start_phase(0)
+	_check(not adv.select_weapon("soaker") and adv.weapon == "nerf", "não troca para arma que ainda não pegou")
+	# Pegar a Soaker em outra tela.
+	var sk_area := ""
+	for aid: String in adv.soakers:
+		if (adv.soakers[aid] as Array).size() > 0:
+			sk_area = aid
+	main.load_area(sk_area, (main.areas[sk_area]["spawns"] as Dictionary).keys()[0])
+	player.position = (adv.soakers[sk_area] as Array)[0]
+	adv._invuln = 99.0
+	adv.tick(0.016)
+	_check(adv.has_soaker and adv.weapon == "soaker" and is_equal_approx(adv.water, 100.0), "pegar a Super Soaker enche o tanque e equipa")
+	# Jato: molha, deixa lento, dá dano e gasta água.
+	for scx: Scorpion in adv.get("_scorp_nodes"):
+		scx.position = player.position + Vector2(-400, -400)
+	var sc0 := Scorpion.new()
+	sc0.setup("vermelho", main.walk_map, main._finder, player, 1.0)
+	sc0.hp = 2
+	sc0.position = player.position + Vector2(50, 0)
+	main._world.add_child(sc0)
+	(adv.get("_scorp_nodes") as Array).append(sc0)
+	adv.aim_point = sc0.position + Vector2(0, -4)
+	adv.fire_held = true
+	var w0: float = adv.water
+	adv.tick(0.05)
+	_check(sc0.slow_t > 1.5 and sc0.hp == 1, "jato molha (lento) e tira 1 de vida")
+	for i in 12:
+		adv.fire_held = true
+		adv.aim_point = sc0.position + Vector2(0, -4) if is_instance_valid(sc0) else Vector2.INF
+		adv.tick(0.05)
+	_check(not (adv.get("_scorp_nodes") as Array).has(sc0), "jato contínuo elimina o escorpião")
+	_check(adv.water < w0 - 10.0, "jato gasta água (%.0f%%)" % adv.water)
+	adv.fire_held = false
+	adv.aim_point = Vector2.INF
+	adv.tick(0.016)
+	var jet: WaterJet = adv.get("_jet")
+	_check(jet != null and not jet.visible, "soltar o botão para o jato")
+	# Recarga perto da piscina do Térreo.
+	main.load_area("condominio", "inicio")
+	player.position = Vector2(700, 640)
+	var wp := Vector2.INF
+	for yy in range(480, 820, 8):
+		for xx in range(500, 840, 8):
+			if wp == Vector2.INF and adv.near_water(Vector2(xx, yy)) and main.walk_map.is_footprint_walkable(Vector2(xx, yy), Walker.FOOT_HALF):
+				wp = Vector2(xx, yy)
+	_check(wp != Vector2.INF and not adv.near_water(Vector2(140, 599)), "há borda de piscina caminhável para recarregar")
+	player.position = wp
+	adv.water = 10.0
+	adv.tick(1.0)
+	_check(adv.water > 40.0, "perto da água o tanque recarrega (%.0f%%)" % adv.water)
+	# Chuva recarrega devagar em qualquer lugar.
+	adv.start_phase(2)
+	adv.has_soaker = true
+	player.position = Vector2(140, 599)
+	adv.water = 0.0
+	adv.tick(1.0)
+	_check(adv.water > 3.0 and adv.water < 8.0, "na chuva a Soaker recarrega devagar (%.1f%%)" % adv.water)
+	# Espalhadora: 5 dardos, 1 cartucho, alcance curto.
+	adv.has_spreader = true
+	adv.cartridges = 2
+	_check(adv.select_weapon("espalhadora"), "troca para a Espalhadora")
+	var nd := (adv.get("_dart_nodes") as Array).size()
+	adv.set("_fire_cd", 0.0)
+	adv.shoot(player.position + Vector2(100, 0))
+	var darts_now: Array = adv.get("_dart_nodes")
+	_check(darts_now.size() - nd == 5 and adv.cartridges == 1, "Espalhadora solta 5 dardos e gasta 1 cartucho")
+	var ang_ok := true
+	for dd: Dart in darts_now.slice(nd):
+		var base_dir := (player.position + Vector2(100, 0) - (player.position + Vector2(0, -12))).normalized()
+		if absf(dd.velocity.angle_to(base_dir)) > deg_to_rad(21) or dd.max_range > 150.0:
+			ang_ok = false
+	_check(ang_ok, "dardos em leque de 40° e alcance curto")
+	adv.set("_fire_cd", 0.0)
+	adv.cartridges = 0
+	_check(not adv.shoot(player.position + Vector2(100, 0)), "sem cartuchos não atira")
+	# Troca com Q (ciclo) e o painel mostra a arma.
+	adv.select_weapon("nerf")
+	adv.cycle_weapon()
+	_check(adv.weapon == "soaker", "Q passa para a próxima arma que você tem")
+	_check(String((adv.get("_dart_label") as Label).text).begins_with("Água"), "painel mostra a munição da arma atual")
+	var mk: Dictionary = adv.markers_for(String(main.current_area))
+	_check(mk.has("dots"), "minimapa aceita as armas novas")
+	adv.start_phase(0)
 	main.call("_back_to_title")
 	_check(not adv.is_night() and not adv.is_raining() and not adv.active, "voltar ao início desliga noite, chuva e o jogo")

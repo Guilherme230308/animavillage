@@ -338,6 +338,28 @@
         }
       }
     },
+    "assets/game/areas/condominio/water.png": {
+      "declaredUseEvidence": [],
+      "generator": {},
+      "inputs": [],
+      "license": {},
+      "origin": "unknown",
+      "referenceEvidence": [
+        "scripts/vila/adventure.gd"
+      ],
+      "regions": [],
+      "sha256": "sha256:62704dda6b6dc972184bd8fe91f7d28bc602fd69e1a63c18db0cf31209e5738d",
+      "shipped": true,
+      "size": 328,
+      "source": {},
+      "status": "present",
+      "transformations": [],
+      "useEvidence": [
+        "scripts/vila/adventure.gd"
+      ],
+      "used": true,
+      "usedBy": []
+    },
     "assets/game/areas/direita/bg.png": {
       "declaredUseEvidence": [],
       "generator": {},
@@ -508,9 +530,9 @@
       "origin": "unknown",
       "referenceEvidence": [],
       "regions": [],
-      "sha256": "sha256:bed3938ea6ff343dca7279b0e93a7364eda8b38a57a17117e6862005ad6057df",
+      "sha256": "sha256:f04c031d2df3b26f55b78d2195bd6f41d6bae1c8c86e508dab37584cfe7dc667",
       "shipped": true,
-      "size": 2513,
+      "size": 2529,
       "source": {},
       "status": "present",
       "transformations": [],
@@ -529,6 +551,18 @@
           "source": {},
           "transformations": [],
           "usedBy": []
+        },
+        "sha256:bed3938ea6ff343dca7279b0e93a7364eda8b38a57a17117e6862005ad6057df": {
+          "generator": {},
+          "inputs": [],
+          "license": {},
+          "origin": "unknown",
+          "regions": [],
+          "sha256": "sha256:bed3938ea6ff343dca7279b0e93a7364eda8b38a57a17117e6862005ad6057df",
+          "size": 2513,
+          "source": {},
+          "transformations": [],
+          "usedBy": []
         }
       }
     },
@@ -542,9 +576,9 @@
         "assets/game/areas.json"
       ],
       "regions": [],
-      "sha256": "sha256:aada1b3232bb34e698e7398105c7c64901fb1daaea7d285cbf0d6ec81a981e68",
+      "sha256": "sha256:ded58dbed6462f55cfb56f3fe4e77f2db9fa47527381b8601ac6b2f4aacd6b05",
       "shipped": true,
-      "size": 4269,
+      "size": 3743,
       "source": {},
       "status": "present",
       "transformations": [],
@@ -586,6 +620,18 @@
           "regions": [],
           "sha256": "sha256:65dea30d318d93fe75168547312961b296b75137c2b92c4db2200bce27db0f6c",
           "size": 2676,
+          "source": {},
+          "transformations": [],
+          "usedBy": []
+        },
+        "sha256:aada1b3232bb34e698e7398105c7c64901fb1daaea7d285cbf0d6ec81a981e68": {
+          "generator": {},
+          "inputs": [],
+          "license": {},
+          "origin": "unknown",
+          "regions": [],
+          "sha256": "sha256:aada1b3232bb34e698e7398105c7c64901fb1daaea7d285cbf0d6ec81a981e68",
+          "size": 4269,
           "source": {},
           "transformations": [],
           "usedBy": []
@@ -1032,6 +1078,50 @@
       "used": true,
       "usedBy": []
     },
+    "assets/game/soaker.png": {
+      "declaredUseEvidence": [],
+      "generator": {},
+      "inputs": [],
+      "license": {},
+      "origin": "unknown",
+      "referenceEvidence": [
+        "scripts/vila/pickup.gd"
+      ],
+      "regions": [],
+      "sha256": "sha256:9ef970647c687d0f7be2c2c197187b1f6d351f785b1b8ac770b346ea8a67c036",
+      "shipped": true,
+      "size": 865,
+      "source": {},
+      "status": "present",
+      "transformations": [],
+      "useEvidence": [
+        "scripts/vila/pickup.gd"
+      ],
+      "used": true,
+      "usedBy": []
+    },
+    "assets/game/soaker_hd.png": {
+      "declaredUseEvidence": [],
+      "generator": {},
+      "inputs": [],
+      "license": {},
+      "origin": "unknown",
+      "referenceEvidence": [
+        "scripts/vila/adventure.gd"
+      ],
+      "regions": [],
+      "sha256": "sha256:9b3f4b0b1ffc4b16de034c6b48964cc2b4dedb55e776267418a4a2ba0c21d3d5",
+      "shipped": true,
+      "size": 9448,
+      "source": {},
+      "status": "present",
+      "transformations": [],
+      "useEvidence": [
+        "scripts/vila/adventure.gd"
+      ],
+      "used": true,
+      "usedBy": []
+    },
     "assets/game/sophia.png": {
       "declaredUseEvidence": [],
       "generator": {},
@@ -1100,6 +1190,50 @@
       "transformations": [],
       "useEvidence": [
         "scripts/vila/vila_main.gd"
+      ],
+      "used": true,
+      "usedBy": []
+    },
+    "assets/game/spread.png": {
+      "declaredUseEvidence": [],
+      "generator": {},
+      "inputs": [],
+      "license": {},
+      "origin": "unknown",
+      "referenceEvidence": [
+        "scripts/vila/pickup.gd"
+      ],
+      "regions": [],
+      "sha256": "sha256:4703b8d3a2cef0511404b719ba106728404398f152458011f364b65bfdbd70d3",
+      "shipped": true,
+      "size": 990,
+      "source": {},
+      "status": "present",
+      "transformations": [],
+      "useEvidence": [
+        "scripts/vila/pickup.gd"
+      ],
+      "used": true,
+      "usedBy": []
+    },
+    "assets/game/spread_hd.png": {
+      "declaredUseEvidence": [],
+      "generator": {},
+      "inputs": [],
+      "license": {},
+      "origin": "unknown",
+      "referenceEvidence": [
+        "scripts/vila/adventure.gd"
+      ],
+      "regions": [],
+      "sha256": "sha256:132e1c55a917ff8421bc9e0fc7aff8f028c139cfa381739390c38efe8e1a98c6",
+      "shipped": true,
+      "size": 11500,
+      "source": {},
+      "status": "present",
+      "transformations": [],
+      "useEvidence": [
+        "scripts/vila/adventure.gd"
       ],
       "used": true,
       "usedBy": []
@@ -1585,9 +1719,9 @@
         ]
       }
     ],
-    "pckSha256": "sha256:9b488ff1b66c02bf5f1916a5d0a759572e46d2874321df838204ac8c5badd81c",
+    "pckSha256": "sha256:e24ddd3b9dc15b1f39887032183f35e8c91f1d6e36181cdef49c22a5ad7df444",
     "profile": "release",
-    "sourceFingerprint": "sha256:dea0310c17bad4c571b6860a1c9a7205ef7a7c1b1b4982a39d58e21f3a48366c"
+    "sourceFingerprint": "sha256:9a97b4ef5278635eb34fd826e80dc3ac0e46979e21c1924dd55e33d5d4b7fe03"
   },
   "procedures": {},
   "summary": {
@@ -1620,9 +1754,9 @@
     },
     "files": {
       "downloaded": 0,
-      "retained": 58,
-      "shipped": 58,
-      "used": 30
+      "retained": 63,
+      "shipped": 63,
+      "used": 35
     },
     "origins": {
       "ai": {
@@ -1656,9 +1790,9 @@
         "used": 2
       },
       "unknown": {
-        "retained": 43,
-        "shipped": 43,
-        "used": 28
+        "retained": 48,
+        "shipped": 48,
+        "used": 33
       }
     },
     "packs": {

@@ -5,6 +5,10 @@ extends Node2D
 const SPEED := 340.0
 const RANGE := 300.0
 var velocity := Vector2.ZERO
+## Alcance deste dardo (a Espalhadora usa alcance curto).
+var max_range := RANGE
+## Dardo verde da Espalhadora.
+var green := false
 var travelled := 0.0
 
 
@@ -17,7 +21,7 @@ func _ready() -> void:
 
 func _draw() -> void:
 	var d := velocity.normalized()
-	draw_line(-d * 5.0, d * 2.0, Color("2f6fe0"), 3.0)
+	draw_line(-d * 5.0, d * 2.0, Color("5fd23a") if green else Color("2f6fe0"), 3.0)
 	draw_line(d * 2.0, d * 4.5, Color("f07a1a"), 3.0)
 
 
@@ -27,4 +31,4 @@ func advance(delta: float) -> bool:
 	position += m
 	travelled += m.length()
 	queue_redraw()
-	return travelled < RANGE
+	return travelled < max_range

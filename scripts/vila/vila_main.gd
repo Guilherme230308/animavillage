@@ -144,6 +144,7 @@ func load_area(id: String, spawn: String) -> void:
 	_ground.add_child(bg)
 	_area_nodes.append(bg)
 	walk_map.load_mask(String(a["walk"]))
+	_player.set_stairs(a.get("stairs", []))
 	var was_visible := _paths_overlay != null and _paths_overlay.visible
 	_paths_overlay = Sprite2D.new()
 	_paths_overlay.texture = _build_paths_texture()
@@ -530,7 +531,7 @@ func _update_hint() -> void:
 	if touch_mode:
 		_hint_label.text = "Toque onde quiser ir · Atirar: botão à direita"
 	else:
-		_hint_label.text = "Clique para andar · Espaço/F ou botão direito: atirar · Shift correr · M caminhos (%s)" % paths
+		_hint_label.text = "Clique para andar · Espaço/F ou botão direito: atirar · 1/2/3 ou Q: arma · Shift correr · M caminhos (%s)" % paths
 	if _touch_buttons.has("paths"):
 		var b: TouchButton = _touch_buttons["paths"]
 		b.text = "Ocultar" if on else "Caminhos"
@@ -566,6 +567,11 @@ func _build_touch_ui() -> void:
 	_touch_layer.add_child(shoot)
 	_touch_buttons["shoot"] = shoot
 	shoot.tapped.connect(func() -> void: adventure.shoot())
+	var swap_w := TouchButton.new("Trocar", Vector2(84, 60))
+	swap_w.font_size = 17
+	_touch_layer.add_child(swap_w)
+	_touch_buttons["weapon"] = swap_w
+	swap_w.tapped.connect(func() -> void: adventure.cycle_weapon())
 
 
 func _enable_touch_mode() -> void:
@@ -633,6 +639,9 @@ func _layout_touch_buttons(vs: Vector2) -> void:
 		var shoot: TouchButton = _touch_buttons["shoot"]
 		var mm_top := (_minimap.position.y if _minimap != null else vs.y) - 16.0
 		shoot.position = Vector2(vs.x - m - shoot.size.x, mm_top - shoot.size.y)
+		if _touch_buttons.has("weapon"):
+			var sw: TouchButton = _touch_buttons["weapon"]
+			sw.position = Vector2(shoot.position.x - 12 - sw.size.x, shoot.position.y + shoot.size.y - sw.size.y)
 	for b in _touch_buttons.values():
 		(b as TouchButton).queue_redraw()
 	_joystick.queue_redraw()
@@ -773,6 +782,16 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 	if adventure.overlay_open:
 		return
+	if event is InputEventKey and event.pressed and not event.echo and (event as InputEventKey).keycode in [KEY_1, KEY_2, KEY_3, KEY_KP_1, KEY_KP_2, KEY_KP_3]:
+		var kc := (event as InputEventKey).keycode
+		var idx := 0 if kc in [KEY_1, KEY_KP_1] else (1 if kc in [KEY_2, KEY_KP_2] else 2)
+		adventure.select_weapon(Adventure.WEAPONS[idx])
+		get_viewport().set_input_as_handled()
+		return
+	if event is InputEventKey and event.pressed and not event.echo and (event as InputEventKey).keycode == KEY_Q:
+		adventure.cycle_weapon()
+		get_viewport().set_input_as_handled()
+		return
 	if event.is_action_pressed("shoot"):
 		adventure.shoot()
 		get_viewport().set_input_as_handled()
@@ -796,6 +815,12 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _process(delta: float) -> void:
+	if adventure != null:
+		var rmb := not touch_mode and Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT)
+		var tb = _touch_buttons.get("shoot")
+		var held: bool = _playing and not _paused and (Input.is_action_pressed("shoot") or rmb or (tb != null and (tb as TouchButton).is_held()))
+		adventure.fire_held = held
+		adventure.aim_point = screen_to_world(get_viewport().get_mouse_position()) if rmb else Vector2.INF
 	var z := lerpf(_camera.zoom.x, _target_zoom, clamp(delta * 8.0, 0.0, 1.0))
 	_camera.zoom = Vector2(z, z)
 	if not _playing or _paused:

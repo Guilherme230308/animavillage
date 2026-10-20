@@ -118,6 +118,21 @@ func _marker(p: Vector2, kind: String, pulse: float = 0.0) -> void:
 			draw_rect(r.grow(1.0), Color(1, 1, 1, 0.95))
 			draw_rect(r, Color("2f7ff0"))
 			draw_rect(Rect2(p - Vector2(2.5, 0.7), Vector2(5, 1.4)), Color("ff8a1a"))
+		"soaker":
+			draw_circle(p + Vector2(0, 1.0), 3.6, dark)
+			draw_colored_polygon(PackedVector2Array([p + Vector2(0, -5.2), p + Vector2(3.2, 0.2), p + Vector2(-3.2, 0.2)]), dark)
+			draw_circle(p + Vector2(0, 1.0), 2.7, Color("39b6ff"))
+			draw_colored_polygon(PackedVector2Array([p + Vector2(0, -4.0), p + Vector2(2.4, 0.4), p + Vector2(-2.4, 0.4)]), Color("39b6ff"))
+			draw_circle(p + Vector2(-0.9, 0.6), 0.8, Color("d8f3ff"))
+		"espalhadora":
+			var fan := PackedVector2Array([p + Vector2(-3.5, 2.5)])
+			var fan_o := PackedVector2Array([p + Vector2(-4.8, 3.2)])
+			for i in 6:
+				var a := -PI * 0.5 - 0.75 + 1.5 * i / 5.0
+				fan.append(p + Vector2(-3.5, 2.5) + Vector2(cos(a), sin(a)) * 6.5 + Vector2(2.6, 0))
+				fan_o.append(p + Vector2(-4.8, 3.2) + Vector2(cos(a), sin(a)) * 8.4 + Vector2(3.2, 0))
+			draw_colored_polygon(fan_o, dark)
+			draw_colored_polygon(fan, Color("6fe03a"))
 		_:
 			var col := Color("ff2e1f") if kind == "vermelho" else Color("ff9a1a")
 			var sz := 4.6 + pulse * 0.8

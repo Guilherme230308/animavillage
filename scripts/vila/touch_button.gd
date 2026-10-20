@@ -34,6 +34,11 @@ func _input(event: InputEvent) -> void:
 			get_viewport().set_input_as_handled()
 
 
+## Verdadeiro enquanto um dedo segura o botão (Super Soaker atira enquanto segura).
+func is_held() -> bool:
+	return _finger != -1
+
+
 ## Mouse (desktop) também funciona, útil para testes.
 func _gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and not event.pressed:

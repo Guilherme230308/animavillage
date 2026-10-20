@@ -21,6 +21,8 @@ var speed_mult := 1.0
 ## Multiplica a distância em que começa (e desiste de) perseguir.
 var aggro_mult := 1.0
 var chasing := false
+## Molhado pela Super Soaker: anda a 50% enquanto > 0.
+var slow_t := 0.0
 var sting_cd := 0.0
 var _sprite: Sprite2D
 var _anim_t := 0.0
@@ -73,7 +75,8 @@ func tick(delta: float, player_hidden: bool) -> bool:
 	sting_cd = maxf(0.0, sting_cd - delta)
 	_force_path_t = maxf(0.0, _force_path_t - delta)
 	_flash = maxf(0.0, _flash - delta)
-	_sprite.modulate = Color(1, 1, 1, 1) if _flash <= 0.0 else Color(3, 3, 3, 1)
+	slow_t = maxf(0.0, slow_t - delta)
+	_sprite.modulate = Color(3, 3, 3, 1) if _flash > 0.0 else (Color(0.55, 0.8, 1.35, 1) if slow_t > 0.0 else Color(1, 1, 1, 1))
 	var cfg: Dictionary = KINDS[kind]
 	var to_p := target.position - position
 	var d := to_p.length()
@@ -85,7 +88,7 @@ func tick(delta: float, player_hidden: bool) -> bool:
 		chasing = true
 		_repath_t = 0.0
 	var dir := Vector2.ZERO
-	var speed := float(cfg["speed"]) * speed_mult
+	var speed := float(cfg["speed"]) * speed_mult * (0.5 if slow_t > 0.0 else 1.0)
 	if chasing:
 		if _force_path_t <= 0.0 and (d < 26.0 or (_clear_line(position, target.position) and d < 90.0)):
 			dir = to_p.normalized()
@@ -132,6 +135,12 @@ func tick(delta: float, player_hidden: bool) -> bool:
 		_try(Vector2(0, back.y))
 		return true
 	return false
+
+
+## Molhado pela Super Soaker: fica lento por `secs` segundos.
+func soak(secs: float) -> void:
+	slow_t = maxf(slow_t, secs)
+	chasing = true
 
 
 ## Leva um dardo. Devolve verdadeiro se morreu.

@@ -136,6 +136,14 @@
       "groupId": "game",
       "used": true
     },
+    "assets/game/areas/condominio/water.png": {
+      "path": "/manus-storage/game/sha256/62704dda6b6dc972184bd8fe91f7d28bc602fd69e1a63c18db0cf31209e5738d.png",
+      "sha256": "sha256:62704dda6b6dc972184bd8fe91f7d28bc602fd69e1a63c18db0cf31209e5738d",
+      "size": 328,
+      "assetType": "image",
+      "groupId": "game",
+      "used": true
+    },
     "assets/game/areas/direita/bg.png": {
       "path": "/manus-storage/game/sha256/8d31d44e1b0bf8471ff31510ef059455d182e64628834db25cbb783bd6bab408.png",
       "sha256": "sha256:8d31d44e1b0bf8471ff31510ef059455d182e64628834db25cbb783bd6bab408",
@@ -169,17 +177,17 @@
       "used": true
     },
     "assets/game/areas/estacionamento/minimap.png": {
-      "path": "/manus-storage/game/sha256/bed3938ea6ff343dca7279b0e93a7364eda8b38a57a17117e6862005ad6057df.png",
-      "sha256": "sha256:bed3938ea6ff343dca7279b0e93a7364eda8b38a57a17117e6862005ad6057df",
-      "size": 2513,
+      "path": "/manus-storage/game/sha256/f04c031d2df3b26f55b78d2195bd6f41d6bae1c8c86e508dab37584cfe7dc667.png",
+      "sha256": "sha256:f04c031d2df3b26f55b78d2195bd6f41d6bae1c8c86e508dab37584cfe7dc667",
+      "size": 2529,
       "assetType": "image",
       "groupId": "game",
       "used": false
     },
     "assets/game/areas/estacionamento/walk.png": {
-      "path": "/manus-storage/game/sha256/aada1b3232bb34e698e7398105c7c64901fb1daaea7d285cbf0d6ec81a981e68.png",
-      "sha256": "sha256:aada1b3232bb34e698e7398105c7c64901fb1daaea7d285cbf0d6ec81a981e68",
-      "size": 4269,
+      "path": "/manus-storage/game/sha256/ded58dbed6462f55cfb56f3fe4e77f2db9fa47527381b8601ac6b2f4aacd6b05.png",
+      "sha256": "sha256:ded58dbed6462f55cfb56f3fe4e77f2db9fa47527381b8601ac6b2f4aacd6b05",
+      "size": 3743,
       "assetType": "image",
       "groupId": "game",
       "used": true
@@ -304,6 +312,22 @@
       "groupId": "game",
       "used": true
     },
+    "assets/game/soaker.png": {
+      "path": "/manus-storage/game/sha256/9ef970647c687d0f7be2c2c197187b1f6d351f785b1b8ac770b346ea8a67c036.png",
+      "sha256": "sha256:9ef970647c687d0f7be2c2c197187b1f6d351f785b1b8ac770b346ea8a67c036",
+      "size": 865,
+      "assetType": "image",
+      "groupId": "game",
+      "used": true
+    },
+    "assets/game/soaker_hd.png": {
+      "path": "/manus-storage/game/sha256/9b3f4b0b1ffc4b16de034c6b48964cc2b4dedb55e776267418a4a2ba0c21d3d5.png",
+      "sha256": "sha256:9b3f4b0b1ffc4b16de034c6b48964cc2b4dedb55e776267418a4a2ba0c21d3d5",
+      "size": 9448,
+      "assetType": "image",
+      "groupId": "game",
+      "used": true
+    },
     "assets/game/sophia.png": {
       "path": "/manus-storage/game/sha256/9fc59299651cdc022d8e8591921a118e39149ebd474a26bee06a1cfd89332cc0.png",
       "sha256": "sha256:9fc59299651cdc022d8e8591921a118e39149ebd474a26bee06a1cfd89332cc0",
@@ -316,6 +340,22 @@
       "path": "/manus-storage/game/sha256/dcba03da9e9e4c9152f45e1370fe634f5bd494c9c9e67a9df0f60149cf2f1113.png",
       "sha256": "sha256:dcba03da9e9e4c9152f45e1370fe634f5bd494c9c9e67a9df0f60149cf2f1113",
       "size": 210107,
+      "assetType": "image",
+      "groupId": "game",
+      "used": true
+    },
+    "assets/game/spread.png": {
+      "path": "/manus-storage/game/sha256/4703b8d3a2cef0511404b719ba106728404398f152458011f364b65bfdbd70d3.png",
+      "sha256": "sha256:4703b8d3a2cef0511404b719ba106728404398f152458011f364b65bfdbd70d3",
+      "size": 990,
+      "assetType": "image",
+      "groupId": "game",
+      "used": true
+    },
+    "assets/game/spread_hd.png": {
+      "path": "/manus-storage/game/sha256/132e1c55a917ff8421bc9e0fc7aff8f028c139cfa381739390c38efe8e1a98c6.png",
+      "sha256": "sha256:132e1c55a917ff8421bc9e0fc7aff8f028c139cfa381739390c38efe8e1a98c6",
+      "size": 11500,
       "assetType": "image",
       "groupId": "game",
       "used": true

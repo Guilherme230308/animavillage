@@ -3,7 +3,7 @@
   "engineVersion": "4.7.2.stable.official.ed1daf0bf",
   "inputs": {
     "objectFormat": "sha1",
-    "tree": "e989443166a548409e420b29c7c1543d9ca3d261",
+    "tree": "a8a80ced3b0be9de3d56fdea08e1e359ee363f9b",
     "entries": [
       {
         "path": ".gitignore",
@@ -33,7 +33,7 @@
         "path": "assets.lock.json",
         "type": "file",
         "mode": "100644",
-        "object": "4c05a982bcb355d0e9a8d425a51833ea8e606096"
+        "object": "d27d6c4d4a5f5bfe9a34c459e399a12bfc5f4f32"
       },
       {
         "path": "assets/game/antonio.png",
@@ -61,7 +61,7 @@
         "path": "assets/game/areas.json",
         "type": "file",
         "mode": "100644",
-        "object": "1a5c758a34e20750b16ad9790bf78389cb89f511"
+        "object": "46cc2ad7326d9d5c6a967c8d09e9a8fe50a8d45e"
       },
       {
         "path": "assets/game/areas/condominio/bg.png",
@@ -213,6 +213,17 @@
         "object": "693fddc6cc99b92e9bf715278387972fea6982ba"
       },
       {
+        "path": "assets/game/areas/condominio/water.png",
+        "type": "managed",
+        "sha256": "sha256:62704dda6b6dc972184bd8fe91f7d28bc602fd69e1a63c18db0cf31209e5738d"
+      },
+      {
+        "path": "assets/game/areas/condominio/water.png.import",
+        "type": "file",
+        "mode": "100644",
+        "object": "4b3c4eebf819fd0b3365c5887387164d4e4172bf"
+      },
+      {
         "path": "assets/game/areas/direita/bg.png",
         "type": "managed",
         "sha256": "sha256:8d31d44e1b0bf8471ff31510ef059455d182e64628834db25cbb783bd6bab408"
@@ -259,7 +270,7 @@
       {
         "path": "assets/game/areas/estacionamento/minimap.png",
         "type": "managed",
-        "sha256": "sha256:bed3938ea6ff343dca7279b0e93a7364eda8b38a57a17117e6862005ad6057df"
+        "sha256": "sha256:f04c031d2df3b26f55b78d2195bd6f41d6bae1c8c86e508dab37584cfe7dc667"
       },
       {
         "path": "assets/game/areas/estacionamento/minimap.png.import",
@@ -270,7 +281,7 @@
       {
         "path": "assets/game/areas/estacionamento/walk.png",
         "type": "managed",
-        "sha256": "sha256:aada1b3232bb34e698e7398105c7c64901fb1daaea7d285cbf0d6ec81a981e68"
+        "sha256": "sha256:ded58dbed6462f55cfb56f3fe4e77f2db9fa47527381b8601ac6b2f4aacd6b05"
       },
       {
         "path": "assets/game/areas/estacionamento/walk.png.import",
@@ -444,6 +455,28 @@
         "object": "4222e1eb6d4120db42c8ef7f82bd826466a5eac9"
       },
       {
+        "path": "assets/game/soaker.png",
+        "type": "managed",
+        "sha256": "sha256:9ef970647c687d0f7be2c2c197187b1f6d351f785b1b8ac770b346ea8a67c036"
+      },
+      {
+        "path": "assets/game/soaker.png.import",
+        "type": "file",
+        "mode": "100644",
+        "object": "c68d2ac6f80e4c1422e775e2bf4fa21655ae883e"
+      },
+      {
+        "path": "assets/game/soaker_hd.png",
+        "type": "managed",
+        "sha256": "sha256:9b3f4b0b1ffc4b16de034c6b48964cc2b4dedb55e776267418a4a2ba0c21d3d5"
+      },
+      {
+        "path": "assets/game/soaker_hd.png.import",
+        "type": "file",
+        "mode": "100644",
+        "object": "c0590c72baa488f4506c5a26f646599b307780ce"
+      },
+      {
         "path": "assets/game/sophia.png",
         "type": "managed",
         "sha256": "sha256:9fc59299651cdc022d8e8591921a118e39149ebd474a26bee06a1cfd89332cc0"
@@ -469,7 +502,29 @@
         "path": "assets/game/spawn_points.json",
         "type": "file",
         "mode": "100644",
-        "object": "89033c0bfca178cde156aed487edca6b2cff8a16"
+        "object": "4e6380539a926c0cc35b2fb29bd5b88f50ca1435"
+      },
+      {
+        "path": "assets/game/spread.png",
+        "type": "managed",
+        "sha256": "sha256:4703b8d3a2cef0511404b719ba106728404398f152458011f364b65bfdbd70d3"
+      },
+      {
+        "path": "assets/game/spread.png.import",
+        "type": "file",
+        "mode": "100644",
+        "object": "f0f0193fc2ff4b7ee43b81c5ea0726d5d2bb4127"
+      },
+      {
+        "path": "assets/game/spread_hd.png",
+        "type": "managed",
+        "sha256": "sha256:132e1c55a917ff8421bc9e0fc7aff8f028c139cfa381739390c38efe8e1a98c6"
+      },
+      {
+        "path": "assets/game/spread_hd.png.import",
+        "type": "file",
+        "mode": "100644",
+        "object": "4b3460017d9ca4ea8d143be6e6f4708c682163cd"
       },
       {
         "path": "assets/game/vini.png",
@@ -1169,7 +1224,7 @@
         "path": "scripts/vila/adventure.gd",
         "type": "file",
         "mode": "100644",
-        "object": "5284b2fc64ee246c3c31e9410d4460b3bc7d8d9a"
+        "object": "cb01304cbc058161e19ab09ba139a5f5b5320753"
       },
       {
         "path": "scripts/vila/adventure.gd.uid",
@@ -1181,7 +1236,7 @@
         "path": "scripts/vila/dart.gd",
         "type": "file",
         "mode": "100644",
-        "object": "11daf52f92649ba72d9c0d580cd3abaf3c1a619a"
+        "object": "e204a85219bb2a80f8589a3654632daf3a82ef64"
       },
       {
         "path": "scripts/vila/dart.gd.uid",
@@ -1205,7 +1260,7 @@
         "path": "scripts/vila/minimap.gd",
         "type": "file",
         "mode": "100644",
-        "object": "7d8b4f888362ff829296d1c36758f66eb31bafcf"
+        "object": "c2e66fda409eeb2ebaa59a3933134adc9333dfb3"
       },
       {
         "path": "scripts/vila/minimap.gd.uid",
@@ -1241,7 +1296,7 @@
         "path": "scripts/vila/pickup.gd",
         "type": "file",
         "mode": "100644",
-        "object": "36c697d8a2e9420f631f2bad92f8f487c343fa86"
+        "object": "726802c4981a1f00f67a21eac8c3a3ada3bfd5eb"
       },
       {
         "path": "scripts/vila/pickup.gd.uid",
@@ -1265,7 +1320,7 @@
         "path": "scripts/vila/scorpion.gd",
         "type": "file",
         "mode": "100644",
-        "object": "80e21b299e919d2bffab1328e181a427897021f3"
+        "object": "bf674135d6ca5eee152f73e48a80615ad37c7253"
       },
       {
         "path": "scripts/vila/scorpion.gd.uid",
@@ -1277,7 +1332,7 @@
         "path": "scripts/vila/touch_button.gd",
         "type": "file",
         "mode": "100644",
-        "object": "a784761b4972de45467bc77d69b4f3c1bbc2581a"
+        "object": "ccb1c28247bb8cd320df7548cbd00430e8a73b04"
       },
       {
         "path": "scripts/vila/touch_button.gd.uid",
@@ -1301,7 +1356,7 @@
         "path": "scripts/vila/vila_main.gd",
         "type": "file",
         "mode": "100644",
-        "object": "9fca6561dd52db150e11b4e971f97b3101ec543e"
+        "object": "e3de73c521e61358200b16ce3d1e21c7f9915b5c"
       },
       {
         "path": "scripts/vila/vila_main.gd.uid",
@@ -1325,13 +1380,25 @@
         "path": "scripts/vila/walker.gd",
         "type": "file",
         "mode": "100644",
-        "object": "38306ec4f14c9df2b9bbb3813cf4ed693807ecf6"
+        "object": "5cf05222d9b65a498637e9b8074e72734b9831d4"
       },
       {
         "path": "scripts/vila/walker.gd.uid",
         "type": "file",
         "mode": "100644",
         "object": "802476eb98de7240427b3d43813a95a60650e080"
+      },
+      {
+        "path": "scripts/vila/water_jet.gd",
+        "type": "file",
+        "mode": "100644",
+        "object": "20aa9b88e57e6e5348f179683608f59ac95097f2"
+      },
+      {
+        "path": "scripts/vila/water_jet.gd.uid",
+        "type": "file",
+        "mode": "100644",
+        "object": "c11fe1aa94f857341373abb97e5db0948ad298ca"
       },
       {
         "path": "shaders/arcade_filter.gdshader",
@@ -1427,7 +1494,7 @@
         "path": "test/vila_tests.gd",
         "type": "file",
         "mode": "100644",
-        "object": "a89ae87ecc70a67734841a4b4cc7afcfed8c68be"
+        "object": "23c3a78d4615da154d0cc8ce7273301f17ce50b8"
       },
       {
         "path": "test/vila_tests.gd.uid",
@@ -1522,7 +1589,7 @@
     ]
   },
   "build": {
-    "snapshotId": "sha256:1545ec7948070885ea9ec62bbb99c0d7b8ff43ab9673375ef290f0ec54902303",
+    "snapshotId": "sha256:a19142e010aba3e3a18e3ad57eb6d20ae6d862b748eddf119fc46d0481d4b3ed",
     "toolchain": {
       "engineVersion": "4.7.2.stable.official.ed1daf0bf",
       "engineDigest": "sha256:8d106cbe6144c2dc7e881d61d2429c1a8a76e6b22ef48bd5e48dcf934953f71e",
@@ -1535,21 +1602,21 @@
     "profile": "release",
     "export": {
       "profile": "release",
-      "snapshotId": "sha256:1545ec7948070885ea9ec62bbb99c0d7b8ff43ab9673375ef290f0ec54902303",
+      "snapshotId": "sha256:a19142e010aba3e3a18e3ad57eb6d20ae6d862b748eddf119fc46d0481d4b3ed",
       "files": {
         "THIRD_PARTY_NOTICES.txt": "sha256:c729a77bf07eb9745b2d89c3ce4ead3357438366f41743d2755ae35f98509cf9",
         "index.apple-touch-icon.png": "sha256:d2716209a9509d8b7357841254fdfcbbe5ade6b96b01921b9f3f091fd1c9c793",
         "index.audio.position.worklet.js": "sha256:be33985bc7160d6bf9646f259cd86b259cd67b02ccb297ee5c44f8ac84327bc8",
         "index.audio.worklet.js": "sha256:5b476a9c9ce642c0ee4256436d1bc31d9c38f868aca0f9a8e2a57c18d2dec2a3",
-        "index.html": "sha256:9cc89b12508a5db422d5ebac86c12fe4bcbbf2ce2c728485e48fe8ef3555493e",
+        "index.html": "sha256:9c31d433e6192b9843218da7ea98efc765ac989247b3161a4ce240e4d518a97c",
         "index.icon.png": "sha256:bf74e1751235e01f2350f03af885ea344fa6836d13e6e363d94863756bcbe131",
         "index.js": "sha256:cb28c2d8ffd8981888823f1b6d98cdec4e3e11adf209ad556c22878e6d51c63a",
-        "index.pck": "sha256:9b488ff1b66c02bf5f1916a5d0a759572e46d2874321df838204ac8c5badd81c",
+        "index.pck": "sha256:e24ddd3b9dc15b1f39887032183f35e8c91f1d6e36181cdef49c22a5ad7df444",
         "index.png": "sha256:3cb4495c0b98dfbe4b663cbf2b6836473572339beb66d902367893162a70be0e",
         "index.wasm": "sha256:fc74679e3b97f76878947fcd4fbe1268cbfa6188182a2e33bbc3f5dc9bfa57d0",
         "open-source-licenses.html": "sha256:9215f5fdd50039a9b6f3d8f0271cbc21bbdf64b917fb118dd29c8a16b9974e00"
       },
-      "digest": "sha256:3b29bd859137b3f702497751c571e672680c87f5330e4e2883e2f523ca63b86d"
+      "digest": "sha256:00847399146a2ffb2f64e3b3a4257b7af2eeef35de1755fd7eed2ef66f29c606"
     }
   },
   "artifacts": {
@@ -1558,8 +1625,8 @@
       "sha256": "sha256:fc74679e3b97f76878947fcd4fbe1268cbfa6188182a2e33bbc3f5dc9bfa57d0"
     },
     "pck": {
-      "path": "/manus-storage/game/sha256/9b488ff1b66c02bf5f1916a5d0a759572e46d2874321df838204ac8c5badd81c.pck",
-      "sha256": "sha256:9b488ff1b66c02bf5f1916a5d0a759572e46d2874321df838204ac8c5badd81c"
+      "path": "/manus-storage/game/sha256/e24ddd3b9dc15b1f39887032183f35e8c91f1d6e36181cdef49c22a5ad7df444.pck",
+      "sha256": "sha256:e24ddd3b9dc15b1f39887032183f35e8c91f1d6e36181cdef49c22a5ad7df444"
     }
   },
   "files": {
@@ -1568,7 +1635,7 @@
     "index.apple-touch-icon.png": "sha256:d2716209a9509d8b7357841254fdfcbbe5ade6b96b01921b9f3f091fd1c9c793",
     "index.audio.position.worklet.js": "sha256:be33985bc7160d6bf9646f259cd86b259cd67b02ccb297ee5c44f8ac84327bc8",
     "index.audio.worklet.js": "sha256:5b476a9c9ce642c0ee4256436d1bc31d9c38f868aca0f9a8e2a57c18d2dec2a3",
-    "index.html": "sha256:ad00c072823f5dd64c27753634fd64a3c59a629d143aceb862f1e08b53be1e43",
+    "index.html": "sha256:d9c7a4923f9f2b2571311e8f11f80c01cc2dd2bed11b65d3d8e16810f7d2484b",
     "index.icon.png": "sha256:bf74e1751235e01f2350f03af885ea344fa6836d13e6e363d94863756bcbe131",
     "index.js": "sha256:cb28c2d8ffd8981888823f1b6d98cdec4e3e11adf209ad556c22878e6d51c63a",
     "index.png": "sha256:3cb4495c0b98dfbe4b663cbf2b6836473572339beb66d902367893162a70be0e",

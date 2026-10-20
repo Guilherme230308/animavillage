@@ -14,9 +14,9 @@ func _ready() -> void:
 	var mat := CanvasItemMaterial.new()
 	mat.light_mode = CanvasItemMaterial.LIGHT_MODE_UNSHADED
 	material = mat
-	if kind == "arma":
+	if kind in ["arma", "soaker", "espalhadora"]:
 		_sprite = Sprite2D.new()
-		_sprite.texture = load("res://assets/game/nerf.png") as Texture2D
+		_sprite.texture = load({"arma": "res://assets/game/nerf.png", "soaker": "res://assets/game/soaker.png", "espalhadora": "res://assets/game/spread.png"}[kind]) as Texture2D
 		_sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 		_sprite.use_parent_material = true
 		add_child(_sprite)
@@ -33,10 +33,11 @@ func _draw() -> void:
 	if kind == "coracao":
 		_draw_heart()
 		return
-	if kind == "arma":
+	if kind in ["arma", "soaker", "espalhadora"]:
 		var r := 11.0 + sin(_t * 4.0) * 1.0
-		draw_circle(Vector2(0, 0), r, Color(1.0, 0.85, 0.3, 0.18))
-		draw_arc(Vector2(0, 0), r, 0, TAU, 20, Color(1.0, 0.9, 0.4, 0.7), 1.0)
+		var gc: Color = {"arma": Color(1.0, 0.88, 0.35), "soaker": Color(0.4, 0.8, 1.0), "espalhadora": Color(0.5, 1.0, 0.35)}[kind]
+		draw_circle(Vector2(0, 0), r, Color(gc, 0.2))
+		draw_arc(Vector2(0, 0), r, 0, TAU, 20, Color(gc, 0.75), 1.0)
 		return
 	# Moeda girando: largura varia com o cosseno do giro.
 	var bob := sin(_t * 3.0) * 1.0
