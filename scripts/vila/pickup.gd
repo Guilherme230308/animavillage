@@ -30,6 +30,9 @@ func _process(delta: float) -> void:
 
 
 func _draw() -> void:
+	if kind == "coracao":
+		_draw_heart()
+		return
 	if kind == "arma":
 		var r := 11.0 + sin(_t * 4.0) * 1.0
 		draw_circle(Vector2(0, 0), r, Color(1.0, 0.85, 0.3, 0.18))
@@ -54,3 +57,23 @@ func _draw() -> void:
 	draw_polyline(pts, Color("8a5a12"), 1.0)
 	if w > 2.5:
 		draw_rect(Rect2(c + Vector2(-0.5, -2.0), Vector2(1, 4)), Color("fff3b0"))
+
+
+## Coração em pixel art pulsando, com brilho.
+func _draw_heart() -> void:
+	var beat := 1.0 + 0.12 * maxf(0.0, sin(_t * 6.0))
+	var c := Vector2(0, -8 + sin(_t * 2.5) * 1.0)
+	draw_circle(Vector2(0, 1), 4.0, Color(0, 0, 0, 0.25))
+	draw_circle(c, 11.0 * beat, Color(1.0, 0.3, 0.45, 0.16))
+	var rows := ["0110110", "1111111", "1111111", "0111110", "0011100", "0001000"]
+	var px := 1.6 * beat
+	var o := c - Vector2(3.5 * px, 3.0 * px)
+	for y in rows.size():
+		for x in rows[y].length():
+			if rows[y][x] == "1":
+				draw_rect(Rect2(o + Vector2(x, y) * px - Vector2(0.6, 0.6), Vector2(px + 1.2, px + 1.2)), Color("5a0d1a"))
+	for y in rows.size():
+		for x in rows[y].length():
+			if rows[y][x] == "1":
+				draw_rect(Rect2(o + Vector2(x, y) * px, Vector2(px, px)), Color("ff3b5c"))
+	draw_rect(Rect2(o + Vector2(1, 1) * px, Vector2(px, px)), Color("ffc2cc"))

@@ -74,15 +74,29 @@
       "origin": "unknown",
       "referenceEvidence": [],
       "regions": [],
-      "sha256": "sha256:851e7d770a7cb4178904a9f146007bd390fd92fed6a20ea08f95a5d3b86be1d5",
+      "sha256": "sha256:83aefdd6e16fe1fd65e0f1c83081e740f93f337fd340c5c9c06e52e0462763f4",
       "shipped": true,
-      "size": 3582,
+      "size": 4059,
       "source": {},
       "status": "present",
       "transformations": [],
       "useEvidence": [],
       "used": false,
-      "usedBy": []
+      "usedBy": [],
+      "versions": {
+        "sha256:851e7d770a7cb4178904a9f146007bd390fd92fed6a20ea08f95a5d3b86be1d5": {
+          "generator": {},
+          "inputs": [],
+          "license": {},
+          "origin": "unknown",
+          "regions": [],
+          "sha256": "sha256:851e7d770a7cb4178904a9f146007bd390fd92fed6a20ea08f95a5d3b86be1d5",
+          "size": 3582,
+          "source": {},
+          "transformations": [],
+          "usedBy": []
+        }
+      }
     },
     "assets/game/areas/condominio/tower_01.png": {
       "declaredUseEvidence": [],
@@ -274,9 +288,9 @@
         "assets/game/areas.json"
       ],
       "regions": [],
-      "sha256": "sha256:71734792dccd480956b735ef1d433c7f8b7ce39a4b96f48717506c425970bc43",
+      "sha256": "sha256:2c06a7e6160a8fe3fa018c7f333c5e10015efde9b525193d04613fb10dcd90c6",
       "shipped": true,
-      "size": 3437,
+      "size": 3816,
       "source": {},
       "status": "present",
       "transformations": [],
@@ -294,6 +308,18 @@
           "regions": [],
           "sha256": "sha256:1649a6acfbd64a2ad0e8a867d1476e79135e446d60a661aebe0160b7b88b953e",
           "size": 5245,
+          "source": {},
+          "transformations": [],
+          "usedBy": []
+        },
+        "sha256:71734792dccd480956b735ef1d433c7f8b7ce39a4b96f48717506c425970bc43": {
+          "generator": {},
+          "inputs": [],
+          "license": {},
+          "origin": "unknown",
+          "regions": [],
+          "sha256": "sha256:71734792dccd480956b735ef1d433c7f8b7ce39a4b96f48717506c425970bc43",
+          "size": 3437,
           "source": {},
           "transformations": [],
           "usedBy": []
@@ -1521,9 +1547,9 @@
         ]
       }
     ],
-    "pckSha256": "sha256:0ab7a683cf075b1a943c62f779e784b6cea0cfc3e7ad625339d56c33bc256a7f",
+    "pckSha256": "sha256:6fe338971a4cd8127f9114cc14abec6f36ef307799c121607342e7899138e385",
     "profile": "release",
-    "sourceFingerprint": "sha256:1f4ddf998d3c1968c7470f7a8acdf6ee087ff736d89da68ad78612e29e82774d"
+    "sourceFingerprint": "sha256:05a9c4e6ce77314ee042fed3c82c5dd2bc50ac0bb09bc1fcf335b91d0a16e282"
   },
   "procedures": {},
   "summary": {

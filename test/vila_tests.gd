@@ -415,6 +415,32 @@ func _adventure_tests(main: Node) -> void:
 	_check(adv.phase == 2 and adv.is_raining() and not adv.is_night(), "nível 3 é de dia com chuva")
 	_check(_count(adv, "coins") == 100 and _count(adv, "guns") == 10 and adv.darts_per_gun() == 10, "nível 3: 100 moedas e 10 lançadores com 10 dardos")
 	_check(_count(adv, "scorps", "amarelo") == 10 and _count(adv, "scorps", "vermelho") == 5, "nível 3: 10 amarelos e 5 vermelhos")
+	# Dificuldade por nível: dardos para matar, velocidade e coração.
+	var P: Array = Adventure.PHASES
+	_check(int(P[0]["hp_yellow"]) < int(P[2]["hp_yellow"]) or int(P[0]["hp_red"]) < int(P[2]["hp_red"]), "níveis difíceis pedem mais dardos")
+	_check(float(P[0]["speed"]) < float(P[1]["speed"]) and float(P[1]["speed"]) < float(P[2]["speed"]), "escorpiões ficam mais rápidos a cada nível")
+	_check(int(P[0]["heart_every"]) < int(P[2]["heart_every"]) and int(P[0]["heart_heal"]) > int(P[2]["heart_heal"]), "coração mais raro e fraco nos níveis difíceis")
+	var hp_ok := true
+	for scx: Scorpion in adv.get("_scorp_nodes"):
+		if scx.hp != adv.scorpion_hp(scx.kind) or absf(scx.speed_mult - float(P[2]["speed"])) > 0.001:
+			hp_ok = false
+	_check(hp_ok, "escorpiões do nível 3 têm vida e velocidade do nível")
+	adv.health = 50
+	adv.set("_kills_to_heart", 1)
+	var hearts_before := (adv.get("_heart_nodes") as Array).size()
+	adv._on_kill(player.position)
+	_check((adv.get("_heart_nodes") as Array).size() == hearts_before + 1, "coração aparece após as mortes necessárias")
+	adv._update_minimap()
+	var has_heart_dot := false
+	for d: Array in (main.get("_minimap") as Minimap).dots:
+		if String(d[1]) == "coracao":
+			has_heart_dot = true
+	_check(has_heart_dot, "minimapa mostra o coração")
+	adv._invuln = 99.0
+	adv.tick(0.016)
+	_check(adv.health == 50 + adv.heart_heal(), "coração recupera %d%% (%d)" % [adv.heart_heal(), adv.health])
+	_check((adv.get("_heart_nodes") as Array).size() == hearts_before, "coração some ao ser pego")
+	adv._invuln = 0.0
 	await process_frame
 	adv.health = 10
 	adv._stung("vermelho")

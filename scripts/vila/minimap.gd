@@ -98,6 +98,13 @@ func _marker(p: Vector2, kind: String, pulse: float = 0.0) -> void:
 			draw_circle(p, 3.4, dark)
 			draw_circle(p, 2.5, Color("ffd23a"))
 			draw_circle(p + Vector2(-0.7, -0.7), 0.9, Color("fff3b0"))
+		"coracao":
+			draw_circle(p + Vector2(-1.8, -1.0), 2.6, dark)
+			draw_circle(p + Vector2(1.8, -1.0), 2.6, dark)
+			draw_colored_polygon(PackedVector2Array([p + Vector2(-4.4, -0.4), p + Vector2(4.4, -0.4), p + Vector2(0, 4.6)]), dark)
+			draw_circle(p + Vector2(-1.8, -1.0), 1.9, Color("ff3b5c"))
+			draw_circle(p + Vector2(1.8, -1.0), 1.9, Color("ff3b5c"))
+			draw_colored_polygon(PackedVector2Array([p + Vector2(-3.6, -0.6), p + Vector2(3.6, -0.6), p + Vector2(0, 3.6)]), Color("ff3b5c"))
 		"arma":
 			var r := Rect2(p - Vector2(3.5, 3.5), Vector2(7, 7))
 			draw_rect(r.grow(1.0), Color(1, 1, 1, 0.95))

@@ -9,11 +9,14 @@ const SPAWN_POINTS := "res://assets/game/spawn_points.json"
 ## Nível 2: −50% moedas/escorpiões, +10% armas/dardos. Nível 3: quantidades originais do dia.
 const PHASES := [
 	{"name": "Nível 1 · Dia (fácil)", "short": "nível 1", "coins": 30, "yellow": 3, "red": 2, "guns": 13, "darts": 13,
-		"dmg_yellow": 5, "dmg_red": 10, "night": false, "rain": false, "speed": 1.0},
+		"dmg_yellow": 5, "dmg_red": 10, "night": false, "rain": false, "speed": 0.8,
+		"hp_yellow": 1, "hp_red": 2, "heart_every": 2, "heart_heal": 30},
 	{"name": "Nível 2 · Noite", "short": "nível 2", "coins": 50, "yellow": 8, "red": 5, "guns": 11, "darts": 11,
-		"dmg_yellow": 10, "dmg_red": 15, "night": true, "rain": false, "speed": 1.1},
+		"dmg_yellow": 10, "dmg_red": 15, "night": true, "rain": false, "speed": 1.0,
+		"hp_yellow": 2, "hp_red": 3, "heart_every": 3, "heart_heal": 20},
 	{"name": "Nível 3 · Dia com chuva", "short": "nível 3", "coins": 100, "yellow": 10, "red": 5, "guns": 10, "darts": 10,
-		"dmg_yellow": 10, "dmg_red": 15, "night": false, "rain": true, "speed": 1.1},
+		"dmg_yellow": 10, "dmg_red": 15, "night": false, "rain": true, "speed": 1.2,
+		"hp_yellow": 2, "hp_red": 4, "heart_every": 4, "heart_heal": 15},
 ]
 const FIRE_COOLDOWN := 0.28
 const AIM_RANGE := 260.0
@@ -30,6 +33,10 @@ var overlay_open := false
 var coins: Dictionary = {}
 var guns: Dictionary = {}
 var scorps: Dictionary = {}
+## Corações soltos por área (posições).
+var hearts: Dictionary = {}
+var _heart_nodes: Array = []
+var _kills_to_heart := 0
 var _points: Dictionary = {}
 var _darts_at_phase_start := 0
 var _coin_nodes: Array = []
@@ -74,6 +81,18 @@ func coins_goal() -> int:
 	return int(PHASES[phase]["coins"])
 
 
+func scorpion_hp(kind: String) -> int:
+	return int(PHASES[phase]["hp_yellow"] if kind == "amarelo" else PHASES[phase]["hp_red"])
+
+
+func heart_every() -> int:
+	return int(PHASES[phase]["heart_every"])
+
+
+func heart_heal() -> int:
+	return int(PHASES[phase]["heart_heal"])
+
+
 func darts_per_gun() -> int:
 	return int(PHASES[phase]["darts"])
 
@@ -91,6 +110,8 @@ func start_phase(idx: int) -> void:
 	health = 100
 	coins_got = 0
 	kills = 0
+	hearts = {}
+	_kills_to_heart = heart_every()
 	_darts_at_phase_start = darts
 	_invuln = 0.0
 	_place_everything()
@@ -230,11 +251,12 @@ func on_area_loaded() -> void:
 	for d: Dictionary in scorps.get(id, []):
 		var s := Scorpion.new()
 		s.setup(String(d["kind"]), main.walk_map, main._finder, main._player, float(PHASES[phase]["speed"]))
-		if d.has("hp"):
-			s.hp = int(d["hp"])
+		s.hp = int(d["hp"]) if d.has("hp") else scorpion_hp(String(d["kind"]))
 		s.position = d["pos"]
 		world.add_child(s)
 		_scorp_nodes.append(s)
+	for p: Vector2 in hearts.get(id, []):
+		_heart_nodes.append(_spawn_pickup("coracao", p, world))
 	_invuln = maxf(_invuln, 1.0)
 	_update_minimap()
 
@@ -248,7 +270,7 @@ func _spawn_pickup(kind: String, p: Vector2, world: Node2D) -> Pickup:
 
 
 func _clear_nodes() -> void:
-	for arr: Array in [_coin_nodes, _gun_nodes, _scorp_nodes, _dart_nodes]:
+	for arr: Array in [_coin_nodes, _gun_nodes, _scorp_nodes, _dart_nodes, _heart_nodes]:
 		for n: Node in arr:
 			if is_instance_valid(n):
 				n.queue_free()
@@ -287,6 +309,17 @@ func tick(delta: float) -> void:
 			darts += darts_per_gun()
 			_refresh_stats()
 			_show_toast("Lançador Nerf! +%d dardos (Espaço ou F para atirar)" % darts_per_gun() if not main.touch_mode else "Lançador Nerf! +%d dardos (botão Atirar)" % darts_per_gun())
+	# Corações
+	for i in range(_heart_nodes.size() - 1, -1, -1):
+		var h: Pickup = _heart_nodes[i]
+		if h.position.distance_to(player.position) < 14.0:
+			(hearts[id] as Array).erase(h.position)
+			h.queue_free()
+			_heart_nodes.remove_at(i)
+			var before := health
+			health = mini(100, health + heart_heal())
+			_refresh_stats()
+			_show_toast("Coração! +%d%% de vida" % (health - before) if health > before else "Coração! A vida já está cheia", 1.6)
 	# Escorpiões
 	var hidden: bool = main.is_occluded(player.position)
 	for s: Scorpion in _scorp_nodes:
@@ -307,11 +340,30 @@ func tick(delta: float) -> void:
 					s.queue_free()
 					_scorp_nodes.remove_at(j)
 					kills += 1
+					_on_kill(s.position)
 				break
 		if not alive:
 			d.queue_free()
 			_dart_nodes.remove_at(i)
 	_update_minimap()
+
+
+## Conta as mortes; a cada heart_every() escorpiões, aparece um coração onde caiu o último.
+func _on_kill(where: Vector2) -> void:
+	_kills_to_heart -= 1
+	if _kills_to_heart > 0:
+		return
+	_kills_to_heart = heart_every()
+	var id: String = main.current_area
+	var p: Vector2 = where
+	var wm: WalkMap = main.walk_map
+	if not wm.is_footprint_walkable(p, Walker.FOOT_HALF):
+		p = wm.nearest_walkable(p, Walker.FOOT_HALF)
+	if not hearts.has(id):
+		hearts[id] = []
+	(hearts[id] as Array).append(p)
+	_heart_nodes.append(_spawn_pickup("coracao", p, main._world))
+	_show_toast("Um coração apareceu! Pegue para recuperar %d%% de vida" % heart_heal(), 2.0)
 
 
 func _stung(kind: String) -> void:
@@ -578,9 +630,10 @@ func _phase_complete() -> void:
 	if phase + 1 < PHASES.size():
 		var nx: Dictionary = PHASES[phase + 1]
 		var extra := "A noite caiu no condomínio." if bool(nx["night"]) else ("Começou a chover." if bool(nx["rain"]) else "")
-		_phase_text.text = "Você juntou as %d moedas e eliminou %d escorpiões.\n%s Próximo: %s — %d moedas, %d escorpiões amarelos e %d vermelhos; picadas −%d%% e −%d%%; %d lançadores com %d dardos." % [
+		_phase_text.text = "Você juntou as %d moedas e eliminou %d escorpiões.\n%s Próximo: %s — %d moedas, %d escorpiões amarelos e %d vermelhos; picadas −%d%% e −%d%%; %d lançadores com %d dardos; amarelo cai com %d dardo(s) e vermelho com %d; coração a cada %d escorpiões (+%d%%)." % [
 			coins_goal(), kills, extra, String(nx["name"]), int(nx["coins"]), int(nx["yellow"]), int(nx["red"]),
-			int(nx["dmg_yellow"]), int(nx["dmg_red"]), int(nx["guns"]), int(nx["darts"])]
+			int(nx["dmg_yellow"]), int(nx["dmg_red"]), int(nx["guns"]), int(nx["darts"]),
+			int(nx["hp_yellow"]), int(nx["hp_red"]), int(nx["heart_every"]), int(nx["heart_heal"])]
 		_phase_button.text = "Começar o %s" % String(nx["short"])
 		_open_overlay(_phase_screen, _phase_button)
 	else:
@@ -639,6 +692,8 @@ func _update_minimap() -> void:
 		dots.append([c.position, "moeda"])
 	for g: Pickup in _gun_nodes:
 		dots.append([g.position, "arma"])
+	for h: Pickup in _heart_nodes:
+		dots.append([h.position, "coracao"])
 	for s: Scorpion in _scorp_nodes:
 		dots.append([s.position, s.kind])
 	var tc := 0
