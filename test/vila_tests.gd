@@ -34,29 +34,34 @@ func _run() -> void:
 		_check(cbuttons.has(cid), "dá para escolher " + cid)
 		(cbuttons[cid] as Button).pressed.emit()
 		_check(String(main.get("character")) == cid and player.sheet_path.ends_with(cid + ".png"), "jogar com %s usa o sprite certo" % cid)
+		var adv_direct: Adventure = main.get("adventure")
+		_check(not bool((main.get("_title_screen") as Control).visible) and not bool((main.get("_phase_box") as Control).visible) and adv_direct.phase == 0 and not adv_direct.is_night() and not adv_direct.is_raining(), "%s começa direto no nível 1" % cid)
 		main.call("_back_to_title")
 	(cbuttons["luiza"] as Button).pressed.emit()
 	_check(String(main.get("character")) == "luiza" and player.sheet_path.ends_with("luiza.png"), "jogar com Luiza usa a Luiza")
-	_check(not bool((main.get("_title_screen") as Control).visible), "escolher personagem inicia o jogo")
+	_check(bool((main.get("_title_screen") as Control).visible) and bool((main.get("_phase_box") as Control).visible) and not bool(main.get("_playing")), "Luiza escolhe a fase antes de começar")
+	var pbuttons: Array = main.get("_phase_buttons")
+	_check(pbuttons.size() == Adventure.PHASES.size(), "a escolha lista os níveis que existem")
+	for i: int in Adventure.PHASES.size():
+		_check(String((pbuttons[i] as Button).text) == String(Adventure.PHASES[i]["name"]), "botão da fase %d" % (i + 1))
+	(pbuttons[2] as Button).pressed.emit()
+	var adv_pick: Adventure = main.get("adventure")
+	_check(not bool((main.get("_title_screen") as Control).visible) and adv_pick.phase == 2 and adv_pick.is_raining() and not adv_pick.is_night(), "Luiza começa no nível 3 com chuva de dia")
 	main.call("_back_to_title")
 	(cbuttons["sophia"] as Button).pressed.emit()
-	_check(bool((main.get("_level_screen") as Control).visible), "Sophia abre a escolha de nível")
-	var lvb: Array = main.get("_level_buttons")
-	_check(lvb.size() == Adventure.PHASES.size(), "a escolha mostra os %d níveis" % Adventure.PHASES.size())
-	(lvb[2] as Button).pressed.emit()
-	var adv0: Adventure = main.get("adventure")
-	_check(adv0.phase == 2 and not bool((main.get("_level_screen") as Control).visible), "escolher o nível 3 começa no nível 3")
-	adv0.coins_got = 3
-	adv0.health = 40
+	_check(bool((main.get("_phase_box") as Control).visible) and String(main.get("character")) == "sophia", "Sophia também escolhe a fase")
+	(pbuttons[3] as Button).pressed.emit()
+	_check(adv_pick.phase == 3 and adv_pick.is_night() and adv_pick.is_raining(), "Sophia começa no nível 4 com noite e chuva")
+	adv_pick.coins_got = 3
+	adv_pick.health = 40
 	player.position += Vector2(30, 0)
 	main.call("_open_pause")
 	main.call("restart_phase")
-	_check(adv0.phase == 2 and adv0.coins_got == 0 and adv0.health == 100 and not bool(main.get("_paused")), "voltar ao início da fase recomeça o mesmo nível")
+	_check(adv_pick.phase == 3 and adv_pick.coins_got == 0 and adv_pick.health == 100 and not bool(main.get("_paused")), "voltar ao início da fase recomeça o mesmo nível")
 	main.call("_back_to_title")
 	(cbuttons["sophia"] as Button).pressed.emit()
-	(lvb[0] as Button).pressed.emit()
-	_check(adv0.phase == 0, "escolher o nível 1 começa no nível 1")
-	_check(String(main.get("character")) == "sophia" and player.sheet_path.ends_with("sophia.png"), "jogar com Sophia usa a Sophia")
+	(pbuttons[0] as Button).pressed.emit()
+	_check(String(main.get("character")) == "sophia" and player.sheet_path.ends_with("sophia.png") and adv_pick.phase == 0 and not adv_pick.is_night() and not adv_pick.is_raining(), "jogar com Sophia usa a Sophia no nível 1")
 
 	# Caminhar em cada direção nunca sai do passeio, e em pelo menos uma direção se move.
 	var total := 0.0
@@ -166,8 +171,26 @@ func _run() -> void:
 	await process_frame
 	var joy: TouchJoystick = main.get("_joystick")
 	_check(bool((main.get("_touch_layer") as Control).visible), "controles de toque visíveis")
-	var vs := root.get_visible_rect().size
-	var origin := Vector2(vs.x * 0.2, vs.y * 0.7)
+	var vs := joy.get_viewport_rect().size
+	var buttons: Dictionary = main.get("_touch_buttons")
+	var shoot_b: TouchButton = buttons["shoot"]
+	var weapon_b: TouchButton = buttons["weapon"]
+	_check(shoot_b.size == weapon_b.size and shoot_b.size == Vector2(124, 104), "Atirar e Trocar Arma do mesmo tamanho")
+	_check(mm.position.x <= 18.0 and mm.position.x + mm.size.x < vs.x * 0.5, "minimapa à esquerda no toque")
+	var weapon_r := Rect2(weapon_b.position, weapon_b.size)
+	var shoot_r := Rect2(shoot_b.position, shoot_b.size)
+	var mm_r := Rect2(mm.position, mm.size)
+	var joy_r := Rect2(vs.x - TouchJoystick.EDGE - TouchJoystick.RADIUS * 2.0, vs.y - TouchJoystick.EDGE - TouchJoystick.RADIUS * 2.0, TouchJoystick.RADIUS * 2.0, TouchJoystick.RADIUS * 2.0)
+	_check(weapon_r.end.x <= shoot_r.position.x - 16.0 and shoot_r.end.y <= mm_r.position.y - 20.0 and not weapon_r.intersects(mm_r) and not shoot_r.intersects(mm_r) and not weapon_r.intersects(joy_r) and not shoot_r.intersects(joy_r), "ações à esquerda, sem cobrir o minimapa nem o movimento")
+	var rest: Vector2 = joy.call("_rest_position")
+	_check(rest.x > vs.x * 0.5, "joystick descansa à direita")
+	var left := InputEventScreenTouch.new()
+	left.index = 1
+	left.position = Vector2(vs.x * 0.2, vs.y * 0.62)
+	left.pressed = true
+	joy._input(left)
+	_check(not joy.is_held(), "joystick ignora a metade esquerda")
+	var origin := Vector2(vs.x * 0.72, vs.y * 0.62)
 	var press := InputEventScreenTouch.new()
 	press.index = 0
 	press.position = origin

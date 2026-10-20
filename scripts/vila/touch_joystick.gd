@@ -1,6 +1,6 @@
 class_name TouchJoystick
 extends Control
-## Joystick virtual flutuante: toque na metade esquerda da tela e arraste.
+## Joystick virtual flutuante: toque na metade direita da tela e arraste.
 ## Empurrar até a borda ativa a corrida.
 
 signal touched
@@ -9,6 +9,8 @@ const RADIUS := 70.0
 const KNOB_RADIUS := 30.0
 const DEAD_ZONE := 0.15
 const RUN_THRESHOLD := 0.85
+## Folga entre a borda da tela e o círculo em repouso.
+const EDGE := 50.0
 
 var active := true
 var vector := Vector2.ZERO
@@ -26,7 +28,7 @@ func _ready() -> void:
 
 func _rest_position() -> Vector2:
 	var s := get_viewport_rect().size
-	return Vector2(RADIUS + 50.0, s.y - RADIUS - 50.0)
+	return Vector2(s.x - RADIUS - EDGE, s.y - RADIUS - EDGE)
 
 
 func _input(event: InputEvent) -> void:
@@ -52,8 +54,23 @@ func _input(event: InputEvent) -> void:
 
 func _accepts(pos: Vector2) -> bool:
 	var s := get_viewport_rect().size
-	# Metade esquerda, abaixo do HUD superior.
-	return pos.x < s.x * 0.5 and pos.y > 90.0
+	# Metade direita, abaixo do HUD superior, fora dos outros botões.
+	if pos.x < s.x * 0.5 or pos.y <= 90.0:
+		return false
+	return not _over_sibling(pos)
+
+
+func _over_sibling(pos: Vector2) -> bool:
+	var parent := get_parent()
+	if parent == null:
+		return false
+	for c in parent.get_children():
+		if c == self or not (c is Control):
+			continue
+		var control := c as Control
+		if control.visible and control.get_global_rect().has_point(pos):
+			return true
+	return false
 
 
 func _update_knob(pos: Vector2) -> void:

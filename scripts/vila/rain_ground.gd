@@ -21,9 +21,10 @@ func _draw() -> void:
 	for pud: Dictionary in puddles:
 		var c: Vector2 = pud["center"]
 		var r := float(pud["radius"])
-		draw_circle(c, r, Color(0.22, 0.42, 0.72, 0.38))
-		draw_arc(c, r, 0.0, TAU, 22, Color(0.75, 0.9, 1.0, 0.55), 1.6)
-		draw_circle(c + Vector2(-r * 0.25, -r * 0.2), r * 0.18, Color(0.85, 0.95, 1.0, 0.28))
+		draw_circle(c, r, Color(0.06, 0.28, 0.30, 0.92))
+		draw_circle(c, maxf(r - 2.0, r * 0.72), Color(0.18, 0.58, 0.56, 0.78))
+		var shine := clampf(r * 0.16, 1.2, 3.0)
+		draw_circle(c + Vector2(-r * 0.22, -r * 0.18), shine, Color(0.78, 0.95, 0.90, 0.72))
 	for d: Dictionary in drains:
 		var p: Vector2 = d["pos"]
 		var sealed := bool(d["sealed"])

@@ -14,6 +14,8 @@ const CHARACTERS := [
 ]
 const ZOOM_MIN := 1.25
 const ZOOM_MAX := 4.0
+## Trocar Arma e Atirar usam o mesmo retângulo no toque.
+const TOUCH_ACTION_SIZE := Vector2(124, 104)
 const ACCENT := Color("e9a15b")
 const PANEL_BG := Color(0.07, 0.09, 0.08, 0.88)
 
@@ -49,10 +51,12 @@ const FLOORS := {"condominio": 2}
 var _area_label: Label
 var character := "sophia"
 var _character_buttons: Dictionary = {}
-## Teste: ao escolher a Sophia, escolhe-se o nível.
-var _level_screen: Control
-var _level_buttons: Array[Button] = []
 var _char_grid: GridContainer
+var _char_block: VBoxContainer
+var _title_rules: Label
+var _phase_box: VBoxContainer
+var _phase_heading: Label
+var _phase_buttons: Array[Button] = []
 var _char_previews: Array[TextureRect] = []
 var touch_mode := false
 var _joystick: TouchJoystick
@@ -558,17 +562,21 @@ func _build_ui() -> void:
 	tbox.add_child(_label("ANIMA VILLAGE", 56, ACCENT))
 	tbox.add_child(_label("Junte as moedas espalhadas pelo condomínio e pelas ruas para passar de nível.", 20))
 	tbox.add_child(_label("Armas: Nerf (dardos), Super Soaker (molha e deixa lento) e Espalhadora (cinco dardos em leque).", 16, Color("cfd8c4")))
-	tbox.add_child(_label("Nível 1 · dia fácil: moedas, escorpiões e o Nerf. Nível 2 · noite: a lanterna ilumina pouco e entra a Espalhadora. Nível 3 · chuva de dia: poças deixam 30% mais lento, o chão bege e terracota escorrega (a grama não), dardos molhados perdem alcance, e sob a marquise ou a torre coberta não chove (+5% de vida). Uma capa de chuva. Nível 4 · noite de chuva: escorpiões saem dos ralos — tampe os bueiros. O relâmpago revela os escorpiões e o raio cai no círculo. A escada oeste leva às ruas.", 15, Color("cfd8c4")))
+	_title_rules = _label("Nível 1 · dia fácil: moedas, escorpiões e o Nerf. Nível 2 · noite: a lanterna ilumina pouco e entra a Espalhadora. Nível 3 · chuva de dia: poças deixam 30% mais lento, o chão bege e terracota escorrega (a grama não), dardos molhados perdem alcance, e sob a marquise ou a torre coberta não chove (+5% de vida). Uma capa de chuva. Nível 4 · noite de chuva: escorpiões saem dos ralos — tampe os bueiros. O relâmpago revela os escorpiões e o raio cai no círculo. A escada oeste leva às ruas.", 15, Color("cfd8c4"))
+	tbox.add_child(_title_rules)
 	_controls_label = _label("", 15, Color("cfd8c4"))
 	tbox.add_child(_controls_label)
-	tbox.add_child(_label("Escolha com quem jogar:", 20, ACCENT))
+	_char_block = VBoxContainer.new()
+	_char_block.add_theme_constant_override("separation", 16)
+	tbox.add_child(_char_block)
+	_char_block.add_child(_label("Escolha com quem jogar:", 20, ACCENT))
 	var row := GridContainer.new()
 	row.columns = 3
 	row.add_theme_constant_override("h_separation", 14)
 	row.add_theme_constant_override("v_separation", 10)
 	var grid_center := CenterContainer.new()
 	grid_center.add_child(row)
-	tbox.add_child(grid_center)
+	_char_block.add_child(grid_center)
 	_char_grid = row
 	for c: Dictionary in CHARACTERS:
 		var card := VBoxContainer.new()
@@ -589,32 +597,11 @@ func _build_ui() -> void:
 		var b := _make_button(String(c["name"]))
 		b.custom_minimum_size = Vector2(140, 46)
 		var cid := String(c["id"])
-		if cid == "sophia":
-			b.pressed.connect(_show_level_picker)
-		else:
-			b.pressed.connect(func() -> void: _start(cid))
+		b.pressed.connect(_on_title_character.bind(cid))
 		card.add_child(b)
 		_character_buttons[cid] = b
 	_start_button = _character_buttons["sophia"]
-	# Escolha de nível (modo de teste, só com a Sophia)
-	var lv := _centered_panel()
-	_level_screen = lv[0]
-	var lbox: VBoxContainer = lv[1]
-	lbox.add_child(_label("Sophia · modo de teste", 30, ACCENT))
-	lbox.add_child(_label("Escolha o nível para jogar:", 18, Color("cfd8c4")))
-	for i in Adventure.PHASES.size():
-		var lb := _make_button(String(Adventure.PHASES[i]["name"]))
-		lb.custom_minimum_size = Vector2(300, 44)
-		var li := i
-		lb.pressed.connect(func() -> void: _start("sophia", li))
-		lbox.add_child(lb)
-		_level_buttons.append(lb)
-	var lback := _make_button("Voltar")
-	lback.pressed.connect(func() -> void:
-		_level_screen.visible = false
-		_start_button.grab_focus())
-	lbox.add_child(lback)
-	_level_screen.visible = false
+	_build_phase_picker(tbox)
 
 	# Pausa
 	var p := _centered_panel()
@@ -671,11 +658,80 @@ func _build_ui() -> void:
 		move_child(_area_banner, get_child_count() - 1)
 
 
+func _build_phase_picker(tbox: VBoxContainer) -> void:
+	_phase_box = VBoxContainer.new()
+	_phase_box.alignment = BoxContainer.ALIGNMENT_CENTER
+	_phase_box.add_theme_constant_override("separation", 12)
+	_phase_box.visible = false
+	tbox.add_child(_phase_box)
+	_phase_heading = _label("Escolha a fase:", 20, ACCENT)
+	_phase_box.add_child(_phase_heading)
+	var previous: Button = null
+	for i: int in Adventure.PHASES.size():
+		var ph: Dictionary = Adventure.PHASES[i]
+		var pb := _make_button(String(ph["name"]))
+		pb.pressed.connect(_start_picked_phase.bind(i))
+		_phase_box.add_child(pb)
+		_phase_buttons.append(pb)
+		if previous != null:
+			previous.focus_neighbor_bottom = previous.get_path_to(pb)
+			pb.focus_neighbor_top = pb.get_path_to(previous)
+		previous = pb
+	var back := _make_button("Voltar")
+	back.pressed.connect(_close_phase_picker)
+	_phase_box.add_child(back)
+	if previous != null:
+		previous.focus_neighbor_bottom = previous.get_path_to(back)
+		back.focus_neighbor_top = back.get_path_to(previous)
+
+
+func _phase_picker_open() -> bool:
+	return _phase_box != null and _phase_box.visible and _title_screen != null and _title_screen.visible and not _playing
+
+
+func _set_phase_picker(on: bool) -> void:
+	if _phase_box == null:
+		return
+	_phase_box.visible = on
+	if _char_block != null:
+		_char_block.visible = not on
+	if _title_rules != null:
+		_title_rules.visible = not on
+	if _controls_label != null:
+		_controls_label.visible = not on
+
+
+func _open_phase_picker() -> void:
+	_phase_heading.text = "Escolha a fase — %s" % _character_name(character)
+	_set_phase_picker(true)
+	if not _phase_buttons.is_empty():
+		_phase_buttons[0].call_deferred("grab_focus")
+
+
+func _close_phase_picker() -> void:
+	_set_phase_picker(false)
+	var b: Button = _character_buttons.get(character) as Button
+	if b != null:
+		b.call_deferred("grab_focus")
+
+
+func _on_title_character(cid: String) -> void:
+	if cid == "sophia" or cid == "luiza":
+		select_character(cid)
+		_open_phase_picker()
+		return
+	_start(cid)
+
+
+func _start_picked_phase(idx: int) -> void:
+	_start(character, idx)
+
+
 func _update_hint() -> void:
 	var on := _paths_overlay != null and _paths_overlay.visible
 	var paths := "ligado" if on else "desligado"
 	if touch_mode:
-		_hint_label.text = "Toque onde quiser ir · Atirar: botão à direita"
+		_hint_label.text = "Toque onde quiser ir · Atirar: botão à esquerda"
 	else:
 		_hint_label.text = "Clique para andar · Espaço/F ou botão direito: atirar · 1/2/3 ou Q: arma · Shift correr · M caminhos (%s)" % paths
 	if _touch_buttons.has("paths"):
@@ -684,7 +740,7 @@ func _update_hint() -> void:
 		b.queue_redraw()
 	if _controls_label != null:
 		if touch_mode:
-			_controls_label.text = "No celular: toque no lugar para onde quer ir (no cenário ou no minimapa), ou arraste na metade esquerda da tela para andar. O botão Atirar mira no escorpião mais próximo."
+			_controls_label.text = "No celular: toque no lugar para onde quer ir (no cenário ou no minimapa), ou arraste na metade direita da tela para andar. O botão Atirar mira no escorpião mais próximo."
 		else:
 			_controls_label.text = "Clique no cenário ou no minimapa: andar  ·  Setas/WASD: andar  ·  Shift: correr\nEspaço ou F: atirar no escorpião mais próximo  ·  Botão direito: atirar para onde apontar\nM: caminhos  ·  Roda do mouse ou +/−: zoom  ·  Esc: pausar"
 
@@ -708,12 +764,12 @@ func _build_touch_ui() -> void:
 	(_touch_buttons["zoom_in"] as TouchButton).tapped.connect(func() -> void: _zoom_by(1.2))
 	(_touch_buttons["zoom_out"] as TouchButton).tapped.connect(func() -> void: _zoom_by(1.0 / 1.2))
 	(_touch_buttons["pause"] as TouchButton).tapped.connect(_open_pause)
-	var shoot := TouchButton.new("Atirar", Vector2(104, 104))
+	var shoot := TouchButton.new("Atirar", TOUCH_ACTION_SIZE)
 	shoot.font_size = 22
 	_touch_layer.add_child(shoot)
 	_touch_buttons["shoot"] = shoot
 	shoot.tapped.connect(func() -> void: adventure.shoot())
-	var swap_w := TouchButton.new("Trocar Arma", Vector2(124, 60))
+	var swap_w := TouchButton.new("Trocar Arma", TOUCH_ACTION_SIZE)
 	swap_w.font_size = 16
 	_touch_layer.add_child(swap_w)
 	_touch_buttons["weapon"] = swap_w
@@ -760,7 +816,10 @@ func _relayout() -> void:
 			b.custom_minimum_size = Vector2(btn_w, 46 if not narrow else 42)
 			b.add_theme_font_size_override("font_size", 22 if not narrow else 18)
 	if _minimap != null:
-		_minimap.position = vs - _minimap.size - Vector2(18, 18)
+		if touch_mode:
+			_minimap.position = Vector2(18.0, vs.y - _minimap.size.y - 18.0)
+		else:
+			_minimap.position = vs - _minimap.size - Vector2(18, 18)
 	_layout_touch_buttons(vs)
 	if adventure != null:
 		adventure.relayout(vs, 72.0 if touch_mode else 0.0)
@@ -772,6 +831,16 @@ func _layout_touch_buttons(vs: Vector2) -> void:
 	if _touch_buttons.is_empty():
 		return
 	var m := 24.0
+	if touch_mode:
+		_layout_mobile_controls(vs, m)
+	else:
+		_layout_desktop_controls(vs, m)
+	for b in _touch_buttons.values():
+		(b as TouchButton).queue_redraw()
+	_joystick.queue_redraw()
+
+
+func _layout_desktop_controls(vs: Vector2, m: float) -> void:
 	var ox := (_minimap.size.x + 16.0) if _minimap != null else 0.0
 	var paths: TouchButton = _touch_buttons["paths"]
 	var zin: TouchButton = _touch_buttons["zoom_in"]
@@ -788,9 +857,31 @@ func _layout_touch_buttons(vs: Vector2) -> void:
 		if _touch_buttons.has("weapon"):
 			var sw: TouchButton = _touch_buttons["weapon"]
 			sw.position = Vector2(shoot.position.x - 12 - sw.size.x, shoot.position.y + shoot.size.y - sw.size.y)
-	for b in _touch_buttons.values():
-		(b as TouchButton).queue_redraw()
-	_joystick.queue_redraw()
+
+
+## Toque: ações à esquerda, acima do minimapa; o joystick fica na direita.
+func _layout_mobile_controls(vs: Vector2, m: float) -> void:
+	var edge := 18.0
+	var gap := 16.0
+	var map_gap := 20.0
+	var weapon: TouchButton = _touch_buttons["weapon"]
+	var shoot: TouchButton = _touch_buttons["shoot"]
+	var mm_top := vs.y - edge
+	if _minimap != null:
+		mm_top = _minimap.position.y
+	var row_h := maxf(weapon.size.y, shoot.size.y)
+	var y := mm_top - map_gap - row_h
+	weapon.position = Vector2(edge, y + row_h - weapon.size.y)
+	shoot.position = Vector2(edge + weapon.size.x + gap, y + row_h - shoot.size.y)
+	var joy_top := vs.y - TouchJoystick.EDGE - TouchJoystick.RADIUS * 2.0
+	var paths: TouchButton = _touch_buttons["paths"]
+	var zin: TouchButton = _touch_buttons["zoom_in"]
+	var zout: TouchButton = _touch_buttons["zoom_out"]
+	var pause: TouchButton = _touch_buttons["pause"]
+	paths.position = Vector2(vs.x - m - paths.size.x, joy_top - m - paths.size.y)
+	zin.position = Vector2(vs.x - m - zin.size.x, paths.position.y - gap - zin.size.y)
+	zout.position = Vector2(zin.position.x - 14.0 - zout.size.x, zin.position.y)
+	pause.position = Vector2(vs.x - m - pause.size.x, m)
 
 
 func _refresh_touch_visibility() -> void:
@@ -831,18 +922,12 @@ func _show_title() -> void:
 	_paused = false
 	_title_screen.visible = true
 	_pause_screen.visible = false
-	if _level_screen != null:
-		_level_screen.visible = false
 	_hud.visible = false
 	_target_zoom = ZOOM_MIN
 	_camera.zoom = Vector2.ONE * ZOOM_MIN
+	_set_phase_picker(false)
 	_refresh_touch_visibility()
 	_start_button.call_deferred("grab_focus")
-
-
-func _show_level_picker() -> void:
-	_level_screen.visible = true
-	_level_buttons[0].call_deferred("grab_focus")
 
 
 ## Recomeça o nível atual do zero (moedas, vida e itens), voltando ao ponto de partida.
@@ -854,11 +939,10 @@ func restart_phase() -> void:
 	adventure.restart_phase()
 
 
-func _start(char_id: String = "", level: int = 0) -> void:
-	if _level_screen != null:
-		_level_screen.visible = false
+func _start(char_id: String = "", phase_idx: int = 0) -> void:
 	if char_id != "":
 		select_character(char_id)
+	_set_phase_picker(false)
 	_playing = true
 	_paused = false
 	_title_screen.visible = false
@@ -866,7 +950,7 @@ func _start(char_id: String = "", level: int = 0) -> void:
 	_hud.visible = true
 	_target_zoom = ZOOM_MIN
 	_camera.zoom = Vector2.ONE * ZOOM_MIN
-	adventure.new_game(level)
+	adventure.new_game(phase_idx)
 	_refresh_touch_visibility()
 
 
@@ -930,6 +1014,10 @@ func _input(event: InputEvent) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	if _phase_picker_open() and (event.is_action_pressed("ui_cancel") or event.is_action_pressed("pause")):
+		_close_phase_picker()
+		get_viewport().set_input_as_handled()
+		return
 	if event.is_action_pressed("pause"):
 		if _playing and not adventure.overlay_open:
 			if _paused:
@@ -942,6 +1030,11 @@ func _unhandled_input(event: InputEvent) -> void:
 		if event.is_action_pressed("ui_accept") and _title_screen.visible:
 			var focused := get_viewport().gui_get_focus_owner()
 			if focused is Button:
+				return
+			if _phase_picker_open():
+				if not _phase_buttons.is_empty():
+					_phase_buttons[0].grab_focus()
+				get_viewport().set_input_as_handled()
 				return
 			_start(character)
 			get_viewport().set_input_as_handled()

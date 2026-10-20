@@ -48,8 +48,9 @@ const COAT_DAMAGE := 0.5
 const SHELTER_HEAL := 5
 const SLIP_BRAKE := 95.0
 const PUDDLE_COUNT := 5
-const PUDDLE_START_R := 14.0
-const PUDDLE_MAX_R := 38.0
+## Começa menor e cresce até a largura do passeio. O teto absoluto fica abaixo do antigo 38.
+const PUDDLE_START_R := 10.0
+const PUDDLE_MAX_R := 22.0
 const PUDDLE_GROW := 1.8
 const DRAIN_COUNT := 3
 const DRAIN_INTERVAL := 8.0
@@ -173,14 +174,14 @@ func darts_per_gun() -> int:
 	return int(PHASES[phase]["darts"])
 
 
-func new_game(level: int = 0) -> void:
+func new_game(phase_idx: int = 0) -> void:
 	darts = 0
 	weapon = "nerf"
 	has_soaker = false
 	water = 0.0
 	has_spreader = false
 	cartridges = 0
-	start_phase(clampi(level, 0, PHASES.size() - 1))
+	start_phase(clampi(phase_idx, 0, PHASES.size() - 1))
 
 
 ## Volta ao início do nível atual, com os dardos que havia ao começar.
@@ -1152,6 +1153,16 @@ func _cull_sheltered_puddles(id: String) -> void:
 		puddles[id] = kept
 
 
+## Diâmetro no máximo a largura do passeio, e o disco não atravessa a máscara.
+## Teto absoluto: PUDDLE_MAX_R (22), menor que o antigo 38.
+func _puddle_cap(wm: WalkMap, p: Vector2) -> float:
+	var half := wm.path_width(p) * 0.5
+	var inside := wm.edge_clearance(p, minf(half, PUDDLE_MAX_R + 2.0))
+	var cap := minf(half, inside) - 1.0
+	var floor_r := minf(4.0, maxf(inside, 2.0))
+	return clampf(cap, floor_r, PUDDLE_MAX_R)
+
+
 func _place_rain() -> void:
 	puddles.clear()
 	coats.clear()
@@ -1177,9 +1188,13 @@ func _place_rain() -> void:
 			safe.append(Vector2(float(s[0]), float(s[1])))
 		var taken: Array[Vector2] = []
 		var spots: Array[Vector2] = _pick(pts, PUDDLE_COUNT, 90.0, taken, safe, 70.0)
+		var wm := WalkMap.new()
+		var have_mask := wm.load_mask(String((main.areas[id] as Dictionary)["walk"]))
 		var list: Array = []
 		for p: Vector2 in spots:
-			list.append({"center": p, "radius": PUDDLE_START_R, "max_radius": PUDDLE_MAX_R})
+			var cap := _puddle_cap(wm, p) if have_mask else PUDDLE_MAX_R
+			var start := minf(PUDDLE_START_R, cap * 0.65)
+			list.append({"center": p, "radius": start, "max_radius": cap})
 			taken.append(p)
 		puddles[id] = list
 		var coat_spots: Array[Vector2] = []

@@ -1,6 +1,7 @@
 class_name Minimap
 extends Control
-## Minimapa no canto inferior direito: caminhos da tela atual, saídas, personagem e destino.
+## Minimapa da tela atual: caminhos, saídas, personagem e destino.
+## A posição fica no canto inferior esquerdo no toque e no inferior direito no desktop.
 ## Clicar/tocar nele manda a personagem andar até o ponto.
 
 ## Clicar/tocar no minimapa pequeno pede o mapa em tela cheia.
