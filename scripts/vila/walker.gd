@@ -76,6 +76,22 @@ func step(direction: Vector2, running: bool, delta: float) -> Vector2:
 		var motion := dir * speed * delta
 		_try_axis(Vector2(motion.x, 0))
 		_try_axis(Vector2(0, motion.y))
+		if abs(motion.x) > 0.01 and abs(position.x - before.x) < abs(motion.x) * 0.3:
+			_nudge(Vector2(signf(motion.x), 0), motion.length())
+		if abs(motion.y) > 0.01 and abs(position.y - before.y) < abs(motion.y) * 0.3:
+			_nudge(Vector2(0, signf(motion.y)), motion.length())
+		var done := position - before
+		if done.length() < motion.length() * 0.6:
+			# Desliza ao longo de bordas inclinadas e contorna quinas em vez de travar.
+			var rest := motion - done
+			for ang: float in [0.5, -0.5, 0.95, -0.95, 1.35, -1.35]:
+				var alt := rest.rotated(ang)
+				var p0 := position
+				_try_axis(Vector2(alt.x, 0))
+				_try_axis(Vector2(0, alt.y))
+				if (position - p0).dot(rest.normalized()) > rest.length() * 0.05:
+					break
+				position = p0
 		if abs(direction.x) > abs(direction.y):
 			facing = "right" if direction.x > 0 else "left"
 		else:
@@ -87,6 +103,26 @@ func step(direction: Vector2, running: bool, delta: float) -> Vector2:
 	if _sprite != null:
 		_sprite.speed_scale = 1.6 if running else 1.0
 	return position - before
+
+
+## Correção de quina: bloqueado num eixo, procura uma brecha até 10 px para o lado e desliza até ela.
+func _nudge(axis: Vector2, amount: float) -> void:
+	if walk_map == null:
+		return
+	var side := Vector2(axis.y, axis.x)
+	for k in range(1, 11):
+		for sgn: float in [1.0, -1.0]:
+			var off := side * sgn * float(k)
+			if not walk_map.is_footprint_walkable(position + off + axis * 2.0, FOOT_HALF):
+				continue
+			var clear := true
+			for j in range(1, k + 1):
+				if not walk_map.is_footprint_walkable(position + side * sgn * float(j), FOOT_HALF):
+					clear = false
+					break
+			if clear:
+				_try_axis(side * sgn * minf(amount, float(k)))
+				return
 
 
 func _try_axis(motion: Vector2) -> void:

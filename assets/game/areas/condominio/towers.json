@@ -3,100 +3,100 @@
   "file": "tower_01.png",
   "x": 515,
   "y": 101,
-  "sort_y": 186,
+  "sort_y": 334,
   "foot_center": [
    606,
-   250
+   277
   ]
  },
  {
   "file": "tower_02.png",
   "x": 755,
   "y": 105,
-  "sort_y": 190,
+  "sort_y": 330,
   "foot_center": [
-   853,
-   257
+   859,
+   278
   ]
  },
  {
   "file": "tower_03.png",
   "x": 377,
   "y": 248,
-  "sort_y": 333,
+  "sort_y": 470,
   "foot_center": [
-   459,
-   403
+   453,
+   423
   ]
  },
  {
   "file": "tower_04.png",
   "x": 235,
   "y": 385,
-  "sort_y": 470,
+  "sort_y": 612,
   "foot_center": [
-   318,
-   545
+   316,
+   567
   ]
  },
  {
   "file": "tower_05.png",
   "x": 140,
   "y": 603,
-  "sort_y": 688,
+  "sort_y": 830,
   "foot_center": [
-   219,
-   759
+   228,
+   782
   ]
  },
  {
   "file": "tower_06.png",
   "x": 277,
   "y": 740,
-  "sort_y": 825,
+  "sort_y": 970,
   "foot_center": [
-   356,
-   897
+   359,
+   923
   ]
  },
  {
   "file": "tower_07.png",
   "x": 413,
   "y": 880,
-  "sort_y": 965,
+  "sort_y": 1110,
   "foot_center": [
-   500,
-   1045
+   504,
+   1068
   ]
  },
  {
   "file": "tower_08.png",
   "x": 650,
   "y": 895,
-  "sort_y": 980,
+  "sort_y": 1136,
   "foot_center": [
-   730,
-   1064
+   737,
+   1091
   ]
  },
  {
   "file": "tower_09.png",
   "x": 806,
   "y": 749,
-  "sort_y": 834,
+  "sort_y": 980,
   "foot_center": [
-   890,
-   908
+   891,
+   933
   ]
  },
  {
   "file": "tower_10.png",
   "x": 955,
   "y": 598,
-  "sort_y": 683,
+  "sort_y": 830,
   "foot_center": [
-   1055,
-   752
+   1060,
+   777
   ]
  }
 ]

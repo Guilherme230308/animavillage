@@ -105,9 +105,9 @@
       "used": false
     },
     "assets/game/areas/condominio/walk.png": {
-      "path": "/manus-storage/game/sha256/e43d19c87cbe527e74cbf957c29f9c3753540ab6f9998c96695b74720e374c28.png",
-      "sha256": "sha256:e43d19c87cbe527e74cbf957c29f9c3753540ab6f9998c96695b74720e374c28",
-      "size": 5029,
+      "path": "/manus-storage/game/sha256/1649a6acfbd64a2ad0e8a867d1476e79135e446d60a661aebe0160b7b88b953e.png",
+      "sha256": "sha256:1649a6acfbd64a2ad0e8a867d1476e79135e446d60a661aebe0160b7b88b953e",
+      "size": 5245,
       "assetType": "image",
       "groupId": "game",
       "used": true
@@ -121,25 +121,25 @@
       "used": true
     },
     "assets/game/areas/direita/walk.png": {
-      "path": "/manus-storage/game/sha256/ad07c1a08ba5bb1c7abf723ac74ee928a725507634a65a3dfc69e50238540519.png",
-      "sha256": "sha256:ad07c1a08ba5bb1c7abf723ac74ee928a725507634a65a3dfc69e50238540519",
-      "size": 2166,
+      "path": "/manus-storage/game/sha256/9d7e363b013663062e0f0f32a6bdefbc156ea1cc05eaa33a16d60454b0646fe9.png",
+      "sha256": "sha256:9d7e363b013663062e0f0f32a6bdefbc156ea1cc05eaa33a16d60454b0646fe9",
+      "size": 2149,
       "assetType": "image",
       "groupId": "game",
       "used": false
     },
     "assets/game/areas/estacionamento/bg.png": {
-      "path": "/manus-storage/game/sha256/2fdf8d403c7e752a7cb510c05843f3466fd1926d3e2d8b2a420c472765a3c144.png",
-      "sha256": "sha256:2fdf8d403c7e752a7cb510c05843f3466fd1926d3e2d8b2a420c472765a3c144",
-      "size": 7494856,
+      "path": "/manus-storage/game/sha256/edde6732e2674e4c88812f819f13cf036c4afa690c0a801406add0961501b5bf.png",
+      "sha256": "sha256:edde6732e2674e4c88812f819f13cf036c4afa690c0a801406add0961501b5bf",
+      "size": 7345329,
       "assetType": "image",
       "groupId": "game",
       "used": true
     },
     "assets/game/areas/estacionamento/walk.png": {
-      "path": "/manus-storage/game/sha256/65dea30d318d93fe75168547312961b296b75137c2b92c4db2200bce27db0f6c.png",
-      "sha256": "sha256:65dea30d318d93fe75168547312961b296b75137c2b92c4db2200bce27db0f6c",
-      "size": 2676,
+      "path": "/manus-storage/game/sha256/21db82110241028f67cb1518042263bdbc0346291df2c8f8f9b9a97ebd779882.png",
+      "sha256": "sha256:21db82110241028f67cb1518042263bdbc0346291df2c8f8f9b9a97ebd779882",
+      "size": 2685,
       "assetType": "image",
       "groupId": "game",
       "used": true
@@ -153,9 +153,9 @@
       "used": true
     },
     "assets/game/areas/fundos/walk.png": {
-      "path": "/manus-storage/game/sha256/a8a071b09b03c60d2edb85bca4a68add1716ad79519fc3ac58a80ebb00d2c3c1.png",
-      "sha256": "sha256:a8a071b09b03c60d2edb85bca4a68add1716ad79519fc3ac58a80ebb00d2c3c1",
-      "size": 2200,
+      "path": "/manus-storage/game/sha256/9d9a9335764bc83a89ae5948942988f3f75875a0b784b5e9484ec52e4d3e952c.png",
+      "sha256": "sha256:9d9a9335764bc83a89ae5948942988f3f75875a0b784b5e9484ec52e4d3e952c",
+      "size": 2232,
       "assetType": "image",
       "groupId": "game",
       "used": false
@@ -169,9 +169,9 @@
       "used": true
     },
     "assets/game/areas/oeste/walk.png": {
-      "path": "/manus-storage/game/sha256/a1420f9ef00927df2fcae2f11c4297b31e9dd592dd78e6951cb3e0262549ccd7.png",
-      "sha256": "sha256:a1420f9ef00927df2fcae2f11c4297b31e9dd592dd78e6951cb3e0262549ccd7",
-      "size": 2139,
+      "path": "/manus-storage/game/sha256/40837ce4269b864953d388f1e13cd4a46c369e20a8320e4aa5ce0a6e35eb67ad.png",
+      "sha256": "sha256:40837ce4269b864953d388f1e13cd4a46c369e20a8320e4aa5ce0a6e35eb67ad",
+      "size": 2136,
       "assetType": "image",
       "groupId": "game",
       "used": false

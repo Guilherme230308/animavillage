@@ -57,10 +57,14 @@ func _run() -> void:
 	# Torres: a base (prédio) bloqueia; o chão logo atrás é caminhável e fica escondido.
 	_check(not map.is_point_walkable(Vector2(700, 620)), "piscina bloqueada")
 	_check(not map.is_point_walkable(Vector2(30, 600)), "mata externa bloqueada")
-	for fc: Vector2 in [Vector2(596, 317), Vector2(845, 313), Vector2(451, 452), Vector2(309, 595), Vector2(232, 813), Vector2(357, 953), Vector2(507, 1093), Vector2(719, 1119), Vector2(874, 962), Vector2(1029, 813)]:
+	for fc: Vector2 in [Vector2(606, 277), Vector2(859, 278), Vector2(453, 423), Vector2(316, 567), Vector2(228, 782), Vector2(359, 923), Vector2(504, 1068), Vector2(737, 1091), Vector2(891, 933), Vector2(1060, 777)]:
 		_check(not map.is_point_walkable(fc), "base da torre bloqueia " + str(fc))
-	for mid: Vector2 in [Vector2(596, 260), Vector2(845, 260), Vector2(1029, 760), Vector2(232, 760)]:
-		_check(not map.is_point_walkable(mid), "não atravessa o meio da torre " + str(mid))
+	# Debaixo do telhado/fachada dá para andar, e a torre fica desenhada na frente.
+	var under := 0
+	for top: Vector2 in [Vector2(600, 150), Vector2(850, 150), Vector2(470, 300), Vector2(320, 450), Vector2(220, 660), Vector2(1050, 650)]:
+		if map.is_footprint_walkable(top, Walker.FOOT_HALF) and bool(main.call("is_occluded", top)):
+			under += 1
+	_check(under >= 4, "caminhos passam por baixo das torres, cobertos por elas (%d)" % under)
 	var behind := _first_walkable_behind(main, map)
 	_check(behind != Vector2.INF, "existe chão caminhável atrás de uma torre")
 	if behind != Vector2.INF:
@@ -95,6 +99,11 @@ func _run() -> void:
 			if e["to"] == order[i + 1]:
 				found = true
 		_check(found, "%s liga com %s" % [order[i], order[i + 1]])
+	# Caminhada real (mesmo movimento do jogador) até cada saída, trocando de tela.
+	for route: Array in [["condominio", "inicio", "oeste"], ["oeste", "escada", "estacionamento"], ["oeste", "escada", "fundos"],
+			["fundos", "norte", "direita"], ["direita", "oeste", "estacionamento"], ["estacionamento", "oeste", "direita"],
+			["estacionamento", "sul", "oeste"], ["direita", "norte", "fundos"], ["fundos", "leste", "oeste"], ["oeste", "leste", "condominio"]]:
+		_check(await _walk_route(main, route[0], route[1], route[2]), "caminhando: %s -> %s" % [route[0], route[2]])
 	main.call("load_area", "condominio", "inicio")
 	map = main.walk_map
 
@@ -210,3 +219,62 @@ func _reach_rect(map: WalkMap, from: Vector2, rect: Array) -> bool:
 				seen[n.y * map.width + n.x] = 1
 				queue.append(n)
 	return false
+
+
+## Traça a rota (A* simples em largura) até a saída e conduz a personagem com o movimento do jogo.
+func _walk_route(main: Node, from_area: String, spawn: String, to_area: String) -> bool:
+	main.call("load_area", from_area, spawn)
+	var areas: Dictionary = main.get("areas")
+	var exit_rect := Rect2()
+	for e: Dictionary in areas[from_area]["exits"]:
+		if e["to"] == to_area:
+			var r: Array = e["rect"]
+			exit_rect = Rect2(float(r[0]), float(r[1]), float(r[2]), float(r[3]))
+	if exit_rect.size == Vector2.ZERO:
+		return false
+	var map: WalkMap = main.walk_map
+	var player: Walker = main.get("_player")
+	var c := WalkMap.CELL
+	var start := Vector2i(int(player.position.x / c), int(player.position.y / c))
+	var prev := {}
+	prev[start] = start
+	var queue: Array[Vector2i] = [start]
+	var head := 0
+	var goal := Vector2i(-1, -1)
+	while head < queue.size():
+		var cur: Vector2i = queue[head]
+		head += 1
+		if exit_rect.grow(2.0).has_point(Vector2((cur.x + 0.5) * c, (cur.y + 0.5) * c)):
+			goal = cur
+			break
+		for dlt: Vector2i in [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]:
+			var n := cur + dlt
+			if prev.has(n) or not map.is_footprint_walkable(Vector2((n.x + 0.5) * c, (n.y + 0.5) * c), Walker.FOOT_HALF):
+				continue
+			prev[n] = cur
+			queue.append(n)
+	if goal.x < 0:
+		printerr("[route] sem rota %s/%s -> %s" % [from_area, spawn, to_area])
+		return false
+	var path: Array[Vector2] = []
+	var k := goal
+	while k != start:
+		path.push_front(Vector2((k.x + 0.5) * c, (k.y + 0.5) * c))
+		k = prev[k]
+	var i := 0
+	var guard := 0
+	while i < path.size() and guard < 20000:
+		guard += 1
+		if String(main.get("current_area")) != from_area:
+			break
+		var target: Vector2 = path[i]
+		var to := target - player.position
+		if to.length() < 2.5:
+			i += 1
+			continue
+		main.call("simulate_walk", to.normalized(), 1.0 / 60.0, false)
+	if String(main.get("current_area")) == from_area:
+		main.call("simulate_walk", (exit_rect.get_center() - player.position).normalized(), 0.5, false)
+	if String(main.get("current_area")) != to_area:
+		printerr("[route] travou %s/%s -> %s em %s (alvo %s, area %s, i=%d/%d)" % [from_area, spawn, to_area, player.position, exit_rect, main.get("current_area"), i, path.size()])
+	return String(main.get("current_area")) == to_area
