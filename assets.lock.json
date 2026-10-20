@@ -161,25 +161,25 @@
       "used": false
     },
     "assets/game/areas/estacionamento/bg.png": {
-      "path": "/manus-storage/game/sha256/d923f289fc917619e017be6785804cb8daee313038dcedc5f7f62fd2d0059678.png",
-      "sha256": "sha256:d923f289fc917619e017be6785804cb8daee313038dcedc5f7f62fd2d0059678",
-      "size": 5998149,
+      "path": "/manus-storage/game/sha256/48af7639a9f8c9bc8ab3ad400deb0f39cd302bdecd92eb791bb1b11ae5d9c502.png",
+      "sha256": "sha256:48af7639a9f8c9bc8ab3ad400deb0f39cd302bdecd92eb791bb1b11ae5d9c502",
+      "size": 7075534,
       "assetType": "image",
       "groupId": "game",
       "used": true
     },
     "assets/game/areas/estacionamento/minimap.png": {
-      "path": "/manus-storage/game/sha256/1f5e59cd2f5d9d3d3a0c5d9ef5f03f01c2cd0afd1c5159da71fc58ed529b9770.png",
-      "sha256": "sha256:1f5e59cd2f5d9d3d3a0c5d9ef5f03f01c2cd0afd1c5159da71fc58ed529b9770",
-      "size": 2542,
+      "path": "/manus-storage/game/sha256/bed3938ea6ff343dca7279b0e93a7364eda8b38a57a17117e6862005ad6057df.png",
+      "sha256": "sha256:bed3938ea6ff343dca7279b0e93a7364eda8b38a57a17117e6862005ad6057df",
+      "size": 2513,
       "assetType": "image",
       "groupId": "game",
       "used": false
     },
     "assets/game/areas/estacionamento/walk.png": {
-      "path": "/manus-storage/game/sha256/6209c1e9606158b0de411a07d057d196fd2345820fc469cf06a09ed9a025b655.png",
-      "sha256": "sha256:6209c1e9606158b0de411a07d057d196fd2345820fc469cf06a09ed9a025b655",
-      "size": 3743,
+      "path": "/manus-storage/game/sha256/aada1b3232bb34e698e7398105c7c64901fb1daaea7d285cbf0d6ec81a981e68.png",
+      "sha256": "sha256:aada1b3232bb34e698e7398105c7c64901fb1daaea7d285cbf0d6ec81a981e68",
+      "size": 4269,
       "assetType": "image",
       "groupId": "game",
       "used": true

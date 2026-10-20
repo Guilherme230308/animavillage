@@ -463,7 +463,7 @@ func _apply_night(on: bool) -> void:
 		tex.width = 256
 		tex.height = 256
 		_light.texture = tex
-		_light.texture_scale = 1.3
+		_light.texture_scale = 0.91  # 30% menor que o foco original (1.3)
 		_light.energy = 1.25
 		_light.position = Vector2(0, -10)
 		main._player.add_child(_light)
@@ -687,22 +687,43 @@ func _update_minimap() -> void:
 	var mm: Minimap = main._minimap
 	if mm == null:
 		return
+	var data := markers_for(String(main.current_area))
+	mm.dots = data["dots"]
+	mm.counts = data["counts"]
+	mm.show_legend = active
+
+
+## Marcadores e contagens de uma área (a atual usa os itens vivos; as outras, o estado salvo).
+func markers_for(id: String) -> Dictionary:
 	var dots: Array = []
-	for c: Pickup in _coin_nodes:
-		dots.append([c.position, "moeda"])
-	for g: Pickup in _gun_nodes:
-		dots.append([g.position, "arma"])
-	for h: Pickup in _heart_nodes:
-		dots.append([h.position, "coracao"])
-	for s: Scorpion in _scorp_nodes:
-		dots.append([s.position, s.kind])
+	var nc := 0
+	var ng := 0
+	var ns := 0
+	if id == String(main.current_area):
+		for c: Pickup in _coin_nodes:
+			dots.append([c.position, "moeda"])
+		for g: Pickup in _gun_nodes:
+			dots.append([g.position, "arma"])
+		for h: Pickup in _heart_nodes:
+			dots.append([h.position, "coracao"])
+		for sc: Scorpion in _scorp_nodes:
+			dots.append([sc.position, sc.kind])
+		nc = _coin_nodes.size(); ng = _gun_nodes.size(); ns = _scorp_nodes.size()
+	elif active:
+		for p: Vector2 in coins.get(id, []):
+			dots.append([p, "moeda"])
+		for p: Vector2 in guns.get(id, []):
+			dots.append([p, "arma"])
+		for p: Vector2 in hearts.get(id, []):
+			dots.append([p, "coracao"])
+		for d: Dictionary in scorps.get(id, []):
+			dots.append([d["pos"], String(d["kind"])])
+		nc = (coins.get(id, []) as Array).size(); ng = (guns.get(id, []) as Array).size(); ns = (scorps.get(id, []) as Array).size()
 	var tc := 0
 	var tg := 0
-	for id: String in coins:
-		tc += (coins[id] as Array).size()
-	for id: String in guns:
-		tg += (guns[id] as Array).size()
-	mm.counts = {"moeda": _coin_nodes.size(), "arma": _gun_nodes.size(), "escorpiao": _scorp_nodes.size(),
-		"moeda_total": tc, "arma_total": tg, "escorpiao_total": remaining_scorpions()}
-	mm.show_legend = active
-	mm.dots = dots
+	for a: String in coins:
+		tc += (coins[a] as Array).size()
+	for a: String in guns:
+		tg += (guns[a] as Array).size()
+	return {"dots": dots, "counts": {"moeda": nc, "arma": ng, "escorpiao": ns,
+		"moeda_total": tc, "arma_total": tg, "escorpiao_total": remaining_scorpions()}}

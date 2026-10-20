@@ -450,9 +450,9 @@
         "assets/game/areas.json"
       ],
       "regions": [],
-      "sha256": "sha256:d923f289fc917619e017be6785804cb8daee313038dcedc5f7f62fd2d0059678",
+      "sha256": "sha256:48af7639a9f8c9bc8ab3ad400deb0f39cd302bdecd92eb791bb1b11ae5d9c502",
       "shipped": true,
-      "size": 5998149,
+      "size": 7075534,
       "source": {},
       "status": "present",
       "transformations": [],
@@ -470,6 +470,18 @@
           "regions": [],
           "sha256": "sha256:2fdf8d403c7e752a7cb510c05843f3466fd1926d3e2d8b2a420c472765a3c144",
           "size": 7494856,
+          "source": {},
+          "transformations": [],
+          "usedBy": []
+        },
+        "sha256:d923f289fc917619e017be6785804cb8daee313038dcedc5f7f62fd2d0059678": {
+          "generator": {},
+          "inputs": [],
+          "license": {},
+          "origin": "unknown",
+          "regions": [],
+          "sha256": "sha256:d923f289fc917619e017be6785804cb8daee313038dcedc5f7f62fd2d0059678",
+          "size": 5998149,
           "source": {},
           "transformations": [],
           "usedBy": []
@@ -496,15 +508,29 @@
       "origin": "unknown",
       "referenceEvidence": [],
       "regions": [],
-      "sha256": "sha256:1f5e59cd2f5d9d3d3a0c5d9ef5f03f01c2cd0afd1c5159da71fc58ed529b9770",
+      "sha256": "sha256:bed3938ea6ff343dca7279b0e93a7364eda8b38a57a17117e6862005ad6057df",
       "shipped": true,
-      "size": 2542,
+      "size": 2513,
       "source": {},
       "status": "present",
       "transformations": [],
       "useEvidence": [],
       "used": false,
-      "usedBy": []
+      "usedBy": [],
+      "versions": {
+        "sha256:1f5e59cd2f5d9d3d3a0c5d9ef5f03f01c2cd0afd1c5159da71fc58ed529b9770": {
+          "generator": {},
+          "inputs": [],
+          "license": {},
+          "origin": "unknown",
+          "regions": [],
+          "sha256": "sha256:1f5e59cd2f5d9d3d3a0c5d9ef5f03f01c2cd0afd1c5159da71fc58ed529b9770",
+          "size": 2542,
+          "source": {},
+          "transformations": [],
+          "usedBy": []
+        }
+      }
     },
     "assets/game/areas/estacionamento/walk.png": {
       "declaredUseEvidence": [],
@@ -516,9 +542,9 @@
         "assets/game/areas.json"
       ],
       "regions": [],
-      "sha256": "sha256:6209c1e9606158b0de411a07d057d196fd2345820fc469cf06a09ed9a025b655",
+      "sha256": "sha256:aada1b3232bb34e698e7398105c7c64901fb1daaea7d285cbf0d6ec81a981e68",
       "shipped": true,
-      "size": 3743,
+      "size": 4269,
       "source": {},
       "status": "present",
       "transformations": [],
@@ -536,6 +562,18 @@
           "regions": [],
           "sha256": "sha256:21db82110241028f67cb1518042263bdbc0346291df2c8f8f9b9a97ebd779882",
           "size": 2685,
+          "source": {},
+          "transformations": [],
+          "usedBy": []
+        },
+        "sha256:6209c1e9606158b0de411a07d057d196fd2345820fc469cf06a09ed9a025b655": {
+          "generator": {},
+          "inputs": [],
+          "license": {},
+          "origin": "unknown",
+          "regions": [],
+          "sha256": "sha256:6209c1e9606158b0de411a07d057d196fd2345820fc469cf06a09ed9a025b655",
+          "size": 3743,
           "source": {},
           "transformations": [],
           "usedBy": []
@@ -1547,9 +1585,9 @@
         ]
       }
     ],
-    "pckSha256": "sha256:6fe338971a4cd8127f9114cc14abec6f36ef307799c121607342e7899138e385",
+    "pckSha256": "sha256:6e889bad534bfb6b42f4e0264ffe23b114ba1e024c765382c3219270d16b2156",
     "profile": "release",
-    "sourceFingerprint": "sha256:05a9c4e6ce77314ee042fed3c82c5dd2bc50ac0bb09bc1fcf335b91d0a16e282"
+    "sourceFingerprint": "sha256:10d4920a275937f0a2eb505b3ca43ee76dc001e2d8a1d7c1c1e0da8788ddf80e"
   },
   "procedures": {},
   "summary": {

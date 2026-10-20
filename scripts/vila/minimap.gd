@@ -3,9 +3,14 @@ extends Control
 ## Minimapa no canto inferior direito: caminhos da tela atual, saídas, personagem e destino.
 ## Clicar/tocar nele manda a personagem andar até o ponto.
 
-signal picked(world_pos: Vector2)
+## Clicar/tocar no minimapa pequeno pede o mapa em tela cheia.
+signal open_requested
 
-const MAX_SIDE := 200.0
+var max_side := 200.0
+## Falso no mapa em tela cheia (não abre outro mapa).
+var interactive := true
+## Tamanho dos marcadores (maior no mapa em tela cheia).
+var marker_scale := 1.0
 var world_size := Vector2(1, 1)
 var player_pos := Vector2.ZERO
 var target_pos := Vector2.INF
@@ -30,7 +35,7 @@ func set_area(tex: Texture2D, size_world: Vector2, area_exits: Array, area_title
 	world_size = size_world
 	exits = area_exits
 	title = area_title
-	var k := MAX_SIDE / maxf(size_world.x, size_world.y)
+	var k := max_side / maxf(size_world.x, size_world.y)
 	custom_minimum_size = (size_world * k).round() + Vector2(12, 34 + LEGEND_H)
 	size = custom_minimum_size
 	queue_redraw()
@@ -56,10 +61,8 @@ func _gui_input(event: InputEvent) -> void:
 		pos = event.position
 	elif event is InputEventScreenTouch and event.pressed:
 		pos = event.position
-	if pos != Vector2.INF:
-		var r := _map_rect()
-		if r.has_point(pos):
-			picked.emit((pos - r.position) / r.size * world_size)
+	if pos != Vector2.INF and interactive:
+		open_requested.emit()
 		accept_event()
 
 
@@ -85,6 +88,9 @@ func _draw() -> void:
 	var pulse := 0.5 + 0.5 * sin(_t * 5.0)
 	for d: Array in dots:
 		_marker(_to_map(d[0]), String(d[1]), pulse)
+	if not Rect2(Vector2.ZERO, world_size).has_point(player_pos):
+		_legend()
+		return
 	var pp := _to_map(player_pos)
 	draw_circle(pp, 5.5, Color(1, 1, 1, 0.9))
 	draw_circle(pp, 4.0, Color("e0433a"))
@@ -92,6 +98,8 @@ func _draw() -> void:
 
 
 func _marker(p: Vector2, kind: String, pulse: float = 0.0) -> void:
+	draw_set_transform(p, 0.0, Vector2.ONE * marker_scale)
+	p = Vector2.ZERO
 	var dark := Color(0.05, 0.04, 0.02, 0.9)
 	match kind:
 		"moeda":
@@ -118,6 +126,7 @@ func _marker(p: Vector2, kind: String, pulse: float = 0.0) -> void:
 			draw_colored_polygon(out, dark)
 			draw_colored_polygon(tri, col)
 
+	draw_set_transform(Vector2.ZERO)
 
 func _legend() -> void:
 	if not show_legend:

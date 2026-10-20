@@ -403,6 +403,8 @@ func _adventure_tests(main: Node) -> void:
 	_check(adv.overlay_open and (adv.get("_phase_screen") as Control).visible, "com todas as moedas o nível termina")
 	(adv.get("_phase_button") as Button).pressed.emit()
 	_check(adv.phase == 1 and adv.is_night() and not adv.is_raining(), "nível 2 é noturno")
+	var lt: PointLight2D = adv.get("_light")
+	_check(lt != null and absf(lt.texture_scale - 1.3 * 0.7) < 0.01, "lanterna 30%% menor (%.2f)" % (lt.texture_scale if lt != null else -1.0))
 	_check(_count(adv, "coins") == 50 and adv.health == 100, "nível 2: 50 moedas e vida cheia")
 	_check(_count(adv, "scorps", "amarelo") == 8 and _count(adv, "scorps", "vermelho") == 5, "nível 2: 8 amarelos e 5 vermelhos")
 	_check(_count(adv, "guns") == 11 and adv.darts_per_gun() == 11, "nível 2: 11 lançadores com 11 dardos")
@@ -453,5 +455,31 @@ func _adventure_tests(main: Node) -> void:
 	_check(mm.show_legend and int(mm.counts["moeda"]) == (adv.get("_coin_nodes") as Array).size(), "minimapa conta as moedas da tela")
 	_check(int(mm.counts["moeda_total"]) == _count(adv, "coins") and int(mm.counts["arma_total"]) == _count(adv, "guns"), "minimapa mostra o total do nível")
 	_check(mm.dots.size() == (adv.get("_coin_nodes") as Array).size() + (adv.get("_gun_nodes") as Array).size() + (adv.get("_scorp_nodes") as Array).size(), "minimapa marca moedas, Nerfs e escorpiões")
+	# Nome da tela e nova ligação estacionamento → rua direita.
+	_check(String(main.areas["condominio"]["title"]) == "Térreo", "tela principal se chama Térreo")
+	var ex_ok := false
+	for e: Dictionary in main.areas["estacionamento"]["exits"]:
+		if String(e["to"]) == "direita" and int((e["rect"] as Array)[1]) == 0 and int((e["rect"] as Array)[0]) > 450 and int((e["rect"] as Array)[0]) < 700:
+			ex_ok = true
+	_check(ex_ok, "estacionamento liga à rua direita pela borda de cima")
+	# Troca de personagem sem reiniciar.
+	adv.health = 70
+	var pos_before: Vector2 = player.position
+	var phase_before: int = adv.phase
+	var coins_before: int = adv.coins_got
+	main.swap_character("gabriel")
+	_check(String(main.character) == "gabriel" and adv.phase == phase_before and adv.health == 70 and adv.coins_got == coins_before and adv.active, "troca de personagem mantém o nível")
+	_check(player.position.distance_to(pos_before) < 0.1, "troca de personagem mantém a posição")
+	# Mapa em tela cheia.
+	adv.overlay_open = false
+	main.set("_paused", false)
+	main.open_map()
+	var ms: MapScreen = main.get("_map_screen")
+	_check(ms.is_open() and bool(main.get("_paused")), "clicar no minimapa abre o mapa em tela cheia e pausa")
+	ms.show_area("estacionamento")
+	var md: Dictionary = adv.markers_for("estacionamento")
+	_check(ms.current_tab() == "estacionamento" and (ms.get("_map") as Minimap).dots.size() == (md["dots"] as Array).size(), "mapa troca de cenário e mostra os itens dele")
+	ms.close()
+	_check(not ms.is_open() and not bool(main.get("_paused")), "Voltar fecha o mapa e retoma o jogo")
 	main.call("_back_to_title")
 	_check(not adv.is_night() and not adv.is_raining() and not adv.active, "voltar ao início desliga noite, chuva e o jogo")

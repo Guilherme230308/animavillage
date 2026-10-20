@@ -63,6 +63,8 @@ var _path_i := 0
 var _stuck_t := 0.0
 var _marker: Node2D
 var _minimap: Minimap
+var _map_screen: MapScreen
+var _swap_buttons: Dictionary = {}
 var adventure: Adventure
 
 
@@ -480,13 +482,32 @@ func _build_ui() -> void:
 	_resume_button = _make_button("Continuar")
 	_resume_button.pressed.connect(_resume)
 	pbox.add_child(_resume_button)
-	var restart := _make_button("Trocar personagem / início")
+	pbox.add_child(_label("Trocar de personagem (o nível continua):", 18, Color("cfd8c4")))
+	var swap := GridContainer.new()
+	swap.columns = 3
+	swap.add_theme_constant_override("h_separation", 8)
+	swap.add_theme_constant_override("v_separation", 8)
+	var swap_center := CenterContainer.new()
+	swap_center.add_child(swap)
+	pbox.add_child(swap_center)
+	for c: Dictionary in CHARACTERS:
+		var sb := _make_button(String(c["name"]))
+		sb.custom_minimum_size = Vector2(120, 40)
+		var sid := String(c["id"])
+		sb.pressed.connect(func() -> void: swap_character(sid))
+		swap.add_child(sb)
+		_swap_buttons[sid] = sb
+	var restart := _make_button("Voltar ao início")
 	restart.pressed.connect(_back_to_title)
 	pbox.add_child(restart)
 
 	_minimap = Minimap.new()
-	_minimap.picked.connect(func(wp: Vector2) -> void: go_to(wp))
+	_minimap.open_requested.connect(open_map)
 	add_child(_minimap)
+	_map_screen = MapScreen.new()
+	_map_screen.main = self
+	_map_screen.closed.connect(_on_map_closed)
+	add_child(_map_screen)
 	var a0: Dictionary = areas[current_area]
 	_minimap.set_area(load(String(a0["walk"]).get_base_dir() + "/minimap.png") as Texture2D,
 		(load(String(a0["bg"])) as Texture2D).get_size(), a0["exits"], String(a0["title"]))
@@ -644,6 +665,8 @@ func _open_pause() -> void:
 		return
 	_paused = true
 	_pause_screen.visible = true
+	for sid: String in _swap_buttons:
+		(_swap_buttons[sid] as Button).disabled = sid == character
 	_resume_button.grab_focus()
 	_refresh_touch_visibility()
 
@@ -678,6 +701,39 @@ func select_character(char_id: String) -> void:
 			character = char_id
 			_player.set_sheet(String(c["sheet"]))
 			return
+
+
+## Troca a personagem no meio do jogo, mantendo posição, vida, moedas e dardos.
+func swap_character(char_id: String) -> void:
+	var pos := _player.position
+	select_character(char_id)
+	_player.position = pos
+	if adventure != null and adventure.active:
+		adventure._show_toast("Agora você joga com %s" % _character_name(char_id), 1.6)
+	_resume()
+
+
+func _character_name(char_id: String) -> String:
+	for c: Dictionary in CHARACTERS:
+		if String(c["id"]) == char_id:
+			return String(c["name"])
+	return char_id
+
+
+func open_map() -> void:
+	if not _playing or _paused or _map_screen == null:
+		return
+	if adventure != null and adventure.overlay_open:
+		return
+	_paused = true
+	clear_move()
+	_map_screen.open()
+	_refresh_touch_visibility()
+
+
+func _on_map_closed() -> void:
+	_paused = false
+	_refresh_touch_visibility()
 
 
 func _resume() -> void:
