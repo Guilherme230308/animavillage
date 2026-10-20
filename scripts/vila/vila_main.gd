@@ -72,6 +72,8 @@ var _path_i := 0
 var _stuck_t := 0.0
 var _marker: Node2D
 var _minimap: Minimap
+## O quadrado de localização fica visível por este tempo e depois some.
+var _minimap_t := 0.0
 var _map_screen: MapScreen
 var _swap_buttons: Dictionary = {}
 var adventure: Adventure
@@ -182,6 +184,7 @@ func load_area(id: String, spawn: String) -> void:
 	if _minimap != null:
 		var mm_path := String(a["walk"]).get_base_dir() + "/minimap.png"
 		_minimap.set_area(load(mm_path) as Texture2D, size, a["exits"], String(a["title"]))
+		_show_location(3.0)
 		_relayout()
 	if _area_label != null:
 		_area_label.text = area_hud_text(id)
@@ -816,13 +819,16 @@ func _relayout() -> void:
 			b.custom_minimum_size = Vector2(btn_w, 46 if not narrow else 42)
 			b.add_theme_font_size_override("font_size", 22 if not narrow else 18)
 	if _minimap != null:
-		if touch_mode:
-			_minimap.position = Vector2(18.0, vs.y - _minimap.size.y - 18.0)
-		else:
-			_minimap.position = vs - _minimap.size - Vector2(18, 18)
-	_layout_touch_buttons(vs)
+		# Onde ficava o painel de vida e armas: canto superior direito.
+		var right_gap := 96.0 if touch_mode else 16.0
+		_minimap.position = Vector2(vs.x - _minimap.size.x - right_gap, 14.0)
+		if _hud != null:
+			var hud_rect := Rect2(_hud.position, _hud.get_combined_minimum_size())
+			if Rect2(_minimap.position, _minimap.size).intersects(hud_rect.grow(8.0)):
+				_minimap.position.y = hud_rect.end.y + 8.0
 	if adventure != null:
-		adventure.relayout(vs, 72.0 if touch_mode else 0.0)
+		adventure.relayout(vs, 0.0)
+	_layout_touch_buttons(vs)
 	_update_hint()
 	_refresh_touch_visibility()
 
@@ -852,28 +858,44 @@ func _layout_desktop_controls(vs: Vector2, m: float) -> void:
 	pause.position = Vector2(vs.x - m - pause.size.x, m)
 	if _touch_buttons.has("shoot"):
 		var shoot: TouchButton = _touch_buttons["shoot"]
-		var mm_top := (_minimap.position.y if _minimap != null else vs.y) - 16.0
-		shoot.position = Vector2(vs.x - m - shoot.size.x, mm_top - shoot.size.y)
+		var stats_top := vs.y - 16.0
+		if adventure != null and adventure._stats != null:
+			stats_top = adventure._stats.position.y
+		shoot.position = Vector2(vs.x - m - shoot.size.x, stats_top - 16.0 - shoot.size.y)
 		if _touch_buttons.has("weapon"):
 			var sw: TouchButton = _touch_buttons["weapon"]
 			sw.position = Vector2(shoot.position.x - 12 - sw.size.x, shoot.position.y + shoot.size.y - sw.size.y)
 
 
-## Toque: ações à esquerda, acima do minimapa; o joystick fica na direita.
+## Toque: Trocar Arma e Atirar ao lado do direcional, abaixo do quadrado de localização.
 func _layout_mobile_controls(vs: Vector2, m: float) -> void:
-	var edge := 18.0
 	var gap := 16.0
-	var map_gap := 20.0
 	var weapon: TouchButton = _touch_buttons["weapon"]
 	var shoot: TouchButton = _touch_buttons["shoot"]
-	var mm_top := vs.y - edge
+	var stick := Rect2(
+		vs.x - TouchJoystick.EDGE - TouchJoystick.RADIUS * 2.0,
+		vs.y - TouchJoystick.EDGE - TouchJoystick.RADIUS * 2.0,
+		TouchJoystick.RADIUS * 2.0,
+		TouchJoystick.RADIUS * 2.0)
+	var y := stick.position.y + (stick.size.y - weapon.size.y) * 0.5
+	var x := stick.position.x - gap - weapon.size.x - gap - shoot.size.x
+	weapon.position = Vector2(x, y)
+	shoot.position = Vector2(x + weapon.size.x + gap, y)
+	if adventure != null and adventure._stats != null:
+		var blocked := Rect2(adventure._stats.position, adventure._stats.size).grow(12.0)
+		while Rect2(weapon.position, weapon.size).intersects(blocked) or Rect2(shoot.position, shoot.size).intersects(blocked):
+			weapon.position.y -= 8.0
+			shoot.position.y -= 8.0
+			if weapon.position.y < 80.0:
+				break
 	if _minimap != null:
-		mm_top = _minimap.position.y
-	var row_h := maxf(weapon.size.y, shoot.size.y)
-	var y := mm_top - map_gap - row_h
-	weapon.position = Vector2(edge, y + row_h - weapon.size.y)
-	shoot.position = Vector2(edge + weapon.size.x + gap, y + row_h - shoot.size.y)
-	var joy_top := vs.y - TouchJoystick.EDGE - TouchJoystick.RADIUS * 2.0
+		var map_box := Rect2(_minimap.position, _minimap.size).grow(12.0)
+		while Rect2(weapon.position, weapon.size).intersects(map_box) or Rect2(shoot.position, shoot.size).intersects(map_box):
+			weapon.position.y += 8.0
+			shoot.position.y += 8.0
+			if weapon.position.y > vs.y - weapon.size.y - 8.0:
+				break
+	var joy_top := minf(stick.position.y, weapon.position.y)
 	var paths: TouchButton = _touch_buttons["paths"]
 	var zin: TouchButton = _touch_buttons["zoom_in"]
 	var zout: TouchButton = _touch_buttons["zoom_out"]
@@ -890,7 +912,7 @@ func _refresh_touch_visibility() -> void:
 	var overlay := adventure != null and adventure.overlay_open
 	_touch_layer.visible = touch_mode and _playing and not _paused and not overlay
 	if _minimap != null:
-		_minimap.visible = _playing and not _paused and not overlay
+		_minimap.visible = _playing and not _paused and not overlay and _minimap_t > 0.0
 	if adventure != null and adventure._stats != null:
 		adventure._stats.visible = _playing and adventure.active
 	if not _touch_layer.visible and _joystick != null:
@@ -951,6 +973,7 @@ func _start(char_id: String = "", phase_idx: int = 0) -> void:
 	_target_zoom = ZOOM_MIN
 	_camera.zoom = Vector2.ONE * ZOOM_MIN
 	adventure.new_game(phase_idx)
+	_show_location(3.0)
 	_refresh_touch_visibility()
 
 
@@ -1073,7 +1096,16 @@ func _unhandled_input(event: InputEvent) -> void:
 			_target_zoom = clamp(_target_zoom / 1.1, ZOOM_MIN, ZOOM_MAX)
 
 
+func _show_location(seconds: float) -> void:
+	_minimap_t = seconds
+	_refresh_touch_visibility()
+
+
 func _process(delta: float) -> void:
+	if _minimap_t > 0.0 and _playing and not _paused:
+		_minimap_t = maxf(_minimap_t - delta, 0.0)
+		if _minimap_t == 0.0 and _minimap != null:
+			_minimap.visible = false
 	if adventure != null:
 		var rmb := not touch_mode and Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT)
 		var tb = _touch_buttons.get("shoot")

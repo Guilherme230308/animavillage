@@ -1457,17 +1457,18 @@ func _show_toast(text: String, secs: float = 2.0) -> void:
 	_toast_tween.tween_property(_toast, "modulate:a", 0.0, 0.5)
 
 
-func relayout(vs: Vector2, top_right_reserved: float) -> void:
+func relayout(vs: Vector2, _top_right_reserved: float) -> void:
 	if _stats == null:
 		return
 	_stats.reset_size()
-	_stats.position = Vector2(vs.x - _stats.size.x - 16.0 - top_right_reserved, 14.0)
-	# Tela estreita: sem espaço ao lado da ajuda, fica logo abaixo dela.
+	# Troca com o quadrado de localização: vida e armas ficam onde o mapa ficava.
+	if main.touch_mode:
+		_stats.position = Vector2(18.0, vs.y - _stats.size.y - 18.0)
+	else:
+		_stats.position = vs - _stats.size - Vector2(18.0, 18.0)
 	var hud: Control = main._hud
 	var hud_rect := Rect2(hud.position, hud.get_combined_minimum_size())
-	if _stats.position.x < hud_rect.end.x + 8.0:
-		_stats.position = Vector2(16.0, hud_rect.end.y + 8.0)
-	_toast.offset_top = maxf(120.0, _stats.position.y + _stats.size.y + 14.0)
+	_toast.offset_top = maxf(120.0, hud_rect.end.y + 14.0)
 	_refresh_stats()
 
 

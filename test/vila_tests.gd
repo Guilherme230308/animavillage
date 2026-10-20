@@ -176,12 +176,13 @@ func _run() -> void:
 	var shoot_b: TouchButton = buttons["shoot"]
 	var weapon_b: TouchButton = buttons["weapon"]
 	_check(shoot_b.size == weapon_b.size and shoot_b.size == Vector2(124, 104), "Atirar e Trocar Arma do mesmo tamanho")
-	_check(mm.position.x <= 18.0 and mm.position.x + mm.size.x < vs.x * 0.5, "minimapa à esquerda no toque")
+	_check(mm.position.x + mm.size.x > vs.x * 0.75, "minimapa troca de lugar e fica à direita no toque")
 	var weapon_r := Rect2(weapon_b.position, weapon_b.size)
 	var shoot_r := Rect2(shoot_b.position, shoot_b.size)
 	var mm_r := Rect2(mm.position, mm.size)
 	var joy_r := Rect2(vs.x - TouchJoystick.EDGE - TouchJoystick.RADIUS * 2.0, vs.y - TouchJoystick.EDGE - TouchJoystick.RADIUS * 2.0, TouchJoystick.RADIUS * 2.0, TouchJoystick.RADIUS * 2.0)
-	_check(weapon_r.end.x <= shoot_r.position.x - 16.0 and shoot_r.end.y <= mm_r.position.y - 20.0 and not weapon_r.intersects(mm_r) and not shoot_r.intersects(mm_r) and not weapon_r.intersects(joy_r) and not shoot_r.intersects(joy_r), "ações à esquerda, sem cobrir o minimapa nem o movimento")
+	var beside := weapon_r.end.x <= joy_r.position.x - 12.0 and shoot_r.end.x <= joy_r.position.x - 12.0 and weapon_r.position.y < joy_r.end.y and shoot_r.end.y > joy_r.position.y
+	_check(beside and not weapon_r.intersects(mm_r) and not shoot_r.intersects(mm_r) and not weapon_r.intersects(joy_r) and not shoot_r.intersects(joy_r) and not weapon_r.intersects(shoot_r), "ações ao lado do direcional, sem se cobrir")
 	var rest: Vector2 = joy.call("_rest_position")
 	_check(rest.x > vs.x * 0.5, "joystick descansa à direita")
 	var left := InputEventScreenTouch.new()
