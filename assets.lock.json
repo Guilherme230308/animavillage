@@ -16,6 +16,22 @@
   },
   "bundles": {},
   "assets": {
+    "assets/game/antonio.png": {
+      "path": "/manus-storage/game/sha256/3459eac64caf8e78aa2b7433f1543f969da0c03704773f49adec9a55629e0667.png",
+      "sha256": "sha256:3459eac64caf8e78aa2b7433f1543f969da0c03704773f49adec9a55629e0667",
+      "size": 29177,
+      "assetType": "image",
+      "groupId": "game",
+      "used": true
+    },
+    "assets/game/antonio_hd.png": {
+      "path": "/manus-storage/game/sha256/70f81d9291b4f937c28d893026adb51aac620c63856dcd6d291bf6044e876b69.png",
+      "sha256": "sha256:70f81d9291b4f937c28d893026adb51aac620c63856dcd6d291bf6044e876b69",
+      "size": 204767,
+      "assetType": "image",
+      "groupId": "game",
+      "used": true
+    },
     "assets/game/areas/condominio/bg.png": {
       "path": "/manus-storage/game/sha256/7392a5e9f4eac0e85a72e0e071b45193b462476be97a2bde5ee7c709183a4483.png",
       "sha256": "sha256:7392a5e9f4eac0e85a72e0e071b45193b462476be97a2bde5ee7c709183a4483",
@@ -216,6 +232,38 @@
       "groupId": "game",
       "used": false
     },
+    "assets/game/gabriel.png": {
+      "path": "/manus-storage/game/sha256/0083f7cde356d8c4ffc51e1b82a81133bb5c8465f668a44c3f6c10521cfc732c.png",
+      "sha256": "sha256:0083f7cde356d8c4ffc51e1b82a81133bb5c8465f668a44c3f6c10521cfc732c",
+      "size": 27078,
+      "assetType": "image",
+      "groupId": "game",
+      "used": true
+    },
+    "assets/game/gabriel_hd.png": {
+      "path": "/manus-storage/game/sha256/8894100a2b778503837ebe4711d063ce848f827c23d7c66db92303d20f3bc8d1.png",
+      "sha256": "sha256:8894100a2b778503837ebe4711d063ce848f827c23d7c66db92303d20f3bc8d1",
+      "size": 182337,
+      "assetType": "image",
+      "groupId": "game",
+      "used": true
+    },
+    "assets/game/guilherme.png": {
+      "path": "/manus-storage/game/sha256/3b5c403fc1d37bef772e600c00928ab36afcd23e1facb857da78d3736ca5c8c5.png",
+      "sha256": "sha256:3b5c403fc1d37bef772e600c00928ab36afcd23e1facb857da78d3736ca5c8c5",
+      "size": 27516,
+      "assetType": "image",
+      "groupId": "game",
+      "used": true
+    },
+    "assets/game/guilherme_hd.png": {
+      "path": "/manus-storage/game/sha256/bc8f3292f695af1a1637e3236d22529b1aa67f2b177bd701a856871558c3e523.png",
+      "sha256": "sha256:bc8f3292f695af1a1637e3236d22529b1aa67f2b177bd701a856871558c3e523",
+      "size": 188645,
+      "assetType": "image",
+      "groupId": "game",
+      "used": true
+    },
     "assets/game/luiza.png": {
       "path": "/manus-storage/game/sha256/19e2c663af74e87eaa4745199d7cc580d8bdbdea0a56279ae93301c74b768b31.png",
       "sha256": "sha256:19e2c663af74e87eaa4745199d7cc580d8bdbdea0a56279ae93301c74b768b31",
@@ -268,6 +316,22 @@
       "path": "/manus-storage/game/sha256/dcba03da9e9e4c9152f45e1370fe634f5bd494c9c9e67a9df0f60149cf2f1113.png",
       "sha256": "sha256:dcba03da9e9e4c9152f45e1370fe634f5bd494c9c9e67a9df0f60149cf2f1113",
       "size": 210107,
+      "assetType": "image",
+      "groupId": "game",
+      "used": true
+    },
+    "assets/game/vini.png": {
+      "path": "/manus-storage/game/sha256/2817698c017f2e725daf582f4eeddb164f9a47e05a7d034c807051c3e3584260.png",
+      "sha256": "sha256:2817698c017f2e725daf582f4eeddb164f9a47e05a7d034c807051c3e3584260",
+      "size": 30224,
+      "assetType": "image",
+      "groupId": "game",
+      "used": true
+    },
+    "assets/game/vini_hd.png": {
+      "path": "/manus-storage/game/sha256/95340c0cdb47cef56d3efb447c9ff04e6b646fb4150261b848cb612fae928f42.png",
+      "sha256": "sha256:95340c0cdb47cef56d3efb447c9ff04e6b646fb4150261b848cb612fae928f42",
+      "size": 204663,
       "assetType": "image",
       "groupId": "game",
       "used": true

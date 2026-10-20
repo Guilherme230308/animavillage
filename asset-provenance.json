@@ -1,5 +1,49 @@
 {
   "assets": {
+    "assets/game/antonio.png": {
+      "declaredUseEvidence": [],
+      "generator": {},
+      "inputs": [],
+      "license": {},
+      "origin": "unknown",
+      "referenceEvidence": [
+        "scripts/vila/vila_main.gd"
+      ],
+      "regions": [],
+      "sha256": "sha256:3459eac64caf8e78aa2b7433f1543f969da0c03704773f49adec9a55629e0667",
+      "shipped": true,
+      "size": 29177,
+      "source": {},
+      "status": "present",
+      "transformations": [],
+      "useEvidence": [
+        "scripts/vila/vila_main.gd"
+      ],
+      "used": true,
+      "usedBy": []
+    },
+    "assets/game/antonio_hd.png": {
+      "declaredUseEvidence": [],
+      "generator": {},
+      "inputs": [],
+      "license": {},
+      "origin": "unknown",
+      "referenceEvidence": [
+        "scripts/vila/vila_main.gd"
+      ],
+      "regions": [],
+      "sha256": "sha256:70f81d9291b4f937c28d893026adb51aac620c63856dcd6d291bf6044e876b69",
+      "shipped": true,
+      "size": 204767,
+      "source": {},
+      "status": "present",
+      "transformations": [],
+      "useEvidence": [
+        "scripts/vila/vila_main.gd"
+      ],
+      "used": true,
+      "usedBy": []
+    },
     "assets/game/areas/condominio/bg.png": {
       "declaredUseEvidence": [],
       "generator": {},
@@ -700,6 +744,94 @@
         }
       }
     },
+    "assets/game/gabriel.png": {
+      "declaredUseEvidence": [],
+      "generator": {},
+      "inputs": [],
+      "license": {},
+      "origin": "unknown",
+      "referenceEvidence": [
+        "scripts/vila/vila_main.gd"
+      ],
+      "regions": [],
+      "sha256": "sha256:0083f7cde356d8c4ffc51e1b82a81133bb5c8465f668a44c3f6c10521cfc732c",
+      "shipped": true,
+      "size": 27078,
+      "source": {},
+      "status": "present",
+      "transformations": [],
+      "useEvidence": [
+        "scripts/vila/vila_main.gd"
+      ],
+      "used": true,
+      "usedBy": []
+    },
+    "assets/game/gabriel_hd.png": {
+      "declaredUseEvidence": [],
+      "generator": {},
+      "inputs": [],
+      "license": {},
+      "origin": "unknown",
+      "referenceEvidence": [
+        "scripts/vila/vila_main.gd"
+      ],
+      "regions": [],
+      "sha256": "sha256:8894100a2b778503837ebe4711d063ce848f827c23d7c66db92303d20f3bc8d1",
+      "shipped": true,
+      "size": 182337,
+      "source": {},
+      "status": "present",
+      "transformations": [],
+      "useEvidence": [
+        "scripts/vila/vila_main.gd"
+      ],
+      "used": true,
+      "usedBy": []
+    },
+    "assets/game/guilherme.png": {
+      "declaredUseEvidence": [],
+      "generator": {},
+      "inputs": [],
+      "license": {},
+      "origin": "unknown",
+      "referenceEvidence": [
+        "scripts/vila/vila_main.gd"
+      ],
+      "regions": [],
+      "sha256": "sha256:3b5c403fc1d37bef772e600c00928ab36afcd23e1facb857da78d3736ca5c8c5",
+      "shipped": true,
+      "size": 27516,
+      "source": {},
+      "status": "present",
+      "transformations": [],
+      "useEvidence": [
+        "scripts/vila/vila_main.gd"
+      ],
+      "used": true,
+      "usedBy": []
+    },
+    "assets/game/guilherme_hd.png": {
+      "declaredUseEvidence": [],
+      "generator": {},
+      "inputs": [],
+      "license": {},
+      "origin": "unknown",
+      "referenceEvidence": [
+        "scripts/vila/vila_main.gd"
+      ],
+      "regions": [],
+      "sha256": "sha256:bc8f3292f695af1a1637e3236d22529b1aa67f2b177bd701a856871558c3e523",
+      "shipped": true,
+      "size": 188645,
+      "source": {},
+      "status": "present",
+      "transformations": [],
+      "useEvidence": [
+        "scripts/vila/vila_main.gd"
+      ],
+      "used": true,
+      "usedBy": []
+    },
     "assets/game/luiza.png": {
       "declaredUseEvidence": [],
       "generator": {},
@@ -899,6 +1031,50 @@
       "sha256": "sha256:dcba03da9e9e4c9152f45e1370fe634f5bd494c9c9e67a9df0f60149cf2f1113",
       "shipped": true,
       "size": 210107,
+      "source": {},
+      "status": "present",
+      "transformations": [],
+      "useEvidence": [
+        "scripts/vila/vila_main.gd"
+      ],
+      "used": true,
+      "usedBy": []
+    },
+    "assets/game/vini.png": {
+      "declaredUseEvidence": [],
+      "generator": {},
+      "inputs": [],
+      "license": {},
+      "origin": "unknown",
+      "referenceEvidence": [
+        "scripts/vila/vila_main.gd"
+      ],
+      "regions": [],
+      "sha256": "sha256:2817698c017f2e725daf582f4eeddb164f9a47e05a7d034c807051c3e3584260",
+      "shipped": true,
+      "size": 30224,
+      "source": {},
+      "status": "present",
+      "transformations": [],
+      "useEvidence": [
+        "scripts/vila/vila_main.gd"
+      ],
+      "used": true,
+      "usedBy": []
+    },
+    "assets/game/vini_hd.png": {
+      "declaredUseEvidence": [],
+      "generator": {},
+      "inputs": [],
+      "license": {},
+      "origin": "unknown",
+      "referenceEvidence": [
+        "scripts/vila/vila_main.gd"
+      ],
+      "regions": [],
+      "sha256": "sha256:95340c0cdb47cef56d3efb447c9ff04e6b646fb4150261b848cb612fae928f42",
+      "shipped": true,
+      "size": 204663,
       "source": {},
       "status": "present",
       "transformations": [],
@@ -1345,9 +1521,9 @@
         ]
       }
     ],
-    "pckSha256": "sha256:4edfa1fde656e6eb5bd18e67fa7e29539ed3678cc2cf15b99921b7abd5103ef6",
+    "pckSha256": "sha256:204ce82f137e09a73b60c2ca949bed1b984b4118a6789b4febd47386fbfcc444",
     "profile": "release",
-    "sourceFingerprint": "sha256:9b39b0357a54826410f7d770a341d1d4440525c3fd59d310a581af37539248e2"
+    "sourceFingerprint": "sha256:7d39fce33df1bda79ae76a58869288619be577e658b731e1a6e67a0d8aee18a6"
   },
   "procedures": {},
   "summary": {
@@ -1380,9 +1556,9 @@
     },
     "files": {
       "downloaded": 0,
-      "retained": 50,
-      "shipped": 50,
-      "used": 22
+      "retained": 58,
+      "shipped": 58,
+      "used": 30
     },
     "origins": {
       "ai": {
@@ -1416,9 +1592,9 @@
         "used": 2
       },
       "unknown": {
-        "retained": 35,
-        "shipped": 35,
-        "used": 20
+        "retained": 43,
+        "shipped": 43,
+        "used": 28
       }
     },
     "packs": {

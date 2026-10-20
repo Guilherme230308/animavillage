@@ -7,6 +7,10 @@ const START_SPAWN := "inicio"
 const CHARACTERS := [
 	{"id": "sophia", "name": "Sophia", "sheet": "res://assets/game/sophia.png", "sheet_hd": "res://assets/game/sophia_hd.png"},
 	{"id": "luiza", "name": "Luiza", "sheet": "res://assets/game/luiza.png", "sheet_hd": "res://assets/game/luiza_hd.png"},
+	{"id": "antonio", "name": "Antônio", "sheet": "res://assets/game/antonio.png", "sheet_hd": "res://assets/game/antonio_hd.png"},
+	{"id": "gabriel", "name": "Gabriel", "sheet": "res://assets/game/gabriel.png", "sheet_hd": "res://assets/game/gabriel_hd.png"},
+	{"id": "vini", "name": "Vini", "sheet": "res://assets/game/vini.png", "sheet_hd": "res://assets/game/vini_hd.png"},
+	{"id": "guilherme", "name": "Guilherme", "sheet": "res://assets/game/guilherme.png", "sheet_hd": "res://assets/game/guilherme_hd.png"},
 ]
 const ZOOM_MIN := 1.25
 const ZOOM_MAX := 4.0
@@ -43,6 +47,8 @@ var _transitioning := false
 var _area_label: Label
 var character := "sophia"
 var _character_buttons: Dictionary = {}
+var _char_grid: GridContainer
+var _char_previews: Array[TextureRect] = []
 var touch_mode := false
 var _joystick: TouchJoystick
 var _touch_layer: Control
@@ -434,10 +440,14 @@ func _build_ui() -> void:
 	_controls_label = _label("", 15, Color("cfd8c4"))
 	tbox.add_child(_controls_label)
 	tbox.add_child(_label("Escolha com quem jogar:", 20, ACCENT))
-	var row := HBoxContainer.new()
-	row.alignment = BoxContainer.ALIGNMENT_CENTER
-	row.add_theme_constant_override("separation", 22)
-	tbox.add_child(row)
+	var row := GridContainer.new()
+	row.columns = 3
+	row.add_theme_constant_override("h_separation", 14)
+	row.add_theme_constant_override("v_separation", 10)
+	var grid_center := CenterContainer.new()
+	grid_center.add_child(row)
+	tbox.add_child(grid_center)
+	_char_grid = row
 	for c: Dictionary in CHARACTERS:
 		var card := VBoxContainer.new()
 		card.alignment = BoxContainer.ALIGNMENT_CENTER
@@ -453,8 +463,9 @@ func _build_ui() -> void:
 		prev.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		prev.custom_minimum_size = Vector2(Walker.HD_FRAME_W, Walker.HD_FRAME_H)
 		card.add_child(prev)
-		var b := _make_button("Jogar com " + String(c["name"]))
-		b.custom_minimum_size = Vector2(210, 52)
+		_char_previews.append(prev)
+		var b := _make_button(String(c["name"]))
+		b.custom_minimum_size = Vector2(140, 46)
 		var cid := String(c["id"])
 		b.pressed.connect(func() -> void: _start(cid))
 		card.add_child(b)
@@ -561,6 +572,20 @@ func _relayout() -> void:
 		if sb != null:
 			sb.set_content_margin_all(28.0 if vs.x > 700.0 else 16.0)
 	_hint_label.add_theme_font_size_override("font_size", 14 if vs.x < 700.0 else 16)
+	if _char_grid != null:
+		# Seis colunas na tela larga; três (em duas linhas) em tablet e celular.
+		var wide := vs.x >= 1000.0
+		_char_grid.columns = 6 if wide else 3
+		var narrow := vs.x < 600.0
+		var btn_w: float = 140.0 if not narrow else floorf((panel_w - 2.0 * 8.0) / 3.0)
+		var tall := vs.y < 760.0 and not wide
+		_char_grid.add_theme_constant_override("h_separation", 14 if not narrow else 8)
+		for prev in _char_previews:
+			var hgt: float = float(Walker.HD_FRAME_H) if not (narrow or tall) else 80.0
+			prev.custom_minimum_size = Vector2(Walker.HD_FRAME_W * hgt / Walker.HD_FRAME_H, hgt)
+		for b: Button in _character_buttons.values():
+			b.custom_minimum_size = Vector2(btn_w, 46 if not narrow else 42)
+			b.add_theme_font_size_override("font_size", 22 if not narrow else 18)
 	if _minimap != null:
 		_minimap.position = vs - _minimap.size - Vector2(18, 18)
 	_layout_touch_buttons(vs)

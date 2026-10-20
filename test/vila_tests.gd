@@ -30,6 +30,11 @@ func _run() -> void:
 	# Escolha de personagem.
 	var cbuttons: Dictionary = main.get("_character_buttons")
 	_check(cbuttons.has("sophia") and cbuttons.has("luiza"), "dá para escolher Sophia ou Luiza")
+	for cid: String in ["antonio", "gabriel", "vini", "guilherme"]:
+		_check(cbuttons.has(cid), "dá para escolher " + cid)
+		(cbuttons[cid] as Button).pressed.emit()
+		_check(String(main.get("character")) == cid and player.sheet_path.ends_with(cid + ".png"), "jogar com %s usa o sprite certo" % cid)
+		main.call("_back_to_title")
 	(cbuttons["luiza"] as Button).pressed.emit()
 	_check(String(main.get("character")) == "luiza" and player.sheet_path.ends_with("luiza.png"), "jogar com Luiza usa a Luiza")
 	_check(not bool((main.get("_title_screen") as Control).visible), "escolher personagem inicia o jogo")
