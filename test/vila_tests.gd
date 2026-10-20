@@ -165,10 +165,11 @@ func _run() -> void:
 	paths_btn.tapped.emit()
 	_check(bool((main.get("_paths_overlay") as Sprite2D).visible), "botão de caminhos funciona")
 
+	await _adventure_tests(main)
 	main.queue_free()
 	await process_frame
 	if _failures.is_empty():
-		print("[vila-tests] PASS: caminhada e colisões")
+		print("[vila-tests] PASS: caminhada, colisões e regras do jogo")
 		quit(0)
 	else:
 		print("[vila-tests] FAILED: %d" % _failures.size())
@@ -295,3 +296,118 @@ func _walk_route(main: Node, from_area: String, spawn: String, to_area: String) 
 	if String(main.get("current_area")) != to_area:
 		printerr("[route] travou %s/%s -> %s em %s (alvo %s, area %s, i=%d/%d)" % [from_area, spawn, to_area, player.position, exit_rect, main.get("current_area"), i, path.size()])
 	return String(main.get("current_area")) == to_area
+
+
+
+## Regras: moedas, armas, escorpiões, vida, tiros e fases.
+func _count(adv: Adventure, dict_name: String, kind: String = "") -> int:
+	var total := 0
+	var d: Dictionary = adv.get(dict_name)
+	for id: String in d:
+		for e: Variant in d[id]:
+			if kind == "" or String((e as Dictionary)["kind"]) == kind:
+				total += 1
+	return total
+
+
+func _adventure_tests(main: Node) -> void:
+	main.call("_back_to_title")
+	main.call("_start", "sophia")
+	await process_frame
+	var adv: Adventure = main.get("adventure")
+	var player: Walker = main.get("_player")
+	_check(adv.active and adv.phase == 0 and adv.health == 100, "fase 1 começa com 100% de vida")
+	_check(_count(adv, "coins") == 100, "100 moedas espalhadas (%d)" % _count(adv, "coins"))
+	_check(_count(adv, "guns") == 10, "10 lançadores espalhados")
+	_check(_count(adv, "scorps", "amarelo") == 10 and _count(adv, "scorps", "vermelho") == 5, "fase 1: 10 escorpiões amarelos e 5 vermelhos")
+	var areas_with_coins := 0
+	for id: String in adv.coins:
+		if (adv.coins[id] as Array).size() > 0:
+			areas_with_coins += 1
+	_check(areas_with_coins == 5, "moedas em todos os cenários")
+	var map: WalkMap = main.walk_map
+	var all_ok := true
+	for id: String in adv.coins:
+		var wm := WalkMap.new()
+		wm.load_mask(String((main.areas[id] as Dictionary)["walk"]))
+		for p: Vector2 in adv.coins[id]:
+			if not wm.is_footprint_walkable(p, Walker.FOOT_HALF):
+				all_ok = false
+	_check(all_ok, "moedas sempre sobre o caminho")
+	# Pegar uma arma: +10 dardos.
+	var area_with_gun := ""
+	for id: String in adv.guns:
+		if (adv.guns[id] as Array).size() > 0:
+			area_with_gun = id
+			break
+	main.call("load_area", area_with_gun, String(((main.areas[area_with_gun] as Dictionary)["spawns"] as Dictionary).keys()[0]))
+	await process_frame
+	var gp: Vector2 = (adv.guns[area_with_gun] as Array)[0]
+	player.position = gp
+	adv._invuln = 99.0
+	adv.tick(0.016)
+	_check(adv.darts == 10, "lançador dá 10 dardos (%d)" % adv.darts)
+	# Picadas: amarelo -5%, vermelho -10% na fase 1.
+	adv._stung("amarelo")
+	_check(adv.health == 95, "picada amarela tira 5%% (%d)" % adv.health)
+	adv._stung("vermelho")
+	_check(adv.health == 85, "picada vermelha tira 10%% (%d)" % adv.health)
+	# Escorpião persegue e pica.
+	var sc := Scorpion.new()
+	sc.setup("amarelo", map, main.get("_finder"), player, 1.0)
+	sc.position = player.position + Vector2(40, 0)
+	if not map.is_footprint_walkable(sc.position, Scorpion.HALF):
+		sc.position = player.position
+	main.get("_world").add_child(sc)
+	await process_frame
+	var stung := false
+	for i in 240:
+		if sc.tick(1.0 / 60.0, false):
+			stung = true
+			break
+	_check(sc.chasing, "escorpião persegue quando a personagem chega perto")
+	_check(stung, "escorpião alcança e pica")
+	sc.queue_free()
+	# Atirar: dardo elimina o escorpião mais próximo.
+	adv._invuln = 99.0
+	var before_kills := adv.kills
+	var target := Scorpion.new()
+	target.setup("amarelo", map, main.get("_finder"), player, 0.0)
+	target.position = player.position + Vector2(0, 30)
+	main.get("_world").add_child(target)
+	(adv.get("_scorp_nodes") as Array).append(target)
+	await process_frame
+	var darts_before := adv.darts
+	_check(adv.shoot(), "atirar com dardos disponíveis")
+	_check(adv.darts == darts_before - 1, "cada tiro gasta 1 dardo")
+	for i in 60:
+		adv.tick(1.0 / 60.0)
+	_check(adv.kills == before_kills + 1, "dardo elimina o escorpião amarelo")
+	adv.darts = 0
+	adv._fire_cd = 0.0
+	_check(not adv.shoot(), "sem dardos não atira")
+	# Coletar todas as moedas: fase 2 noturna.
+	adv.coins_got = 99
+	var area: String = main.current_area
+	var cp: Vector2
+	if (adv.coins[area] as Array).is_empty():
+		(adv.coins[area] as Array).append(player.position)
+		adv.on_area_loaded()
+	cp = (adv.coins[area] as Array)[0]
+	player.position = cp
+	adv.tick(0.016)
+	_check(adv.overlay_open and (adv.get("_phase_screen") as Control).visible, "com 100 moedas a fase termina")
+	adv.start_phase(1)
+	_check(_count(adv, "coins") == 100 and adv.health == 100, "fase 2: 100 moedas novas e vida cheia")
+	await process_frame
+	_check(adv.phase == 1 and adv.is_night(), "fase 2 é noturna")
+	_check(_count(adv, "scorps", "amarelo") == 15 and _count(adv, "scorps", "vermelho") == 10, "fase 2: 15 amarelos e 10 vermelhos")
+	adv._stung("amarelo")
+	_check(adv.health == 90, "fase 2: picada amarela tira 10%")
+	adv._stung("vermelho")
+	_check(adv.health == 75, "fase 2: picada vermelha tira 15%")
+	adv.health = 10
+	adv._stung("vermelho")
+	_check(adv.health == 0 and (adv.get("_over_screen") as Control).visible, "vida em 0% mostra fim de jogo")
+	main.call("_back_to_title")
+	_check(not adv.is_night() and not adv.active, "voltar ao início desliga a noite e o jogo")

@@ -232,6 +232,30 @@
       "groupId": "game",
       "used": true
     },
+    "assets/game/nerf.png": {
+      "path": "/manus-storage/game/sha256/6c4a46d47e27031e0798ed1bc84305087be0f77e5096db4f55bd82dafc12da1b.png",
+      "sha256": "sha256:6c4a46d47e27031e0798ed1bc84305087be0f77e5096db4f55bd82dafc12da1b",
+      "size": 802,
+      "assetType": "image",
+      "groupId": "game",
+      "used": true
+    },
+    "assets/game/nerf_hd.png": {
+      "path": "/manus-storage/game/sha256/011a3a00d97b46446c00e9ebd71a79035e942cdd1ae2d47f4805bacacb65c58b.png",
+      "sha256": "sha256:011a3a00d97b46446c00e9ebd71a79035e942cdd1ae2d47f4805bacacb65c58b",
+      "size": 4561,
+      "assetType": "image",
+      "groupId": "game",
+      "used": true
+    },
+    "assets/game/scorpions.png": {
+      "path": "/manus-storage/game/sha256/dfb00160fa5eb4aa7ca90bb8d4f68f6527486a4dd75b25ca73cf94254efe07b4.png",
+      "sha256": "sha256:dfb00160fa5eb4aa7ca90bb8d4f68f6527486a4dd75b25ca73cf94254efe07b4",
+      "size": 4004,
+      "assetType": "image",
+      "groupId": "game",
+      "used": true
+    },
     "assets/game/sophia.png": {
       "path": "/manus-storage/game/sha256/9fc59299651cdc022d8e8591921a118e39149ebd474a26bee06a1cfd89332cc0.png",
       "sha256": "sha256:9fc59299651cdc022d8e8591921a118e39149ebd474a26bee06a1cfd89332cc0",

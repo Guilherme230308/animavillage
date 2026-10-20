@@ -770,6 +770,72 @@
       "used": true,
       "usedBy": []
     },
+    "assets/game/nerf.png": {
+      "declaredUseEvidence": [],
+      "generator": {},
+      "inputs": [],
+      "license": {},
+      "origin": "unknown",
+      "referenceEvidence": [
+        "scripts/vila/pickup.gd"
+      ],
+      "regions": [],
+      "sha256": "sha256:6c4a46d47e27031e0798ed1bc84305087be0f77e5096db4f55bd82dafc12da1b",
+      "shipped": true,
+      "size": 802,
+      "source": {},
+      "status": "present",
+      "transformations": [],
+      "useEvidence": [
+        "scripts/vila/pickup.gd"
+      ],
+      "used": true,
+      "usedBy": []
+    },
+    "assets/game/nerf_hd.png": {
+      "declaredUseEvidence": [],
+      "generator": {},
+      "inputs": [],
+      "license": {},
+      "origin": "unknown",
+      "referenceEvidence": [
+        "scripts/vila/adventure.gd"
+      ],
+      "regions": [],
+      "sha256": "sha256:011a3a00d97b46446c00e9ebd71a79035e942cdd1ae2d47f4805bacacb65c58b",
+      "shipped": true,
+      "size": 4561,
+      "source": {},
+      "status": "present",
+      "transformations": [],
+      "useEvidence": [
+        "scripts/vila/adventure.gd"
+      ],
+      "used": true,
+      "usedBy": []
+    },
+    "assets/game/scorpions.png": {
+      "declaredUseEvidence": [],
+      "generator": {},
+      "inputs": [],
+      "license": {},
+      "origin": "unknown",
+      "referenceEvidence": [
+        "scripts/vila/scorpion.gd"
+      ],
+      "regions": [],
+      "sha256": "sha256:dfb00160fa5eb4aa7ca90bb8d4f68f6527486a4dd75b25ca73cf94254efe07b4",
+      "shipped": true,
+      "size": 4004,
+      "source": {},
+      "status": "present",
+      "transformations": [],
+      "useEvidence": [
+        "scripts/vila/scorpion.gd"
+      ],
+      "used": true,
+      "usedBy": []
+    },
     "assets/game/sophia.png": {
       "declaredUseEvidence": [],
       "generator": {},
@@ -1279,9 +1345,9 @@
         ]
       }
     ],
-    "pckSha256": "sha256:7aca1a0d0f0a8dbc5343641da39f3a5e6778d9539369bdf67ab303779cb360bd",
+    "pckSha256": "sha256:4edfa1fde656e6eb5bd18e67fa7e29539ed3678cc2cf15b99921b7abd5103ef6",
     "profile": "release",
-    "sourceFingerprint": "sha256:53ed51abcde1e61368119c7d0ad727f8f7c2b9bd15bb7391ebcddea828b5af83"
+    "sourceFingerprint": "sha256:9b39b0357a54826410f7d770a341d1d4440525c3fd59d310a581af37539248e2"
   },
   "procedures": {},
   "summary": {
@@ -1314,9 +1380,9 @@
     },
     "files": {
       "downloaded": 0,
-      "retained": 47,
-      "shipped": 47,
-      "used": 19
+      "retained": 50,
+      "shipped": 50,
+      "used": 22
     },
     "origins": {
       "ai": {
@@ -1350,9 +1416,9 @@
         "used": 2
       },
       "unknown": {
-        "retained": 32,
-        "shipped": 32,
-        "used": 17
+        "retained": 35,
+        "shipped": 35,
+        "used": 20
       }
     },
     "packs": {

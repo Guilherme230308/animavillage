@@ -57,6 +57,7 @@ var _path_i := 0
 var _stuck_t := 0.0
 var _marker: Node2D
 var _minimap: Minimap
+var adventure: Adventure
 
 
 func _ready() -> void:
@@ -66,13 +67,16 @@ func _ready() -> void:
 	touch_mode = DisplayServer.is_touchscreen_available()
 	_build_ui()
 	_build_touch_ui()
+	adventure = Adventure.new()
+	adventure.main = self
+	add_child(adventure)
 	get_tree().root.size_changed.connect(_relayout)
 	_relayout()
 	_show_title()
 
 
 func _ensure_actions() -> void:
-	var extra := {"run": [KEY_SHIFT], "toggle_paths": [KEY_M], "zoom_in": [KEY_EQUAL, KEY_KP_ADD], "zoom_out": [KEY_MINUS, KEY_KP_SUBTRACT]}
+	var extra := {"shoot": [KEY_SPACE, KEY_F], "run": [KEY_SHIFT], "toggle_paths": [KEY_M], "zoom_in": [KEY_EQUAL, KEY_KP_ADD], "zoom_out": [KEY_MINUS, KEY_KP_SUBTRACT]}
 	for action: String in extra:
 		if not InputMap.has_action(action):
 			InputMap.add_action(action)
@@ -117,6 +121,8 @@ func _build_world() -> void:
 ## Troca a tela atual: cenário, máscara de caminhos, torres e posição de chegada.
 func load_area(id: String, spawn: String) -> void:
 	var a: Dictionary = areas[id]
+	if adventure != null:
+		adventure.on_area_leaving()
 	for n in _area_nodes:
 		n.queue_free()
 	_area_nodes.clear()
@@ -159,6 +165,15 @@ func load_area(id: String, spawn: String) -> void:
 		_area_label.text = String(a["title"])
 	if _hint_label != null:
 		_update_hint()
+	if adventure != null:
+		adventure.on_area_loaded()
+
+
+## Garante o buscador de rotas da tela atual (clique para andar e escorpiões).
+func ensure_finder() -> void:
+	if _finder_area != current_area:
+		_finder.build(walk_map)
+		_finder_area = current_area
 
 
 ## Placa no chão de cada saída: seta para fora e o nome da tela seguinte.
@@ -414,8 +429,8 @@ func _build_ui() -> void:
 	_title_screen = t[0]
 	var tbox: VBoxContainer = t[1]
 	tbox.add_child(_label("ANIMA VILLAGE", 56, ACCENT))
-	tbox.add_child(_label("Passeie pelo condomínio em pixel art.", 20))
-	tbox.add_child(_label("Os caminhos seguem os passeios reais da imagem e passam por trás das torres. Desça a escada do lado oeste para sair à rua: a rua lateral das quadras, a rua dos fundos, a rua lateral direita e o estacionamento são telas próprias.", 16, Color("cfd8c4")))
+	tbox.add_child(_label("Junte as 100 moedas espalhadas pelo condomínio e pelas ruas.", 20))
+	tbox.add_child(_label("Cuidado com os escorpiões: os amarelos tiram 5% da vida e os vermelhos 10%. Pegue os lançadores Nerf (10 dardos cada) para se defender. Com todas as moedas, começa a fase 2, à noite, com mais escorpiões e picadas mais fortes. Desça a escada do lado oeste para ir às ruas e ao estacionamento.", 16, Color("cfd8c4")))
 	_controls_label = _label("", 15, Color("cfd8c4"))
 	tbox.add_child(_controls_label)
 	tbox.add_child(_label("Escolha com quem jogar:", 20, ACCENT))
@@ -481,18 +496,18 @@ func _update_hint() -> void:
 	var on := _paths_overlay != null and _paths_overlay.visible
 	var paths := "ligado" if on else "desligado"
 	if touch_mode:
-		_hint_label.text = "Toque onde quiser ir · ou arraste à esquerda"
+		_hint_label.text = "Toque onde quiser ir · Atirar: botão à direita"
 	else:
-		_hint_label.text = "Clique para andar · Setas/WASD · Shift correr · M caminhos (%s) · Esc" % paths
+		_hint_label.text = "Clique para andar · Espaço/F ou botão direito: atirar · Shift correr · M caminhos (%s)" % paths
 	if _touch_buttons.has("paths"):
 		var b: TouchButton = _touch_buttons["paths"]
 		b.text = "Ocultar" if on else "Caminhos"
 		b.queue_redraw()
 	if _controls_label != null:
 		if touch_mode:
-			_controls_label.text = "No celular: toque no lugar para onde quer ir (no cenário ou no minimapa), ou arraste na metade esquerda da tela para andar. Use os botões à direita para mostrar os caminhos, aproximar ou afastar, e pausar."
+			_controls_label.text = "No celular: toque no lugar para onde quer ir (no cenário ou no minimapa), ou arraste na metade esquerda da tela para andar. O botão Atirar mira no escorpião mais próximo."
 		else:
-			_controls_label.text = "Clique no cenário ou no minimapa: andar até lá  ·  Setas ou WASD: andar  ·  Shift: correr\nM: mostrar caminhos  ·  Roda do mouse ou +/−: zoom  ·  Esc: pausar"
+			_controls_label.text = "Clique no cenário ou no minimapa: andar  ·  Setas/WASD: andar  ·  Shift: correr\nEspaço ou F: atirar no escorpião mais próximo  ·  Botão direito: atirar para onde apontar\nM: caminhos  ·  Roda do mouse ou +/−: zoom  ·  Esc: pausar"
 
 
 func _build_touch_ui() -> void:
@@ -514,6 +529,11 @@ func _build_touch_ui() -> void:
 	(_touch_buttons["zoom_in"] as TouchButton).tapped.connect(func() -> void: _zoom_by(1.2))
 	(_touch_buttons["zoom_out"] as TouchButton).tapped.connect(func() -> void: _zoom_by(1.0 / 1.2))
 	(_touch_buttons["pause"] as TouchButton).tapped.connect(_open_pause)
+	var shoot := TouchButton.new("Atirar", Vector2(104, 104))
+	shoot.font_size = 22
+	_touch_layer.add_child(shoot)
+	_touch_buttons["shoot"] = shoot
+	shoot.tapped.connect(func() -> void: adventure.shoot())
 
 
 func _enable_touch_mode() -> void:
@@ -544,6 +564,8 @@ func _relayout() -> void:
 	if _minimap != null:
 		_minimap.position = vs - _minimap.size - Vector2(18, 18)
 	_layout_touch_buttons(vs)
+	if adventure != null:
+		adventure.relayout(vs, 72.0 if touch_mode else 0.0)
 	_update_hint()
 	_refresh_touch_visibility()
 
@@ -561,6 +583,10 @@ func _layout_touch_buttons(vs: Vector2) -> void:
 	zin.position = Vector2(vs.x - m - ox - zin.size.x, paths.position.y - 16 - zin.size.y)
 	zout.position = Vector2(zin.position.x - 14 - zout.size.x, zin.position.y)
 	pause.position = Vector2(vs.x - m - pause.size.x, m)
+	if _touch_buttons.has("shoot"):
+		var shoot: TouchButton = _touch_buttons["shoot"]
+		var mm_top := (_minimap.position.y if _minimap != null else vs.y) - 16.0
+		shoot.position = Vector2(vs.x - m - shoot.size.x, mm_top - shoot.size.y)
 	for b in _touch_buttons.values():
 		(b as TouchButton).queue_redraw()
 	_joystick.queue_redraw()
@@ -569,9 +595,12 @@ func _layout_touch_buttons(vs: Vector2) -> void:
 func _refresh_touch_visibility() -> void:
 	if _touch_layer == null:
 		return
-	_touch_layer.visible = touch_mode and _playing and not _paused
+	var overlay := adventure != null and adventure.overlay_open
+	_touch_layer.visible = touch_mode and _playing and not _paused and not overlay
 	if _minimap != null:
-		_minimap.visible = _playing and not _paused
+		_minimap.visible = _playing and not _paused and not overlay
+	if adventure != null and adventure._stats != null:
+		adventure._stats.visible = _playing and adventure.active
 	if not _touch_layer.visible and _joystick != null:
 		_joystick.release()
 
@@ -614,6 +643,7 @@ func _start(char_id: String = "") -> void:
 	_pause_screen.visible = false
 	_hud.visible = true
 	_target_zoom = ZOOM_DEFAULT
+	adventure.new_game()
 	_refresh_touch_visibility()
 
 
@@ -632,6 +662,7 @@ func _resume() -> void:
 
 
 func _back_to_title() -> void:
+	adventure.stop()
 	load_area(START_AREA, START_SPAWN)
 	distance_walked = 0.0
 	_show_title()
@@ -644,7 +675,7 @@ func _input(event: InputEvent) -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("pause"):
-		if _playing:
+		if _playing and not adventure.overlay_open:
 			if _paused:
 				_resume()
 			else:
@@ -659,7 +690,12 @@ func _unhandled_input(event: InputEvent) -> void:
 			_start(character)
 			get_viewport().set_input_as_handled()
 		return
-	if event.is_action_pressed("toggle_paths"):
+	if adventure.overlay_open:
+		return
+	if event.is_action_pressed("shoot"):
+		adventure.shoot()
+		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("toggle_paths"):
 		_toggle_paths()
 	elif event.is_action_pressed("zoom_in"):
 		_target_zoom = clamp(_target_zoom * 1.2, ZOOM_MIN, ZOOM_MAX)
@@ -668,6 +704,9 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif event is InputEventMouseButton and event.pressed:
 		if event.button_index == MOUSE_BUTTON_LEFT and not _transitioning:
 			go_to(screen_to_world(event.position))
+			get_viewport().set_input_as_handled()
+		elif event.button_index == MOUSE_BUTTON_RIGHT and not _transitioning:
+			adventure.shoot(screen_to_world(event.position))
 			get_viewport().set_input_as_handled()
 		elif event.button_index == MOUSE_BUTTON_WHEEL_UP:
 			_target_zoom = clamp(_target_zoom * 1.1, ZOOM_MIN, ZOOM_MAX)
@@ -686,7 +725,7 @@ func _process(delta: float) -> void:
 	if _joystick != null and _joystick.is_held():
 		dir = _joystick.vector
 		running = _joystick.running
-	if _transitioning:
+	if _transitioning or adventure.overlay_open:
 		_player.step(Vector2.ZERO, false, delta)
 		return
 	if dir.length() > 0.2:
@@ -701,6 +740,9 @@ func _process(delta: float) -> void:
 	if _minimap != null:
 		_minimap.player_pos = _player.position
 	distance_walked += moved.length()
+	adventure.tick(delta)
+	if adventure.overlay_open:
+		return
 	var e := exit_at(_player.position)
 	if not e.is_empty():
 		_go_through(e)
@@ -713,9 +755,7 @@ func screen_to_world(screen_pos: Vector2) -> Vector2:
 
 ## Anda até o ponto (clique, toque ou minimapa) por um caminho que contorna obstáculos.
 func go_to(world_pos: Vector2) -> bool:
-	if _finder_area != current_area:
-		_finder.build(walk_map)
-		_finder_area = current_area
+	ensure_finder()
 	# Clique numa saída: mira o ponto caminhável dentro dela mais próximo do clique.
 	var ex := exit_at(world_pos)
 	if not ex.is_empty() and not walk_map.is_footprint_walkable(world_pos, Walker.FOOT_HALF):

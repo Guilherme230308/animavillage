@@ -11,6 +11,8 @@ var player_pos := Vector2.ZERO
 var target_pos := Vector2.INF
 var exits: Array = []
 var title := ""
+## Pontos extras: [posição no mundo, cor] (moedas, armas, escorpiões).
+var dots: Array = []
 var _tex: Texture2D
 var _t := 0.0
 
@@ -76,6 +78,12 @@ func _draw() -> void:
 	if target_pos != Vector2.INF:
 		var tp := _to_map(target_pos)
 		draw_arc(tp, 4.0 + sin(_t * 6.0) * 1.0, 0, TAU, 16, Color("fff1c9"), 1.5)
+	for d: Array in dots:
+		var dp := _to_map(d[0])
+		var col: Color = d[1]
+		var rad := 1.6 if col == Color("ffd23a") else 2.6
+		draw_circle(dp, rad + 0.8, Color(0, 0, 0, 0.55))
+		draw_circle(dp, rad, col)
 	var pp := _to_map(player_pos)
 	draw_circle(pp, 5.5, Color(1, 1, 1, 0.9))
 	draw_circle(pp, 4.0, Color("e0433a"))
