@@ -57,7 +57,15 @@ func _accepts(pos: Vector2) -> bool:
 	# Metade direita, abaixo do HUD superior, fora dos outros botões.
 	if pos.x < s.x * 0.5 or pos.y <= 90.0:
 		return false
-	return not _over_sibling(pos)
+	if _over_sibling(pos):
+		return false
+	# Toque num escorpião atira, em vez de puxar o direcional.
+	var n: Node = get_parent()
+	while n != null:
+		if n.has_method("scorpion_at_screen"):
+			return n.scorpion_at_screen(pos) == null
+		n = n.get_parent()
+	return true
 
 
 func _over_sibling(pos: Vector2) -> bool:

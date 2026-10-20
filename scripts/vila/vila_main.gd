@@ -72,9 +72,14 @@ var _path_i := 0
 var _stuck_t := 0.0
 var _marker: Node2D
 var _minimap: Minimap
-## O quadrado de localização fica visível por este tempo e depois some.
-var _minimap_t := 0.0
 var _map_screen: MapScreen
+## Dica temporária: onde a personagem está e um conselho, por cerca de 3 segundos.
+var _tip_panel: Panel
+var _tip_where: Label
+var _tip_body: Label
+var _tip_left := 0.0
+var _tip_wait := 0.0
+var _tip_last := -1
 var _swap_buttons: Dictionary = {}
 var adventure: Adventure
 var _floor_img: Image
@@ -184,7 +189,6 @@ func load_area(id: String, spawn: String) -> void:
 	if _minimap != null:
 		var mm_path := String(a["walk"]).get_base_dir() + "/minimap.png"
 		_minimap.set_area(load(mm_path) as Texture2D, size, a["exits"], String(a["title"]))
-		_show_location(3.0)
 		_relayout()
 	if _area_label != null:
 		_area_label.text = area_hud_text(id)
@@ -639,6 +643,7 @@ func _build_ui() -> void:
 	_minimap = Minimap.new()
 	_minimap.open_requested.connect(open_map)
 	add_child(_minimap)
+	_build_tip_panel()
 	_map_screen = MapScreen.new()
 	_map_screen.main = self
 	_map_screen.closed.connect(_on_map_closed)
@@ -736,18 +741,18 @@ func _update_hint() -> void:
 	var on := _paths_overlay != null and _paths_overlay.visible
 	var paths := "ligado" if on else "desligado"
 	if touch_mode:
-		_hint_label.text = "Toque onde quiser ir · Atirar: botão à esquerda"
+		_hint_label.text = "Toque no chão para andar · no escorpião para atirar"
 	else:
-		_hint_label.text = "Clique para andar · Espaço/F ou botão direito: atirar · 1/2/3 ou Q: arma · Shift correr · M caminhos (%s)" % paths
+		_hint_label.text = "Clique no chão para andar · no escorpião para atirar · 1/2/3 ou Q: arma · Shift correr · M caminhos (%s)" % paths
 	if _touch_buttons.has("paths"):
 		var b: TouchButton = _touch_buttons["paths"]
 		b.text = "Ocultar" if on else "Caminhos"
 		b.queue_redraw()
 	if _controls_label != null:
 		if touch_mode:
-			_controls_label.text = "No celular: toque no lugar para onde quer ir (no cenário ou no minimapa), ou arraste na metade direita da tela para andar. O botão Atirar mira no escorpião mais próximo."
+			_controls_label.text = "No celular: toque no chão para ir até lá, ou toque num escorpião para atirar nele. Arraste na metade direita para andar com o direcional. O botão Atirar mira no escorpião mais próximo."
 		else:
-			_controls_label.text = "Clique no cenário ou no minimapa: andar  ·  Setas/WASD: andar  ·  Shift: correr\nEspaço ou F: atirar no escorpião mais próximo  ·  Botão direito: atirar para onde apontar\nM: caminhos  ·  Roda do mouse ou +/−: zoom  ·  Esc: pausar"
+			_controls_label.text = "Clique no chão para andar  ·  Clique num escorpião para atirar nele  ·  Setas/WASD: andar  ·  Shift: correr\nEspaço ou F: atirar no escorpião mais próximo  ·  Botão direito: atirar para onde apontar\nM: caminhos  ·  Roda do mouse ou +/−: zoom  ·  Esc: pausar"
 
 
 func _build_touch_ui() -> void:
@@ -820,17 +825,19 @@ func _relayout() -> void:
 		for b: Button in _character_buttons.values():
 			b.custom_minimum_size = Vector2(btn_w, 46 if not narrow else 42)
 			b.add_theme_font_size_override("font_size", 22 if not narrow else 18)
-	if _minimap != null:
-		# Onde ficava o painel de vida e armas: canto superior direito.
-		var right_gap := 96.0 if touch_mode else 16.0
-		_minimap.position = Vector2(vs.x - _minimap.size.x - right_gap, 14.0)
-		if _hud != null:
-			var hud_rect := Rect2(_hud.position, _hud.get_combined_minimum_size())
-			if Rect2(_minimap.position, _minimap.size).intersects(hud_rect.grow(8.0)):
-				_minimap.position.y = hud_rect.end.y + 8.0
 	if adventure != null:
 		adventure.relayout(vs, 0.0)
-	_layout_touch_buttons(vs)
+	_place_area_below_stats()
+	if touch_mode:
+		_layout_touch_buttons(vs)
+		_settle_touch_minimap(vs)
+	else:
+		if _minimap != null:
+			_minimap.apply_max_side(200.0)
+			_minimap.position = vs - _minimap.size - Vector2(18.0, 18.0)
+		_layout_touch_buttons(vs)
+	if _tip_panel != null and _tip_panel.visible:
+		_place_tip(vs)
 	_update_hint()
 	_refresh_touch_visibility()
 
@@ -860,16 +867,14 @@ func _layout_desktop_controls(vs: Vector2, m: float) -> void:
 	pause.position = Vector2(vs.x - m - pause.size.x, m)
 	if _touch_buttons.has("shoot"):
 		var shoot: TouchButton = _touch_buttons["shoot"]
-		var stats_top := vs.y - 16.0
-		if adventure != null and adventure._stats != null:
-			stats_top = adventure._stats.position.y
-		shoot.position = Vector2(vs.x - m - shoot.size.x, stats_top - 16.0 - shoot.size.y)
+		var mm_top := (_minimap.position.y if _minimap != null else vs.y) - 16.0
+		shoot.position = Vector2(vs.x - m - shoot.size.x, mm_top - shoot.size.y)
 		if _touch_buttons.has("weapon"):
 			var sw: TouchButton = _touch_buttons["weapon"]
 			sw.position = Vector2(shoot.position.x - 12 - sw.size.x, shoot.position.y + shoot.size.y - sw.size.y)
 
 
-## Toque: Trocar Arma e Atirar ao lado do direcional, abaixo do quadrado de localização.
+## Toque: Trocar Arma e Atirar ao lado do direcional.
 func _layout_mobile_controls(vs: Vector2, m: float) -> void:
 	var gap := 16.0
 	var weapon: TouchButton = _touch_buttons["weapon"]
@@ -883,20 +888,6 @@ func _layout_mobile_controls(vs: Vector2, m: float) -> void:
 	var x := stick.position.x - gap - weapon.size.x - gap - shoot.size.x
 	weapon.position = Vector2(x, y)
 	shoot.position = Vector2(x + weapon.size.x + gap, y)
-	if adventure != null and adventure._stats != null:
-		var blocked := Rect2(adventure._stats.position, adventure._stats.size).grow(12.0)
-		while Rect2(weapon.position, weapon.size).intersects(blocked) or Rect2(shoot.position, shoot.size).intersects(blocked):
-			weapon.position.y -= 8.0
-			shoot.position.y -= 8.0
-			if weapon.position.y < 80.0:
-				break
-	if _minimap != null:
-		var map_box := Rect2(_minimap.position, _minimap.size).grow(12.0)
-		while Rect2(weapon.position, weapon.size).intersects(map_box) or Rect2(shoot.position, shoot.size).intersects(map_box):
-			weapon.position.y += 8.0
-			shoot.position.y += 8.0
-			if weapon.position.y > vs.y - weapon.size.y - 8.0:
-				break
 	var joy_top := minf(stick.position.y, weapon.position.y)
 	var paths: TouchButton = _touch_buttons["paths"]
 	var zin: TouchButton = _touch_buttons["zoom_in"]
@@ -908,13 +899,229 @@ func _layout_mobile_controls(vs: Vector2, m: float) -> void:
 	pause.position = Vector2(vs.x - m - pause.size.x, m)
 
 
+## Toque: minimapa embaixo à esquerda. Se os botões ao lado do direcional ocupam esse canto, ele sobe e encolhe até caber.
+func _settle_touch_minimap(vs: Vector2) -> void:
+	if _minimap == null:
+		return
+	_minimap.apply_max_side(200.0)
+	_minimap.position = Vector2(18.0, vs.y - _minimap.size.y - 18.0)
+	if not _minimap_hits_controls():
+		return
+	var top := 8.0
+	if adventure != null and adventure._stats != null and adventure._stats.visible:
+		top = adventure._stats.position.y + adventure._stats.size.y + 8.0
+	if _hud != null:
+		top = maxf(top, _hud.get_combined_minimum_size().y + 8.0)
+	var bottom := _action_row_top() - 8.0
+	var room_h := maxf(110.0, bottom - top)
+	var chrome_y := 34.0 + Minimap.LEGEND_H
+	_minimap.apply_max_side(clampf(room_h - chrome_y, 72.0, 200.0))
+	var y := bottom - _minimap.size.y
+	if y < top:
+		y = top
+	_minimap.position = Vector2(18.0, y)
+	var guard := 0
+	while _minimap_hits_controls() and _minimap.max_side > 72.0 and guard < 10:
+		_minimap.apply_max_side(_minimap.max_side - 14.0)
+		y = bottom - _minimap.size.y
+		if y < top:
+			y = top
+		_minimap.position = Vector2(18.0, y)
+		guard += 1
+
+
+func _action_row_top() -> float:
+	var vs := Vector2(get_window().content_scale_size)
+	var y := vs.y
+	for key in ["weapon", "shoot"]:
+		if _touch_buttons.has(key):
+			y = minf(y, (_touch_buttons[key] as Control).position.y)
+	return y
+
+
+func _minimap_hits_controls() -> bool:
+	if _minimap == null:
+		return false
+	var box := Rect2(_minimap.position, _minimap.size).grow(6.0)
+	for key in ["weapon", "shoot", "paths", "zoom_in", "zoom_out", "pause"]:
+		if not _touch_buttons.has(key):
+			continue
+		var b: Control = _touch_buttons[key]
+		if box.intersects(Rect2(b.position, b.size)):
+			return true
+	var vs := Vector2(get_window().content_scale_size)
+	var stick := Rect2(
+		vs.x - TouchJoystick.EDGE - TouchJoystick.RADIUS * 2.0,
+		vs.y - TouchJoystick.EDGE - TouchJoystick.RADIUS * 2.0,
+		TouchJoystick.RADIUS * 2.0,
+		TouchJoystick.RADIUS * 2.0)
+	return box.intersects(stick)
+
+
+func _place_area_below_stats() -> void:
+	if _hud == null:
+		return
+	var top := 14
+	if adventure != null and adventure._stats != null and adventure._stats.visible:
+		top = int(ceil(adventure._stats.position.y + adventure._stats.size.y + 8.0))
+	_hud.add_theme_constant_override("margin_top", top)
+	if adventure != null and adventure._toast != null:
+		adventure._toast.offset_top = maxf(120.0, _hud.get_combined_minimum_size().y + 12.0)
+
+
+func _build_tip_panel() -> void:
+	_tip_panel = Panel.new()
+	var sb := _panel_style(10)
+	sb.set_content_margin_all(12)
+	sb.set_border_width_all(2)
+	_tip_panel.add_theme_stylebox_override("panel", sb)
+	_tip_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_tip_panel.clip_contents = true
+	_tip_panel.visible = false
+	_tip_where = Label.new()
+	_tip_where.add_theme_font_size_override("font_size", 16)
+	_tip_where.add_theme_color_override("font_color", ACCENT)
+	_tip_where.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_tip_where.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_tip_panel.add_child(_tip_where)
+	_tip_body = Label.new()
+	_tip_body.add_theme_font_size_override("font_size", 15)
+	_tip_body.add_theme_color_override("font_color", Color("fff1c9"))
+	_tip_body.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_tip_body.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_tip_panel.add_child(_tip_body)
+	add_child(_tip_panel)
+
+
+## Primeira dica pouco depois de o nível começar; as seguintes esperam mais.
+func arm_play_tips() -> void:
+	_tip_left = 0.0
+	_tip_wait = randf_range(6.0, 10.0)
+	_tip_last = -1
+	if _tip_panel != null:
+		_tip_panel.visible = false
+
+
+func _tip_lines() -> PackedStringArray:
+	var lines: PackedStringArray = PackedStringArray()
+	if touch_mode:
+		lines.append("Toque no chão para caminhar até lá. Toque num escorpião para atirar nele.")
+	else:
+		lines.append("Clique no chão para caminhar até lá. Clique num escorpião para atirar nele.")
+	lines.append("Junte as moedas da fase. A vida, a arma e as moedas ficam no canto superior esquerdo.")
+	lines.append("O Nerf dispara um dardo. Pegue outro lançador no mapa para recarregar.")
+	lines.append("A Super Soaker molha e deixa o escorpião lento. Encha o tanque na piscina ou na fonte do Térreo.")
+	var phase := 0 if adventure == null else adventure.phase
+	if phase >= 1:
+		lines.append("A Espalhadora solta cinco dardos em leque. Cada tiro gasta um cartucho.")
+	if adventure != null and adventure.is_raining():
+		lines.append("Poça de chuva deixa você 30% mais lento.")
+		lines.append("Na chuva, o chão bege e o terracota escorregam. A grama não.")
+		lines.append("Sob a marquise ou a torre coberta não chove: sem escorregar, alcance normal e +5% de vida.")
+		lines.append("A capa de chuva dura 20 segundos: você não escorrega e leva metade do dano.")
+		lines.append("Na chuva, o dardo do Nerf perde alcance fora do abrigo.")
+	if phase >= 3:
+		lines.append("Escorpiões saem dos ralos. Fique 2 segundos perto para tampar o bueiro.")
+		lines.append("O relâmpago mostra os escorpiões. O raio cai no círculo — saia de cima dele.")
+	return lines
+
+
+func _show_tip() -> void:
+	var lines := _tip_lines()
+	if lines.is_empty() or _tip_panel == null:
+		_tip_wait = 20.0
+		return
+	var pick := randi() % lines.size()
+	if lines.size() > 1 and pick == _tip_last:
+		pick = (pick + 1) % lines.size()
+	_tip_last = pick
+	_tip_where.text = area_hud_text(current_area)
+	_tip_body.text = lines[pick]
+	_tip_left = 3.0
+	_tip_panel.visible = true
+	_place_tip(Vector2(get_window().content_scale_size))
+
+
+func _place_tip(vs: Vector2) -> void:
+	if _tip_panel == null or _tip_body == null:
+		return
+	var w := minf(280.0, vs.x - 28.0)
+	var h := 124.0
+	if adventure != null and adventure._stats != null and adventure._stats.visible and _touch_buttons.has("pause"):
+		var pause: Control = _touch_buttons["pause"]
+		var gap := pause.position.x - (adventure._stats.position.x + adventure._stats.size.x) - 20.0
+		if gap > 150.0:
+			w = minf(w, gap)
+	_tip_panel.size = Vector2(w, h)
+	_tip_where.position = Vector2(12.0, 8.0)
+	_tip_where.size = Vector2(w - 24.0, 24.0)
+	_tip_body.position = Vector2(12.0, 34.0)
+	_tip_body.size = Vector2(w - 24.0, h - 46.0)
+	var spots: Array[Vector2] = []
+	var stats_r := Rect2()
+	if adventure != null and adventure._stats != null and adventure._stats.visible:
+		stats_r = Rect2(adventure._stats.position, adventure._stats.size)
+		spots.append(Vector2(stats_r.end.x + 10.0, stats_r.position.y))
+		spots.append(Vector2(stats_r.end.x + 10.0, stats_r.end.y + 8.0))
+	if _hud != null:
+		spots.append(Vector2((vs.x - w) * 0.5, _hud.get_combined_minimum_size().y + 8.0))
+	spots.append(Vector2(vs.x - w - 14.0, 14.0))
+	spots.append(Vector2(14.0, vs.y * 0.38))
+	for spot in spots:
+		var p := Vector2(
+			clampf(spot.x, 8.0, maxf(8.0, vs.x - w - 8.0)),
+			clampf(spot.y, 8.0, maxf(8.0, vs.y - h - 8.0)))
+		_tip_panel.position = p
+		if not _tip_blocked():
+			return
+	_tip_panel.position = Vector2(clampf((vs.x - w) * 0.5, 8.0, maxf(8.0, vs.x - w - 8.0)), clampf(vs.y * 0.34, 8.0, maxf(8.0, vs.y - h - 8.0)))
+
+
+func _tip_blocked() -> bool:
+	var tip := Rect2(_tip_panel.position, _tip_panel.size)
+	if adventure != null and adventure._stats != null and adventure._stats.visible:
+		if tip.intersects(Rect2(adventure._stats.position, adventure._stats.size).grow(6.0)):
+			return true
+	if _minimap != null and _minimap.visible and tip.intersects(Rect2(_minimap.position, _minimap.size).grow(6.0)):
+		return true
+	if _hud != null and _hud.visible and tip.intersects(Rect2(_hud.position, _hud.get_combined_minimum_size()).grow(4.0)):
+		return true
+	for key in ["weapon", "shoot", "pause"]:
+		if not _touch_buttons.has(key):
+			continue
+		var b: Control = _touch_buttons[key]
+		if b.visible and tip.intersects(Rect2(b.position, b.size).grow(4.0)):
+			return true
+	return false
+
+
+func _advance_tips(delta: float) -> void:
+	if _tip_panel == null:
+		return
+	var overlay := adventure != null and adventure.overlay_open
+	if not _playing or _paused or overlay:
+		_tip_panel.visible = false
+		return
+	if _tip_left > 0.0:
+		_tip_left = maxf(_tip_left - delta, 0.0)
+		_tip_panel.visible = _tip_left > 0.0
+		if _tip_left == 0.0:
+			_tip_wait = randf_range(20.0, 40.0)
+		return
+	if _area_banner != null and _area_banner.visible and _area_banner.modulate.a > 0.25:
+		return
+	_tip_wait = maxf(_tip_wait - delta, 0.0)
+	if _tip_wait == 0.0:
+		_show_tip()
+
+
 func _refresh_touch_visibility() -> void:
 	if _touch_layer == null:
 		return
 	var overlay := adventure != null and adventure.overlay_open
 	_touch_layer.visible = touch_mode and _playing and not _paused and not overlay
 	if _minimap != null:
-		_minimap.visible = _playing and not _paused and not overlay and _minimap_t > 0.0
+		_minimap.visible = _playing and not _paused and not overlay
 	if adventure != null and adventure._stats != null:
 		adventure._stats.visible = _playing and adventure.active
 	if not _touch_layer.visible and _joystick != null:
@@ -950,6 +1157,9 @@ func _show_title() -> void:
 	_target_zoom = ZOOM_MIN
 	_camera.zoom = Vector2.ONE * ZOOM_MIN
 	_set_phase_picker(false)
+	if _tip_panel != null:
+		_tip_panel.visible = false
+		_tip_left = 0.0
 	_refresh_touch_visibility()
 	_start_button.call_deferred("grab_focus")
 
@@ -975,7 +1185,6 @@ func _start(char_id: String = "", phase_idx: int = 0) -> void:
 	_target_zoom = ZOOM_MIN
 	_camera.zoom = Vector2.ONE * ZOOM_MIN
 	adventure.new_game(phase_idx)
-	_show_location(3.0)
 	_refresh_touch_visibility()
 
 
@@ -1091,7 +1300,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		_target_zoom = clamp(_target_zoom / 1.2, ZOOM_MIN, ZOOM_MAX)
 	elif event is InputEventMouseButton and event.pressed:
 		if event.button_index == MOUSE_BUTTON_LEFT and not _transitioning:
-			go_to(screen_to_world(event.position))
+			click_screen(event.position)
 			get_viewport().set_input_as_handled()
 		elif event.button_index == MOUSE_BUTTON_RIGHT and not _transitioning:
 			adventure.shoot(screen_to_world(event.position))
@@ -1102,22 +1311,17 @@ func _unhandled_input(event: InputEvent) -> void:
 			_target_zoom = clamp(_target_zoom / 1.1, ZOOM_MIN, ZOOM_MAX)
 
 
-func _show_location(seconds: float) -> void:
-	_minimap_t = seconds
-	_refresh_touch_visibility()
-
-
 func _process(delta: float) -> void:
-	if _minimap_t > 0.0 and _playing and not _paused:
-		_minimap_t = maxf(_minimap_t - delta, 0.0)
-		if _minimap_t == 0.0 and _minimap != null:
-			_minimap.visible = false
+	_advance_tips(delta)
 	if adventure != null:
 		var rmb := not touch_mode and Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT)
 		var tb = _touch_buttons.get("shoot")
 		var held: bool = _playing and not _paused and (Input.is_action_pressed("shoot") or rmb or (tb != null and (tb as TouchButton).is_held()))
 		adventure.fire_held = held
-		adventure.aim_point = screen_to_world(get_viewport().get_mouse_position()) if rmb else Vector2.INF
+		if rmb:
+			adventure.aim_point = screen_to_world(get_viewport().get_mouse_position())
+		elif not (adventure.weapon == "soaker" and adventure._burst > 0.0 and adventure.aim_point != Vector2.INF):
+			adventure.aim_point = Vector2.INF
 	var z := lerpf(_camera.zoom.x, _target_zoom, clamp(delta * 8.0, 0.0, 1.0))
 	_camera.zoom = Vector2(z, z)
 	if not _playing or _paused:
@@ -1160,6 +1364,41 @@ func _process(delta: float) -> void:
 ## Converte uma posição da tela para o mapa da tela atual.
 func screen_to_world(screen_pos: Vector2) -> Vector2:
 	return _sub_viewport.get_canvas_transform().affine_inverse() * screen_pos
+
+
+func world_to_screen(world_pos: Vector2) -> Vector2:
+	return _sub_viewport.get_canvas_transform() * world_pos
+
+
+## Escorpião sob o clique ou toque. O raio acompanha o sprite (24×26).
+func scorpion_at_screen(screen_pos: Vector2) -> Scorpion:
+	if adventure == null or not adventure.active:
+		return null
+	var world := screen_to_world(screen_pos)
+	var best: Scorpion = null
+	var best_d := 22.0
+	for s: Scorpion in adventure._scorp_nodes:
+		if not is_instance_valid(s):
+			continue
+		var d := world.distance_to(s.position + Vector2(0, -6))
+		if d <= best_d:
+			best = s
+			best_d = d
+	return best
+
+
+## Clique ou toque: no chão caminha; num escorpião atira nele. O mapa só abre pelo minimapa.
+func click_screen(screen_pos: Vector2) -> void:
+	if not _playing or _paused or _transitioning:
+		return
+	if adventure != null and adventure.overlay_open:
+		return
+	var sc := scorpion_at_screen(screen_pos)
+	if sc != null:
+		clear_move()
+		adventure.shoot(sc.position + Vector2(0, -4))
+		return
+	go_to(screen_to_world(screen_pos))
 
 
 ## Anda até o ponto (clique, toque ou minimapa) por um caminho que contorna obstáculos.

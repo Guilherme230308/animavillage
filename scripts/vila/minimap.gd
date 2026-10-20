@@ -1,9 +1,7 @@
 class_name Minimap
 extends Control
 ## Minimapa da tela atual: caminhos, saídas, personagem e destino.
-## Fica no canto superior direito, no lugar do painel de vida, e some após alguns segundos.
-## Clicar/tocar nele manda a personagem andar até o ponto.
-
+## Fica visível o tempo todo durante o jogo.
 ## Clicar/tocar no minimapa pequeno pede o mapa em tela cheia.
 signal open_requested
 
@@ -29,6 +27,15 @@ var _t := 0.0
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_STOP
+
+
+func apply_max_side(side: float) -> void:
+	side = maxf(side, 72.0)
+	if is_equal_approx(max_side, side):
+		return
+	max_side = side
+	if _tex != null:
+		set_area(_tex, world_size, exits, title)
 
 
 func set_area(tex: Texture2D, size_world: Vector2, area_exits: Array, area_title: String) -> void:

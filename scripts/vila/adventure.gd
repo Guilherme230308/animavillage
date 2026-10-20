@@ -229,6 +229,10 @@ func start_phase(idx: int) -> void:
 	_refresh_stats()
 	main._show_banner(level_banner(phase), 3.2)
 	_show_toast("Colete as %d moedas!" % coins_goal(), 3.0)
+	if main.has_method("arm_play_tips"):
+		main.arm_play_tips()
+	if main.has_method("_relayout"):
+		main._relayout()
 
 
 func stop() -> void:
@@ -1502,19 +1506,12 @@ func _show_toast(text: String, secs: float = 2.0) -> void:
 	_toast_tween.tween_property(_toast, "modulate:a", 0.0, 0.5)
 
 
-func relayout(vs: Vector2, _top_right_reserved: float) -> void:
+func relayout(_vs: Vector2, _top_right_reserved: float) -> void:
 	if _stats == null:
 		return
-	_stats.reset_size()
-	# Troca com o quadrado de localização: vida e armas ficam onde o mapa ficava.
-	if main.touch_mode:
-		_stats.position = Vector2(18.0, vs.y - _stats.size.y - 18.0)
-	else:
-		_stats.position = vs - _stats.size - Vector2(18.0, 18.0)
-	var hud: Control = main._hud
-	var hud_rect := Rect2(hud.position, hud.get_combined_minimum_size())
-	_toast.offset_top = maxf(120.0, hud_rect.end.y + 14.0)
 	_refresh_stats()
+	_stats.reset_size()
+	_stats.position = Vector2(16.0, 14.0)
 
 
 func _update_minimap() -> void:

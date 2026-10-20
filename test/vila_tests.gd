@@ -176,13 +176,31 @@ func _run() -> void:
 	var shoot_b: TouchButton = buttons["shoot"]
 	var weapon_b: TouchButton = buttons["weapon"]
 	_check(shoot_b.size == weapon_b.size and shoot_b.size == Vector2(124, 104), "Atirar e Trocar Arma do mesmo tamanho")
-	_check(mm.position.x + mm.size.x > vs.x * 0.75, "minimapa troca de lugar e fica à direita no toque")
+	var adv_ui: Adventure = main.get("adventure")
+	var stats: Control = adv_ui.get("_stats")
+	_check(stats.visible and stats.position.x < 40.0 and stats.position.y < 30.0, "status no canto superior esquerdo")
+	var hud_top := int((main.get("_hud") as Control).get_theme_constant("margin_top"))
+	_check(hud_top >= int(stats.position.y + stats.size.y), "nome da área fica abaixo do status")
+	_check(mm.visible and mm.position.x < 40.0 and mm.position.y > stats.position.y, "minimapa fica à esquerda, abaixo do status, e continua visível")
 	var weapon_r := Rect2(weapon_b.position, weapon_b.size)
 	var shoot_r := Rect2(shoot_b.position, shoot_b.size)
 	var mm_r := Rect2(mm.position, mm.size)
 	var joy_r := Rect2(vs.x - TouchJoystick.EDGE - TouchJoystick.RADIUS * 2.0, vs.y - TouchJoystick.EDGE - TouchJoystick.RADIUS * 2.0, TouchJoystick.RADIUS * 2.0, TouchJoystick.RADIUS * 2.0)
 	var beside := weapon_r.end.x <= joy_r.position.x - 12.0 and shoot_r.end.x <= joy_r.position.x - 12.0 and weapon_r.position.y < joy_r.end.y and shoot_r.end.y > joy_r.position.y
 	_check(beside and not weapon_r.intersects(mm_r) and not shoot_r.intersects(mm_r) and not weapon_r.intersects(joy_r) and not shoot_r.intersects(joy_r) and not weapon_r.intersects(shoot_r), "ações ao lado do direcional, sem se cobrir")
+	(main.get("_area_banner") as CanvasItem).visible = false
+	main.set("_tip_left", 0.0)
+	main.set("_tip_wait", 0.01)
+	main.call("_advance_tips", 0.02)
+	var tip: Control = main.get("_tip_panel")
+	_check(tip.visible and tip.mouse_filter == Control.MOUSE_FILTER_IGNORE, "dica aparece e não bloqueia o clique")
+	_check(String((main.get("_tip_where") as Label).text) != "" and String((main.get("_tip_body") as Label).text) != "", "dica diz onde está e um conselho")
+	_check(not Rect2(tip.position, tip.size).intersects(Rect2(stats.position, stats.size)), "dica não cobre o status")
+	_check(not Rect2(tip.position, tip.size).intersects(Rect2(mm.position, mm.size)), "dica não cobre o minimapa")
+	main.call("_advance_tips", 3.05)
+	_check(not tip.visible and mm.visible, "dica some em 3 segundos e o minimapa fica")
+	var next_wait := float(main.get("_tip_wait"))
+	_check(next_wait >= 20.0 and next_wait <= 40.0, "próxima dica espera entre 20 e 40 segundos")
 	var rest: Vector2 = joy.call("_rest_position")
 	_check(rest.x > vs.x * 0.5, "joystick descansa à direita")
 	var left := InputEventScreenTouch.new()
@@ -446,6 +464,49 @@ func _adventure_tests(main: Node) -> void:
 	adv.darts = 0
 	adv._fire_cd = 0.0
 	_check(not adv.shoot(), "sem dardos não atira")
+	# Clique no escorpião atira nele; clique no chão só caminha.
+	adv.darts = 4
+	adv.weapon = "nerf"
+	adv._fire_cd = 0.0
+	var near_sc := Scorpion.new()
+	near_sc.setup("amarelo", map, main.get("_finder"), player, 0.0)
+	near_sc.position = player.position + Vector2(36, 0)
+	var far_sc := Scorpion.new()
+	far_sc.setup("vermelho", map, main.get("_finder"), player, 0.0)
+	far_sc.position = player.position + Vector2(0, 80)
+	main.get("_world").add_child(near_sc)
+	main.get("_world").add_child(far_sc)
+	(adv.get("_scorp_nodes") as Array).append(near_sc)
+	(adv.get("_scorp_nodes") as Array).append(far_sc)
+	main.call("clear_move")
+	main.call("click_screen", main.call("world_to_screen", far_sc.position + Vector2(0, -6)))
+	var shot_nodes: Array = adv.get("_dart_nodes")
+	_check(not shot_nodes.is_empty() and (main.get("move_path") as PackedVector2Array).is_empty(), "clique no escorpião atira e não caminha")
+	if not shot_nodes.is_empty():
+		var dart: Dart = shot_nodes[shot_nodes.size() - 1]
+		var origin := player.position + Vector2(0, -12)
+		var to_far := (far_sc.position + Vector2(0, -4) - origin).normalized()
+		var to_near := (near_sc.position + Vector2(0, -4) - origin).normalized()
+		var aim := dart.velocity.normalized()
+		_check(aim.dot(to_far) > aim.dot(to_near) + 0.15, "o tiro vai para o escorpião clicado")
+		dart.queue_free()
+		shot_nodes.clear()
+	(adv.get("_scorp_nodes") as Array).erase(near_sc)
+	(adv.get("_scorp_nodes") as Array).erase(far_sc)
+	near_sc.queue_free()
+	far_sc.queue_free()
+	var walked := false
+	for step: Vector2 in [Vector2(180, 0), Vector2(-180, 0), Vector2(0, 180), Vector2(0, -180)]:
+		var ground: Vector2 = map.nearest_walkable(player.position + step, Walker.FOOT_HALF)
+		if ground.distance_to(player.position) < 50.0:
+			continue
+		main.call("click_screen", main.call("world_to_screen", ground))
+		if not (main.get("move_path") as PackedVector2Array).is_empty():
+			walked = true
+			break
+	_check(walked and not bool(main.get("_paused")), "clique no chão caminha e não abre o mapa")
+	main.call("clear_move")
+	adv.darts = 0
 	# Coletar todas as moedas do nível: abre o próximo.
 	adv.coins_got = adv.coins_goal() - 1
 	var area: String = main.current_area
