@@ -27,7 +27,15 @@ func _run() -> void:
 	var player: Walker = main.get("_player")
 	_check(map.is_footprint_walkable(player.position, Walker.FOOT_HALF), "nasce em passeio")
 	_check(bool((main.get("_title_screen") as Control).visible), "abre na tela de título")
-	main.call("_start")
+	# Escolha de personagem.
+	var cbuttons: Dictionary = main.get("_character_buttons")
+	_check(cbuttons.has("sophia") and cbuttons.has("luiza"), "dá para escolher Sophia ou Luiza")
+	(cbuttons["luiza"] as Button).pressed.emit()
+	_check(String(main.get("character")) == "luiza" and player.sheet_path.ends_with("luiza.png"), "jogar com Luiza usa a Luiza")
+	_check(not bool((main.get("_title_screen") as Control).visible), "escolher personagem inicia o jogo")
+	main.call("_back_to_title")
+	(cbuttons["sophia"] as Button).pressed.emit()
+	_check(String(main.get("character")) == "sophia" and player.sheet_path.ends_with("sophia.png"), "jogar com Sophia usa a Sophia")
 
 	# Caminhar em cada direção nunca sai do passeio, e em pelo menos uma direção se move.
 	var total := 0.0

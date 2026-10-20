@@ -18,7 +18,7 @@ boot_splash/bg_color=Color(0.1, 0.13, 0.1, 1)
 
 
 
-config/name="Vila Vista"
+config/name="Anima Village"
 config/description="Caminhe pelos passeios de um condomínio recriado em pixel art."
 config/version="0.1.0"
 run/main_scene="res://scenes/main.tscn"

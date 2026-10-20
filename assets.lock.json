@@ -182,6 +182,14 @@
       "size": 22016,
       "assetType": "image",
       "groupId": "game",
+      "used": false
+    },
+    "assets/game/luiza.png": {
+      "path": "/manus-storage/game/sha256/f8b213c1c34acfa81deec6896b29461809284538942d8ed46d4a0401ccc187f8.png",
+      "sha256": "sha256:f8b213c1c34acfa81deec6896b29461809284538942d8ed46d4a0401ccc187f8",
+      "size": 28680,
+      "assetType": "image",
+      "groupId": "game",
       "used": true
     },
     "assets/game/scene.png": {
@@ -191,6 +199,14 @@
       "assetType": "image",
       "groupId": "game",
       "used": false
+    },
+    "assets/game/sophia.png": {
+      "path": "/manus-storage/game/sha256/55c97fe0aca15ea7a8b4246138d0821240ebcab10e0d1102f6be1e65f1eca2d9.png",
+      "sha256": "sha256:55c97fe0aca15ea7a8b4246138d0821240ebcab10e0d1102f6be1e65f1eca2d9",
+      "size": 28147,
+      "assetType": "image",
+      "groupId": "game",
+      "used": true
     },
     "assets/game/tower_01.png": {
       "path": "/manus-storage/game/sha256/144a9078c339e02a6d49018dcfc38f0bf39219a460af135126e7902a9a014f58.png",

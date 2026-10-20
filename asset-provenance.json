@@ -406,9 +406,7 @@
       "inputs": [],
       "license": {},
       "origin": "unknown",
-      "referenceEvidence": [
-        "scripts/vila/walker.gd"
-      ],
+      "referenceEvidence": [],
       "regions": [],
       "sha256": "sha256:cbbc9487c9173d0a81cef37c7c5ad89d1c24f6d1e4d807a7bf8957d2bb2bfb09",
       "shipped": true,
@@ -416,8 +414,28 @@
       "source": {},
       "status": "present",
       "transformations": [],
+      "useEvidence": [],
+      "used": false,
+      "usedBy": []
+    },
+    "assets/game/luiza.png": {
+      "declaredUseEvidence": [],
+      "generator": {},
+      "inputs": [],
+      "license": {},
+      "origin": "unknown",
+      "referenceEvidence": [
+        "scripts/vila/vila_main.gd"
+      ],
+      "regions": [],
+      "sha256": "sha256:f8b213c1c34acfa81deec6896b29461809284538942d8ed46d4a0401ccc187f8",
+      "shipped": true,
+      "size": 28680,
+      "source": {},
+      "status": "present",
+      "transformations": [],
       "useEvidence": [
-        "scripts/vila/walker.gd"
+        "scripts/vila/vila_main.gd"
       ],
       "used": true,
       "usedBy": []
@@ -453,6 +471,30 @@
           "usedBy": []
         }
       }
+    },
+    "assets/game/sophia.png": {
+      "declaredUseEvidence": [],
+      "generator": {},
+      "inputs": [],
+      "license": {},
+      "origin": "unknown",
+      "referenceEvidence": [
+        "scripts/vila/vila_main.gd",
+        "scripts/vila/walker.gd"
+      ],
+      "regions": [],
+      "sha256": "sha256:55c97fe0aca15ea7a8b4246138d0821240ebcab10e0d1102f6be1e65f1eca2d9",
+      "shipped": true,
+      "size": 28147,
+      "source": {},
+      "status": "present",
+      "transformations": [],
+      "useEvidence": [
+        "scripts/vila/vila_main.gd",
+        "scripts/vila/walker.gd"
+      ],
+      "used": true,
+      "usedBy": []
     },
     "assets/game/tower_01.png": {
       "declaredUseEvidence": [],
@@ -1071,9 +1113,9 @@
         ]
       }
     ],
-    "pckSha256": "sha256:031e26ba517605896aa54de403472c2c4134265ce489edb383a4b62d238b1045",
+    "pckSha256": "sha256:7c97a9f027b7a50a662b9420febeb078c8bc489fa3d5ec3d44b12d7fe3d3bc18",
     "profile": "release",
-    "sourceFingerprint": "sha256:a7463f33d893fe6d3a0e60582c392efe6328f3999f42bd76fd7422cf214153a3"
+    "sourceFingerprint": "sha256:c73d8b7d21c88ed46b983a0d57b0eb070f3298f95c143341604b57b669bff10d"
   },
   "procedures": {},
   "summary": {
@@ -1106,9 +1148,9 @@
     },
     "files": {
       "downloaded": 0,
-      "retained": 50,
-      "shipped": 50,
-      "used": 16
+      "retained": 52,
+      "shipped": 52,
+      "used": 17
     },
     "origins": {
       "ai": {
@@ -1142,9 +1184,9 @@
         "used": 2
       },
       "unknown": {
-        "retained": 35,
-        "shipped": 35,
-        "used": 14
+        "retained": 37,
+        "shipped": 37,
+        "used": 15
       }
     },
     "packs": {

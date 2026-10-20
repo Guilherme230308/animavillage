@@ -14,8 +14,8 @@ func _check(ok: bool, label: String) -> void:
 
 
 func _verify() -> void:
-	_check(ProjectSettings.get_setting("application/config/name") == "Vila Vista", "exported identity")
-	for path: String in ["res://assets/game/areas.json", "res://assets/game/hero.png", "res://assets/game/areas/condominio/bg.png", "res://assets/game/areas/condominio/walk.png", "res://assets/game/areas/condominio/towers.json", "res://assets/game/areas/condominio/tower_01.png", "res://assets/game/areas/oeste/bg.png", "res://assets/game/areas/fundos/bg.png", "res://assets/game/areas/direita/bg.png", "res://assets/game/areas/estacionamento/bg.png", "res://assets/game/areas/estacionamento/walk.png"]:
+	_check(ProjectSettings.get_setting("application/config/name") == "Anima Village", "exported identity")
+	for path: String in ["res://assets/game/areas.json", "res://assets/game/sophia.png", "res://assets/game/luiza.png", "res://assets/game/areas/condominio/bg.png", "res://assets/game/areas/condominio/walk.png", "res://assets/game/areas/condominio/towers.json", "res://assets/game/areas/condominio/tower_01.png", "res://assets/game/areas/oeste/bg.png", "res://assets/game/areas/fundos/bg.png", "res://assets/game/areas/direita/bg.png", "res://assets/game/areas/estacionamento/bg.png", "res://assets/game/areas/estacionamento/walk.png"]:
 		_check(ResourceLoader.exists(path), "pack resource: " + path)
 	_check(not ResourceLoader.exists("res://test/vila_tests.gd"), "tests excluded")
 	_check(not ResourceLoader.exists("res://tools/capture_native.gd"), "native capture tool excluded")
@@ -36,7 +36,7 @@ func _verify() -> void:
 		main.queue_free()
 		await process_frame
 	if _failures.is_empty():
-		print("[exported-pack] PASS: Vila Vista")
+		print("[exported-pack] PASS: Anima Village")
 		quit(0)
 	else:
 		print("[exported-pack] FAILED: %d" % _failures.size())

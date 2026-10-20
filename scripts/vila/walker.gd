@@ -2,7 +2,7 @@ class_name Walker
 extends Node2D
 ## Personagem caminhável. A posição do nó é o ponto dos pés.
 
-const SHEET_PATH := "res://assets/game/hero.png"
+const SHEET_PATH := "res://assets/game/sophia.png"
 const FRAME_W := 25
 const FRAME_H := 40
 const ROWS := {"down": 0, "left": 1, "right": 2, "up": 3}
@@ -11,6 +11,7 @@ const RUN_SPEED := 125.0
 const FOOT_HALF := Vector2(3.0, 2.0)
 
 var walk_map: WalkMap
+var sheet_path := SHEET_PATH
 var facing := "down"
 var moving := false
 var _sprite: AnimatedSprite2D
@@ -29,14 +30,22 @@ func _ready() -> void:
 
 	_sprite = AnimatedSprite2D.new()
 	_sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	_sprite.sprite_frames = _build_frames()
+	_sprite.sprite_frames = _build_frames(sheet_path)
 	_sprite.offset = Vector2(0, -FRAME_H / 2.0 + 1)
 	add_child(_sprite)
 	_sprite.play("idle_down")
 
 
-func _build_frames() -> SpriteFrames:
-	var sheet := load(SHEET_PATH) as Texture2D
+## Troca a personagem (folha de sprites 4x4: frente, esquerda, direita, costas).
+func set_sheet(path: String) -> void:
+	sheet_path = path
+	if _sprite != null:
+		_sprite.sprite_frames = _build_frames(path)
+		_sprite.play(("walk_" if moving else "idle_") + facing)
+
+
+static func _build_frames(path: String) -> SpriteFrames:
+	var sheet := load(path) as Texture2D
 	var frames := SpriteFrames.new()
 	frames.remove_animation("default")
 	for dir: String in ROWS:

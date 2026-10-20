@@ -1,9 +1,13 @@
 extends Control
-## Vila Vista: caminhada livre pelo condomínio em pixel art.
+## Anima Village: caminhada livre pelo condomínio em pixel art.
 
 const AREAS_PATH := "res://assets/game/areas.json"
 const START_AREA := "condominio"
 const START_SPAWN := "inicio"
+const CHARACTERS := [
+	{"id": "sophia", "name": "Sophia", "sheet": "res://assets/game/sophia.png"},
+	{"id": "luiza", "name": "Luiza", "sheet": "res://assets/game/luiza.png"},
+]
 const ZOOM_MIN := 1.25
 const ZOOM_MAX := 4.0
 const ZOOM_DEFAULT := 2.25
@@ -37,6 +41,8 @@ var _area_banner: Label
 var _area_banner_tween: Tween
 var _transitioning := false
 var _area_label: Label
+var character := "sophia"
+var _character_buttons: Dictionary = {}
 var touch_mode := false
 var _joystick: TouchJoystick
 var _touch_layer: Control
@@ -337,14 +343,38 @@ func _build_ui() -> void:
 	var t := _centered_panel()
 	_title_screen = t[0]
 	var tbox: VBoxContainer = t[1]
-	tbox.add_child(_label("VILA VISTA", 56, ACCENT))
+	tbox.add_child(_label("ANIMA VILLAGE", 56, ACCENT))
 	tbox.add_child(_label("Passeie pelo condomínio em pixel art.", 20))
 	tbox.add_child(_label("Os caminhos seguem os passeios reais da imagem e passam por trás das torres. Desça a escada do lado oeste para sair à rua: a rua lateral das quadras, a rua dos fundos, a rua lateral direita e o estacionamento são telas próprias.", 16, Color("cfd8c4")))
 	_controls_label = _label("", 15, Color("cfd8c4"))
 	tbox.add_child(_controls_label)
-	_start_button = _make_button("Começar a caminhar")
-	_start_button.pressed.connect(_start)
-	tbox.add_child(_start_button)
+	tbox.add_child(_label("Escolha com quem jogar:", 20, ACCENT))
+	var row := HBoxContainer.new()
+	row.alignment = BoxContainer.ALIGNMENT_CENTER
+	row.add_theme_constant_override("separation", 22)
+	tbox.add_child(row)
+	for c: Dictionary in CHARACTERS:
+		var card := VBoxContainer.new()
+		card.alignment = BoxContainer.ALIGNMENT_CENTER
+		card.add_theme_constant_override("separation", 8)
+		row.add_child(card)
+		var prev := TextureRect.new()
+		var atlas := AtlasTexture.new()
+		atlas.atlas = load(String(c["sheet"])) as Texture2D
+		atlas.region = Rect2(0, 0, Walker.FRAME_W, Walker.FRAME_H)
+		prev.texture = atlas
+		prev.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		prev.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		prev.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		prev.custom_minimum_size = Vector2(Walker.FRAME_W, Walker.FRAME_H) * 3.0
+		card.add_child(prev)
+		var b := _make_button("Jogar com " + String(c["name"]))
+		b.custom_minimum_size = Vector2(210, 52)
+		var cid := String(c["id"])
+		b.pressed.connect(func() -> void: _start(cid))
+		card.add_child(b)
+		_character_buttons[cid] = b
+	_start_button = _character_buttons["sophia"]
 
 	# Pausa
 	var p := _centered_panel()
@@ -354,7 +384,7 @@ func _build_ui() -> void:
 	_resume_button = _make_button("Continuar")
 	_resume_button.pressed.connect(_resume)
 	pbox.add_child(_resume_button)
-	var restart := _make_button("Voltar ao início")
+	var restart := _make_button("Trocar personagem / início")
 	restart.pressed.connect(_back_to_title)
 	pbox.add_child(restart)
 
@@ -488,7 +518,9 @@ func _show_title() -> void:
 	_start_button.call_deferred("grab_focus")
 
 
-func _start() -> void:
+func _start(char_id: String = "") -> void:
+	if char_id != "":
+		select_character(char_id)
 	_playing = true
 	_paused = false
 	_title_screen.visible = false
@@ -496,6 +528,14 @@ func _start() -> void:
 	_hud.visible = true
 	_target_zoom = ZOOM_DEFAULT
 	_refresh_touch_visibility()
+
+
+func select_character(char_id: String) -> void:
+	for c: Dictionary in CHARACTERS:
+		if String(c["id"]) == char_id:
+			character = char_id
+			_player.set_sheet(String(c["sheet"]))
+			return
 
 
 func _resume() -> void:
@@ -526,7 +566,10 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 	if not _playing or _paused:
 		if event.is_action_pressed("ui_accept") and _title_screen.visible:
-			_start()
+			var focused := get_viewport().gui_get_focus_owner()
+			if focused is Button:
+				return
+			_start(character)
 			get_viewport().set_input_as_handled()
 		return
 	if event.is_action_pressed("toggle_paths"):
