@@ -17,6 +17,12 @@ const CUES := {
 	"game.pause": {"path": "", "bus": "UI"},
 	"game.victory": {"path": "", "bus": "SFX"},
 	"game.defeat": {"path": "", "bus": "SFX"},
+	"vila.shot": {"path": "", "bus": "SFX"},
+	"vila.soaker": {"path": "", "bus": "SFX"},
+	"vila.hit": {"path": "", "bus": "SFX"},
+	"vila.scorpion": {"path": "", "bus": "SFX"},
+	"vila.thunder": {"path": "", "bus": "SFX"},
+	"vila.rain": {"path": "", "bus": "SFX"},
 }
 
 var _streams: Dictionary = {}
@@ -29,6 +35,8 @@ var _unlocked := false
 var _headless := false
 var _paused := false
 var _music_tween: Tween
+var _bed_player: AudioStreamPlayer
+var _bed_cue := ""
 
 
 func _ready() -> void:
@@ -60,6 +68,7 @@ func _exit_tree() -> void:
 
 func release_streams() -> void:
 	stop_music(0.0)
+	stop_bed()
 	for player: AudioStreamPlayer in _sfx_players + _ui_players:
 		player.stop()
 		player.stream = null
@@ -92,6 +101,8 @@ func register_stream(cue_id: String, stream: AudioStream) -> bool:
 func unregister_cue(cue_id: String) -> void:
 	if cue_id == _music_cue:
 		stop_music(0.0)
+	if cue_id == _bed_cue:
+		stop_bed()
 	var old_stream: AudioStream = _streams.get(cue_id)
 	if old_stream != null:
 		for players in [_music_players, _sfx_players, _ui_players]:
@@ -184,6 +195,36 @@ func play_cue(cue_id: String, pitch_scale: float = 1.0) -> bool:
 	return true
 
 
+## Keeps one existing SFX voice on a looping cue (rain). Does not add a player.
+func play_bed(cue_id: String) -> bool:
+	var stream: AudioStream = _streams.get(cue_id)
+	if stream == null or str(CUES.get(cue_id, {}).get("kind", "")) == "music":
+		return false
+	if not _unlocked and not _headless:
+		return false
+	if _bed_cue == cue_id and (_headless or (_bed_player != null and is_instance_valid(_bed_player) and _bed_player.playing)):
+		return true
+	stop_bed()
+	if _headless:
+		_bed_cue = cue_id
+		return true
+	var player := _claim_voice(_sfx_players)
+	player.stream = stream
+	player.pitch_scale = 1.0
+	player.play()
+	_bed_player = player
+	_bed_cue = cue_id
+	return true
+
+
+func stop_bed() -> void:
+	_bed_cue = ""
+	if _bed_player != null and is_instance_valid(_bed_player):
+		_bed_player.stop()
+		_bed_player.stream = null
+	_bed_player = null
+
+
 func register_button(button: Button, cancel_cue: bool = false) -> void:
 	if button == null or button.has_meta("audio_registered"):
 		return
@@ -221,13 +262,21 @@ func _make_player(player_name: String, bus_name: String) -> AudioStreamPlayer:
 
 
 func _claim_voice(players: Array) -> AudioStreamPlayer:
+	var fallback: AudioStreamPlayer = null
 	for value: Variant in players:
 		var player: AudioStreamPlayer = value
+		if player == _bed_player:
+			continue
+		if fallback == null:
+			fallback = player
 		if not player.playing:
 			return player
-	var recycled: AudioStreamPlayer = players[0]
-	recycled.stop()
-	return recycled
+	if fallback == null:
+		fallback = players[0]
+		_bed_cue = ""
+		_bed_player = null
+	fallback.stop()
+	return fallback
 
 
 func _load_streams() -> void:

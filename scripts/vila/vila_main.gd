@@ -719,6 +719,7 @@ func _close_phase_picker() -> void:
 
 
 func _on_title_character(cid: String) -> void:
+	AudioDirector.unlock_audio()
 	if cid == "sophia" or cid == "luiza":
 		select_character(cid)
 		_open_phase_picker()
@@ -727,6 +728,7 @@ func _on_title_character(cid: String) -> void:
 
 
 func _start_picked_phase(idx: int) -> void:
+	AudioDirector.unlock_audio()
 	_start(character, idx)
 
 
@@ -1032,11 +1034,15 @@ func _back_to_title() -> void:
 
 
 func _input(event: InputEvent) -> void:
+	if event is InputEventScreenTouch and (event as InputEventScreenTouch).pressed:
+		AudioDirector.unlock_audio()
 	if event is InputEventScreenTouch and not touch_mode:
 		_enable_touch_mode()
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	if (event is InputEventMouseButton and event.pressed) or event.is_action_pressed("ui_accept") or event.is_action_pressed("shoot"):
+		AudioDirector.unlock_audio()
 	if _phase_picker_open() and (event.is_action_pressed("ui_cancel") or event.is_action_pressed("pause")):
 		_close_phase_picker()
 		get_viewport().set_input_as_handled()

@@ -4,6 +4,7 @@ extends Node
 ## Os itens ficam espalhados por todas as telas e lembram o estado ao sair e voltar.
 
 const SPAWN_POINTS := "res://assets/game/spawn_points.json"
+const ProceduralSfx = preload("res://scripts/manus/procedural_sfx.gd")
 ## Níveis. Bases: dia = 100 moedas, 10 amarelos, 5 vermelhos; noite = 100 moedas, 15 amarelos, 10 vermelhos;
 ## 10 lançadores com 10 dardos. Nível 1: −70% moedas/escorpiões, +30% armas/dardos.
 ## Nível 2: −50% moedas/escorpiões, +10% armas/dardos. Nível 3: quantidades originais do dia.
@@ -28,6 +29,7 @@ const SOAK_RANGE := 95.0
 const SOAK_HALF_ANGLE := 18.0
 const SOAK_DRAIN := 22.0
 const SOAK_TICK := 0.5
+const SOAK_SFX_GAP := 0.22
 const SOAK_SLOW := 2.0
 const REFILL_POOL := 35.0
 const REFILL_RAIN := 5.0
@@ -84,6 +86,8 @@ var _soaker_nodes: Array = []
 var _spreader_nodes: Array = []
 var _jet: WaterJet
 var _soak_tick := 0.0
+var _soak_audio := 0.0
+var _sfx_ready := false
 var _burst := 0.0
 var _empty_warned := false
 var _water_img: Image
@@ -150,6 +154,7 @@ var _win_button: Button
 func _ready() -> void:
 	_points = JSON.parse_string(FileAccess.get_file_as_string(SPAWN_POINTS))
 	_build_ui()
+	_arm_sfx()
 
 
 # ---------------------------------------------------------------- fases
@@ -441,6 +446,8 @@ func _clear_nodes() -> void:
 func tick(delta: float) -> void:
 	if not active or overlay_open:
 		return
+	if is_raining():
+		_audio().play_bed("vila.rain")
 	var player: Walker = main._player
 	var id: String = main.current_area
 	_fire_cd = maxf(0.0, _fire_cd - delta)
@@ -557,6 +564,7 @@ func tick(delta: float) -> void:
 func _kill_scorpion(j: int) -> void:
 	var s: Scorpion = _scorp_nodes[j]
 	_puff(s.position, s.kind)
+	_sfx("vila.scorpion")
 	s.queue_free()
 	_scorp_nodes.remove_at(j)
 	kills += 1
@@ -600,6 +608,7 @@ func _update_soaker(delta: float, player: Walker) -> void:
 		if _jet != null:
 			_jet.visible = false
 		_soak_tick = 0.0
+		_soak_audio = 0.0
 		if weapon == "soaker" and fire_held and water <= 0.0 and not _empty_warned:
 			_empty_warned = true
 			_show_toast("Tanque vazio — encha perto das piscinas ou da fonte do Térreo", 2.0)
@@ -617,6 +626,10 @@ func _update_soaker(delta: float, player: Walker) -> void:
 	_jet.direction = dir
 	_jet.length = SOAK_RANGE
 	_soak_tick -= delta
+	_soak_audio -= delta
+	if _soak_audio <= 0.0:
+		_soak_audio = SOAK_SFX_GAP
+		_sfx("vila.soaker")
 	var dmg_now := _soak_tick <= 0.0
 	if dmg_now:
 		_soak_tick = SOAK_TICK
@@ -709,6 +722,7 @@ func _scaled_damage(raw: int) -> int:
 func _stung(kind: String) -> void:
 	var dmg := _scaled_damage(int(PHASES[phase]["dmg_yellow"] if kind == "amarelo" else PHASES[phase]["dmg_red"]))
 	health = maxi(0, health - dmg)
+	_sfx("vila.hit")
 	_invuln = 1.0
 	_refresh_stats()
 	_show_toast("Picada pelo escorpião %s! −%d%%" % [kind, dmg], 1.4)
@@ -721,8 +735,31 @@ func _stung(kind: String) -> void:
 		_game_over()
 
 
+## O autoload não entra no escopo de um class_name durante o teste em --script.
+func _audio() -> Node:
+	return get_node(^"/root/AudioDirector")
+
+
+func _arm_sfx() -> void:
+	if _sfx_ready:
+		return
+	_sfx_ready = true
+	_audio().register_stream("vila.shot", ProceduralSfx.tone(1100.0, 0.045, 0.22, 620.0))
+	_audio().register_stream("vila.soaker", ProceduralSfx.noise(0.24, 0.07, 0.5))
+	_audio().register_stream("vila.hit", ProceduralSfx.tone(150.0, 0.11, 0.32, 62.0))
+	_audio().register_stream("vila.scorpion", ProceduralSfx.tone(720.0, 0.07, 0.14, 240.0))
+	_audio().register_stream("vila.thunder", ProceduralSfx.thunder())
+	_audio().register_stream("vila.rain", ProceduralSfx.noise(1.6, 0.045, 0.38, true))
+
+
+func _sfx(cue_id: String, pitch: float = 1.0) -> void:
+	_arm_sfx()
+	_audio().play_cue(cue_id, pitch)
+
+
 ## Atira com a arma atual. A Super Soaker atira enquanto o botão é segurado (um toque dá um jato curto).
 func shoot(toward: Vector2 = Vector2.INF) -> bool:
+	_audio().unlock_audio()
 	if not active or overlay_open:
 		return false
 	match weapon:
@@ -760,6 +797,7 @@ func _shoot_spread(toward: Vector2) -> bool:
 	cartridges -= 1
 	_fire_cd = SPREAD_CD
 	_refresh_stats()
+	_sfx("vila.shot", 0.82)
 	return true
 
 
@@ -796,6 +834,7 @@ func _shoot_nerf(toward: Vector2) -> bool:
 	darts -= 1
 	_fire_cd = FIRE_COOLDOWN
 	_refresh_stats()
+	_sfx("vila.shot", 1.18)
 	return true
 
 
@@ -868,6 +907,7 @@ func _apply_rain(on: bool) -> void:
 		_rain.scripted = is_night()
 		main.add_child(_rain)
 		main.move_child(_rain, main._viewport_container.get_index() + 1)
+		_audio().play_bed("vila.rain")
 		if _rground == null:
 			_rground = RainGround.new()
 			main._world.add_child(_rground)
@@ -877,6 +917,7 @@ func _apply_rain(on: bool) -> void:
 		_rain_mod = null
 		_rain.queue_free()
 		_rain = null
+		_audio().stop_bed()
 		if _rground != null:
 			_rground.queue_free()
 			_rground = null
@@ -1094,6 +1135,7 @@ func _aim_bolt() -> void:
 
 
 func _resolve_bolt() -> void:
+	_sfx("vila.thunder")
 	var p: Vector2 = _bolt["pos"]
 	for j in range(_scorp_nodes.size() - 1, -1, -1):
 		var s: Scorpion = _scorp_nodes[j]
@@ -1104,8 +1146,11 @@ func _resolve_bolt() -> void:
 			if overlay_open:
 				return
 	if main._player.position.distance_to(p) <= STRIKE_RADIUS:
+		var before := health
 		var dmg := _scaled_damage(STRIKE_DAMAGE)
 		health = maxi(0, health - dmg)
+		if health < before:
+			_sfx("vila.hit", 0.9)
 		_refresh_stats()
 		_show_toast("Raio! −%d%%" % dmg, 1.4)
 		if health <= 0:
