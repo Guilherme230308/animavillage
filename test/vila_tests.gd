@@ -427,6 +427,33 @@ func _adventure_tests(main: Node) -> void:
 		if scx.hp != adv.scorpion_hp(scx.kind) or absf(scx.speed_mult - float(P[2]["speed"])) > 0.001:
 			hp_ok = false
 	_check(hp_ok, "escorpiões do nível 3 têm vida e velocidade do nível")
+	# Nível 4: noite com chuva.
+	adv.start_phase(3)
+	_check(adv.phase == 3 and adv.is_night() and adv.is_raining(), "nível 4 é noite com chuva")
+	_check(_count(adv, "coins") == 100 and _count(adv, "guns") == 12 and adv.darts_per_gun() == 12, "nível 4: 100 moedas e 12 lançadores com 12 dardos")
+	_check(_count(adv, "scorps", "amarelo") == 15 and _count(adv, "scorps", "vermelho") == 10, "nível 4: 15 amarelos e 10 vermelhos")
+	_check(adv.scorpion_hp("amarelo") == 3 and adv.scorpion_hp("vermelho") == 5 and adv.heart_every() == 5 and adv.heart_heal() == 10, "nível 4: 3/5 dardos e coração a cada 5 (+10%)")
+	var ag_ok := true
+	for scy: Scorpion in adv.get("_scorp_nodes"):
+		if absf(scy.aggro_mult - 1.25) > 0.001 or absf(scy.speed_mult - 1.3) > 0.001:
+			ag_ok = false
+	_check(ag_ok, "nível 4: escorpiões 130% mais velozes e perseguem de mais longe")
+	_check(adv.get("_rain") != null and adv.get("_night_mod") != null and adv.get("_rain_mod") == null, "noite com chuva usa a escuridão da noite e a chuva por cima")
+	adv._invuln = 0.0
+	var hb := adv.health
+	adv._stung("vermelho")
+	_check(adv.health == hb - 20, "nível 4: picada vermelha tira 20%")
+	# Folga de munição diminui a cada nível.
+	var prev_ratio := 1e9
+	var ratio_ok := true
+	for ph: Dictionary in Adventure.PHASES:
+		var need := int(ph["yellow"]) * int(ph["hp_yellow"]) + int(ph["red"]) * int(ph["hp_red"])
+		var ratio := float(int(ph["guns"]) * int(ph["darts"])) / float(need)
+		if ratio >= prev_ratio:
+			ratio_ok = false
+		prev_ratio = ratio
+	_check(ratio_ok and prev_ratio > 1.0, "folga de munição cai a cada nível e o nível 4 ainda dá conta (%.2f×)" % prev_ratio)
+	adv.start_phase(2)
 	adv.health = 50
 	adv.set("_kills_to_heart", 1)
 	var hearts_before := (adv.get("_heart_nodes") as Array).size()

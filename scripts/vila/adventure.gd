@@ -9,14 +9,17 @@ const SPAWN_POINTS := "res://assets/game/spawn_points.json"
 ## Nível 2: −50% moedas/escorpiões, +10% armas/dardos. Nível 3: quantidades originais do dia.
 const PHASES := [
 	{"name": "Nível 1 · Dia (fácil)", "short": "nível 1", "coins": 30, "yellow": 3, "red": 2, "guns": 13, "darts": 13,
-		"dmg_yellow": 5, "dmg_red": 10, "night": false, "rain": false, "speed": 0.8,
+		"dmg_yellow": 5, "dmg_red": 10, "night": false, "rain": false, "speed": 0.8, "aggro": 0.8,
 		"hp_yellow": 1, "hp_red": 2, "heart_every": 2, "heart_heal": 30},
 	{"name": "Nível 2 · Noite", "short": "nível 2", "coins": 50, "yellow": 8, "red": 5, "guns": 11, "darts": 11,
-		"dmg_yellow": 10, "dmg_red": 15, "night": true, "rain": false, "speed": 1.0,
+		"dmg_yellow": 10, "dmg_red": 15, "night": true, "rain": false, "speed": 1.0, "aggro": 1.0,
 		"hp_yellow": 2, "hp_red": 3, "heart_every": 3, "heart_heal": 20},
 	{"name": "Nível 3 · Dia com chuva", "short": "nível 3", "coins": 100, "yellow": 10, "red": 5, "guns": 10, "darts": 10,
-		"dmg_yellow": 10, "dmg_red": 15, "night": false, "rain": true, "speed": 1.2,
+		"dmg_yellow": 10, "dmg_red": 15, "night": false, "rain": true, "speed": 1.15, "aggro": 1.1,
 		"hp_yellow": 2, "hp_red": 4, "heart_every": 4, "heart_heal": 15},
+	{"name": "Nível 4 · Noite com chuva", "short": "nível 4", "coins": 100, "yellow": 15, "red": 10, "guns": 12, "darts": 12,
+		"dmg_yellow": 15, "dmg_red": 20, "night": true, "rain": true, "speed": 1.3, "aggro": 1.25,
+		"hp_yellow": 3, "hp_red": 5, "heart_every": 5, "heart_heal": 10},
 ]
 const FIRE_COOLDOWN := 0.28
 const AIM_RANGE := 260.0
@@ -115,6 +118,7 @@ func start_phase(idx: int) -> void:
 	_darts_at_phase_start = darts
 	_invuln = 0.0
 	_place_everything()
+	_apply_rain(false)
 	_apply_night(bool(PHASES[phase]["night"]))
 	_apply_rain(bool(PHASES[phase]["rain"]))
 	_hide_overlays()
@@ -252,6 +256,7 @@ func on_area_loaded() -> void:
 		var s := Scorpion.new()
 		s.setup(String(d["kind"]), main.walk_map, main._finder, main._player, float(PHASES[phase]["speed"]))
 		s.hp = int(d["hp"]) if d.has("hp") else scorpion_hp(String(d["kind"]))
+		s.aggro_mult = float(PHASES[phase]["aggro"])
 		s.position = d["pos"]
 		world.add_child(s)
 		_scorp_nodes.append(s)
@@ -476,14 +481,17 @@ func _apply_night(on: bool) -> void:
 
 func _apply_rain(on: bool) -> void:
 	if on and _rain == null:
-		_rain_mod = CanvasModulate.new()
-		_rain_mod.color = Color(0.68, 0.74, 0.86)
-		main._sub_viewport.add_child(_rain_mod)
+		# Só um CanvasModulate vale por cena: à noite a escuridão já cobre, a chuva vem por cima.
+		if _night_mod == null:
+			_rain_mod = CanvasModulate.new()
+			_rain_mod.color = Color(0.68, 0.74, 0.86)
+			main._sub_viewport.add_child(_rain_mod)
 		_rain = RainLayer.new()
 		main.add_child(_rain)
 		main.move_child(_rain, main._viewport_container.get_index() + 1)
 	elif not on and _rain != null:
-		_rain_mod.queue_free()
+		if _rain_mod != null:
+			_rain_mod.queue_free()
 		_rain_mod = null
 		_rain.queue_free()
 		_rain = null
@@ -629,7 +637,7 @@ func _open_overlay(screen: Control, button: Button) -> void:
 func _phase_complete() -> void:
 	if phase + 1 < PHASES.size():
 		var nx: Dictionary = PHASES[phase + 1]
-		var extra := "A noite caiu no condomínio." if bool(nx["night"]) else ("Começou a chover." if bool(nx["rain"]) else "")
+		var extra := "Noite com chuva: o desafio final." if bool(nx["night"]) and bool(nx["rain"]) else ("A noite caiu no condomínio." if bool(nx["night"]) else ("Começou a chover." if bool(nx["rain"]) else ""))
 		_phase_text.text = "Você juntou as %d moedas e eliminou %d escorpiões.\n%s Próximo: %s — %d moedas, %d escorpiões amarelos e %d vermelhos; picadas −%d%% e −%d%%; %d lançadores com %d dardos; amarelo cai com %d dardo(s) e vermelho com %d; coração a cada %d escorpiões (+%d%%)." % [
 			coins_goal(), kills, extra, String(nx["name"]), int(nx["coins"]), int(nx["yellow"]), int(nx["red"]),
 			int(nx["dmg_yellow"]), int(nx["dmg_red"]), int(nx["guns"]), int(nx["darts"]),

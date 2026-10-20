@@ -18,6 +18,8 @@ var walk_map: WalkMap
 var finder: PathFinder
 var target: Node2D
 var speed_mult := 1.0
+## Multiplica a distância em que começa (e desiste de) perseguir.
+var aggro_mult := 1.0
 var chasing := false
 var sting_cd := 0.0
 var _sprite: Sprite2D
@@ -76,10 +78,10 @@ func tick(delta: float, player_hidden: bool) -> bool:
 	var to_p := target.position - position
 	var d := to_p.length()
 	if chasing:
-		if d > float(cfg["lose"]):
+		if d > float(cfg["lose"]) * aggro_mult:
 			chasing = false
 			_path = PackedVector2Array()
-	elif d < float(cfg["aggro"]) and not player_hidden:
+	elif d < float(cfg["aggro"]) * aggro_mult and not player_hidden:
 		chasing = true
 		_repath_t = 0.0
 	var dir := Vector2.ZERO
