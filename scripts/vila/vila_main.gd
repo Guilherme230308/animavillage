@@ -435,8 +435,8 @@ func _build_ui() -> void:
 	_title_screen = t[0]
 	var tbox: VBoxContainer = t[1]
 	tbox.add_child(_label("ANIMA VILLAGE", 56, ACCENT))
-	tbox.add_child(_label("Junte as 100 moedas espalhadas pelo condomínio e pelas ruas.", 20))
-	tbox.add_child(_label("Cuidado com os escorpiões: os amarelos tiram 5% da vida e os vermelhos 10%. Pegue os lançadores Nerf (10 dardos cada) para se defender. Com todas as moedas, começa a fase 2, à noite, com mais escorpiões e picadas mais fortes. Desça a escada do lado oeste para ir às ruas e ao estacionamento.", 16, Color("cfd8c4")))
+	tbox.add_child(_label("Junte as moedas espalhadas pelo condomínio e pelas ruas para passar de nível.", 20))
+	tbox.add_child(_label("Nível 1: dia (fácil) · Nível 2: noite · Nível 3: dia com chuva. Cuidado com os escorpiões amarelos e vermelhos e pegue os lançadores Nerf para se defender. Desça a escada do lado oeste para ir às ruas e ao estacionamento.", 16, Color("cfd8c4")))
 	_controls_label = _label("", 15, Color("cfd8c4"))
 	tbox.add_child(_controls_label)
 	tbox.add_child(_label("Escolha com quem jogar:", 20, ACCENT))

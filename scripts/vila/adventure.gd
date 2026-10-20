@@ -4,12 +4,16 @@ extends Node
 ## Os itens ficam espalhados por todas as telas e lembram o estado ao sair e voltar.
 
 const SPAWN_POINTS := "res://assets/game/spawn_points.json"
-const COINS := 100
-const GUNS := 10
-const DARTS_PER_GUN := 10
+## Níveis. Bases: dia = 100 moedas, 10 amarelos, 5 vermelhos; noite = 100 moedas, 15 amarelos, 10 vermelhos;
+## 10 lançadores com 10 dardos. Nível 1: −70% moedas/escorpiões, +30% armas/dardos.
+## Nível 2: −50% moedas/escorpiões, +10% armas/dardos. Nível 3: quantidades originais do dia.
 const PHASES := [
-	{"name": "Fase 1 · Dia", "yellow": 10, "red": 5, "dmg_yellow": 5, "dmg_red": 10, "night": false, "speed": 1.0},
-	{"name": "Fase 2 · Noite", "yellow": 15, "red": 10, "dmg_yellow": 10, "dmg_red": 15, "night": true, "speed": 1.1},
+	{"name": "Nível 1 · Dia (fácil)", "short": "nível 1", "coins": 30, "yellow": 3, "red": 2, "guns": 13, "darts": 13,
+		"dmg_yellow": 5, "dmg_red": 10, "night": false, "rain": false, "speed": 1.0},
+	{"name": "Nível 2 · Noite", "short": "nível 2", "coins": 50, "yellow": 8, "red": 5, "guns": 11, "darts": 11,
+		"dmg_yellow": 10, "dmg_red": 15, "night": true, "rain": false, "speed": 1.1},
+	{"name": "Nível 3 · Dia com chuva", "short": "nível 3", "coins": 100, "yellow": 10, "red": 5, "guns": 10, "darts": 10,
+		"dmg_yellow": 10, "dmg_red": 15, "night": false, "rain": true, "speed": 1.1},
 ]
 const FIRE_COOLDOWN := 0.28
 const AIM_RANGE := 260.0
@@ -36,6 +40,8 @@ var _invuln := 0.0
 var _fire_cd := 0.0
 var _night_mod: CanvasModulate
 var _light: PointLight2D
+var _rain_mod: CanvasModulate
+var _rain: RainLayer
 # Interface
 var _stats: PanelContainer
 var _phase_label: Label
@@ -64,6 +70,14 @@ func _ready() -> void:
 
 # ---------------------------------------------------------------- fases
 
+func coins_goal() -> int:
+	return int(PHASES[phase]["coins"])
+
+
+func darts_per_gun() -> int:
+	return int(PHASES[phase]["darts"])
+
+
 func new_game() -> void:
 	darts = 0
 	start_phase(0)
@@ -81,19 +95,21 @@ func start_phase(idx: int) -> void:
 	_invuln = 0.0
 	_place_everything()
 	_apply_night(bool(PHASES[phase]["night"]))
+	_apply_rain(bool(PHASES[phase]["rain"]))
 	_hide_overlays()
 	main.load_area(main.START_AREA, main.START_SPAWN)
 	active = true
 	on_area_loaded()
 	_invuln = 1.5
 	_refresh_stats()
-	_show_toast("%s — colete as %d moedas!" % [String(PHASES[phase]["name"]), COINS], 3.0)
+	_show_toast("%s — colete as %d moedas!" % [String(PHASES[phase]["name"]), coins_goal()], 3.0)
 
 
 func stop() -> void:
 	active = false
 	_clear_nodes()
 	_apply_night(false)
+	_apply_rain(false)
 	_hide_overlays()
 	if _stats != null:
 		_stats.visible = false
@@ -105,8 +121,8 @@ func _place_everything() -> void:
 	for id: String in ids:
 		weights[id] = pow(float((_points.get(id, []) as Array).size()), 0.7)
 	var cfg: Dictionary = PHASES[phase]
-	var n_coins := _distribute(COINS, weights, 6)
-	var n_guns := _distribute(GUNS, weights, 1)
+	var n_coins := _distribute(coins_goal(), weights, 3)
+	var n_guns := _distribute(int(cfg["guns"]), weights, 1)
 	var n_yel := _distribute(int(cfg["yellow"]), weights, 1)
 	var n_red := _distribute(int(cfg["red"]), weights, 0)
 	coins.clear()
@@ -255,7 +271,7 @@ func tick(delta: float) -> void:
 			_coin_nodes.remove_at(i)
 			coins_got += 1
 			_refresh_stats()
-			if coins_got >= COINS:
+			if coins_got >= coins_goal():
 				_phase_complete()
 				return
 	# Armas
@@ -265,9 +281,9 @@ func tick(delta: float) -> void:
 			(guns[id] as Array).erase(g.position)
 			g.queue_free()
 			_gun_nodes.remove_at(i)
-			darts += DARTS_PER_GUN
+			darts += darts_per_gun()
 			_refresh_stats()
-			_show_toast("Lançador Nerf! +%d dardos (Espaço ou F para atirar)" % DARTS_PER_GUN if not main.touch_mode else "Lançador Nerf! +%d dardos (botão Atirar)" % DARTS_PER_GUN)
+			_show_toast("Lançador Nerf! +%d dardos (Espaço ou F para atirar)" % darts_per_gun() if not main.touch_mode else "Lançador Nerf! +%d dardos (botão Atirar)" % darts_per_gun())
 	# Escorpiões
 	var hidden: bool = main.is_occluded(player.position)
 	for s: Scorpion in _scorp_nodes:
@@ -403,6 +419,25 @@ func _apply_night(on: bool) -> void:
 		_light = null
 
 
+func _apply_rain(on: bool) -> void:
+	if on and _rain == null:
+		_rain_mod = CanvasModulate.new()
+		_rain_mod.color = Color(0.68, 0.74, 0.86)
+		main._sub_viewport.add_child(_rain_mod)
+		_rain = RainLayer.new()
+		main.add_child(_rain)
+		main.move_child(_rain, main._viewport_container.get_index() + 1)
+	elif not on and _rain != null:
+		_rain_mod.queue_free()
+		_rain_mod = null
+		_rain.queue_free()
+		_rain = null
+
+
+func is_raining() -> bool:
+	return _rain != null
+
+
 func is_night() -> bool:
 	return _night_mod != null
 
@@ -473,11 +508,11 @@ func _build_ui() -> void:
 	var a: Array = main._centered_panel()
 	_phase_screen = a[0]
 	var b1: VBoxContainer = a[1]
-	b1.add_child(main._label("Fase concluída!", 40, main.ACCENT))
+	b1.add_child(main._label("Nível concluído!", 40, main.ACCENT))
 	_phase_text = main._label("", 18)
 	b1.add_child(_phase_text)
-	_phase_button = main._make_button("Começar a fase 2 (noite)")
-	_phase_button.pressed.connect(func() -> void: start_phase(1))
+	_phase_button = main._make_button("Começar o próximo nível")
+	_phase_button.pressed.connect(func() -> void: start_phase(phase + 1))
 	b1.add_child(_phase_button)
 
 	var o: Array = main._centered_panel()
@@ -486,7 +521,7 @@ func _build_ui() -> void:
 	b2.add_child(main._label("Você foi picada demais!", 36, Color("ff6a5a")))
 	_over_text = main._label("", 18)
 	b2.add_child(_over_text)
-	_over_button = main._make_button("Tentar a fase de novo")
+	_over_button = main._make_button("Tentar o nível de novo")
 	_over_button.pressed.connect(func() -> void:
 		darts = _darts_at_phase_start
 		start_phase(phase))
@@ -538,16 +573,20 @@ func _open_overlay(screen: Control, button: Button) -> void:
 
 func _phase_complete() -> void:
 	if phase + 1 < PHASES.size():
-		_phase_text.text = "Você juntou as %d moedas e eliminou %d escorpiões.\nA noite caiu no condomínio: agora são %d escorpiões amarelos e %d vermelhos, e as picadas doem mais (−%d%% e −%d%%)." % [
-			COINS, kills, int(PHASES[1]["yellow"]), int(PHASES[1]["red"]), int(PHASES[1]["dmg_yellow"]), int(PHASES[1]["dmg_red"])]
+		var nx: Dictionary = PHASES[phase + 1]
+		var extra := "A noite caiu no condomínio." if bool(nx["night"]) else ("Começou a chover." if bool(nx["rain"]) else "")
+		_phase_text.text = "Você juntou as %d moedas e eliminou %d escorpiões.\n%s Próximo: %s — %d moedas, %d escorpiões amarelos e %d vermelhos; picadas −%d%% e −%d%%; %d lançadores com %d dardos." % [
+			coins_goal(), kills, extra, String(nx["name"]), int(nx["coins"]), int(nx["yellow"]), int(nx["red"]),
+			int(nx["dmg_yellow"]), int(nx["dmg_red"]), int(nx["guns"]), int(nx["darts"])]
+		_phase_button.text = "Começar o %s" % String(nx["short"])
 		_open_overlay(_phase_screen, _phase_button)
 	else:
-		_win_text.text = "Você juntou as %d moedas também à noite, com %d%% de vida restante." % [COINS, health]
+		_win_text.text = "Você completou os %d níveis, terminando com %d%% de vida." % [PHASES.size(), health]
 		_open_overlay(_win_screen, _win_button)
 
 
 func _game_over() -> void:
-	_over_text.text = "A vida chegou a 0%%. Você tinha %d de %d moedas nesta fase." % [coins_got, COINS]
+	_over_text.text = "A vida chegou a 0%%. Você tinha %d de %d moedas neste nível." % [coins_got, coins_goal()]
 	_open_overlay(_over_screen, _over_button)
 
 
@@ -559,7 +598,7 @@ func _refresh_stats() -> void:
 	_hp_fill.size.x = 190.0 * health / 100.0
 	_hp_fill.color = Color("e0433a") if health > 30 else Color("ff2a1a")
 	_hp_label.text = "Vida %d%%" % health
-	_coin_label.text = "Moedas %d/%d" % [coins_got, COINS]
+	_coin_label.text = "Moedas %d/%d" % [coins_got, coins_goal()]
 	_dart_label.text = "Dardos %d" % darts
 
 

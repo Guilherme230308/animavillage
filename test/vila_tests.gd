@@ -321,10 +321,11 @@ func _adventure_tests(main: Node) -> void:
 	await process_frame
 	var adv: Adventure = main.get("adventure")
 	var player: Walker = main.get("_player")
-	_check(adv.active and adv.phase == 0 and adv.health == 100, "fase 1 começa com 100% de vida")
-	_check(_count(adv, "coins") == 100, "100 moedas espalhadas (%d)" % _count(adv, "coins"))
-	_check(_count(adv, "guns") == 10, "10 lançadores espalhados")
-	_check(_count(adv, "scorps", "amarelo") == 10 and _count(adv, "scorps", "vermelho") == 5, "fase 1: 10 escorpiões amarelos e 5 vermelhos")
+	_check(adv.active and adv.phase == 0 and adv.health == 100, "nível 1 começa com 100% de vida")
+	_check(_count(adv, "coins") == 30, "nível 1: 30 moedas (%d)" % _count(adv, "coins"))
+	_check(_count(adv, "guns") == 13, "nível 1: 13 lançadores")
+	_check(_count(adv, "scorps", "amarelo") == 3 and _count(adv, "scorps", "vermelho") == 2, "nível 1: 3 amarelos e 2 vermelhos")
+	_check(not adv.is_night() and not adv.is_raining(), "nível 1 é de dia sem chuva")
 	var areas_with_coins := 0
 	for id: String in adv.coins:
 		if (adv.coins[id] as Array).size() > 0:
@@ -351,7 +352,7 @@ func _adventure_tests(main: Node) -> void:
 	player.position = gp
 	adv._invuln = 99.0
 	adv.tick(0.016)
-	_check(adv.darts == 10, "lançador dá 10 dardos (%d)" % adv.darts)
+	_check(adv.darts == 13, "nível 1: lançador dá 13 dardos (%d)" % adv.darts)
 	# Picadas: amarelo -5%, vermelho -10% na fase 1.
 	adv._stung("amarelo")
 	_check(adv.health == 95, "picada amarela tira 5%% (%d)" % adv.health)
@@ -391,28 +392,32 @@ func _adventure_tests(main: Node) -> void:
 	adv.darts = 0
 	adv._fire_cd = 0.0
 	_check(not adv.shoot(), "sem dardos não atira")
-	# Coletar todas as moedas: fase 2 noturna.
-	adv.coins_got = 99
+	# Coletar todas as moedas do nível: abre o próximo.
+	adv.coins_got = adv.coins_goal() - 1
 	var area: String = main.current_area
-	var cp: Vector2
 	if (adv.coins[area] as Array).is_empty():
 		(adv.coins[area] as Array).append(player.position)
 		adv.on_area_loaded()
-	cp = (adv.coins[area] as Array)[0]
-	player.position = cp
+	player.position = (adv.coins[area] as Array)[0]
 	adv.tick(0.016)
-	_check(adv.overlay_open and (adv.get("_phase_screen") as Control).visible, "com 100 moedas a fase termina")
-	adv.start_phase(1)
-	_check(_count(adv, "coins") == 100 and adv.health == 100, "fase 2: 100 moedas novas e vida cheia")
-	await process_frame
-	_check(adv.phase == 1 and adv.is_night(), "fase 2 é noturna")
-	_check(_count(adv, "scorps", "amarelo") == 15 and _count(adv, "scorps", "vermelho") == 10, "fase 2: 15 amarelos e 10 vermelhos")
+	_check(adv.overlay_open and (adv.get("_phase_screen") as Control).visible, "com todas as moedas o nível termina")
+	(adv.get("_phase_button") as Button).pressed.emit()
+	_check(adv.phase == 1 and adv.is_night() and not adv.is_raining(), "nível 2 é noturno")
+	_check(_count(adv, "coins") == 50 and adv.health == 100, "nível 2: 50 moedas e vida cheia")
+	_check(_count(adv, "scorps", "amarelo") == 8 and _count(adv, "scorps", "vermelho") == 5, "nível 2: 8 amarelos e 5 vermelhos")
+	_check(_count(adv, "guns") == 11 and adv.darts_per_gun() == 11, "nível 2: 11 lançadores com 11 dardos")
+	adv._invuln = 0.0
 	adv._stung("amarelo")
-	_check(adv.health == 90, "fase 2: picada amarela tira 10%")
+	_check(adv.health == 90, "nível 2: picada amarela tira 10%")
 	adv._stung("vermelho")
-	_check(adv.health == 75, "fase 2: picada vermelha tira 15%")
+	_check(adv.health == 75, "nível 2: picada vermelha tira 15%")
+	adv.start_phase(2)
+	_check(adv.phase == 2 and adv.is_raining() and not adv.is_night(), "nível 3 é de dia com chuva")
+	_check(_count(adv, "coins") == 100 and _count(adv, "guns") == 10 and adv.darts_per_gun() == 10, "nível 3: 100 moedas e 10 lançadores com 10 dardos")
+	_check(_count(adv, "scorps", "amarelo") == 10 and _count(adv, "scorps", "vermelho") == 5, "nível 3: 10 amarelos e 5 vermelhos")
+	await process_frame
 	adv.health = 10
 	adv._stung("vermelho")
 	_check(adv.health == 0 and (adv.get("_over_screen") as Control).visible, "vida em 0% mostra fim de jogo")
 	main.call("_back_to_title")
-	_check(not adv.is_night() and not adv.active, "voltar ao início desliga a noite e o jogo")
+	_check(not adv.is_night() and not adv.is_raining() and not adv.active, "voltar ao início desliga noite, chuva e o jogo")
