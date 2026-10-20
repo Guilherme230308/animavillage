@@ -11,8 +11,12 @@ var player_pos := Vector2.ZERO
 var target_pos := Vector2.INF
 var exits: Array = []
 var title := ""
-## Pontos extras: [posição no mundo, cor] (moedas, armas, escorpiões).
+## Marcadores: [posição no mundo, tipo] com tipo "moeda", "arma", "amarelo" ou "vermelho".
 var dots: Array = []
+## Contagens para a legenda: nesta tela e no nível inteiro.
+var counts := {"moeda": 0, "arma": 0, "escorpiao": 0, "moeda_total": 0, "arma_total": 0, "escorpiao_total": 0}
+var show_legend := false
+const LEGEND_H := 24.0
 var _tex: Texture2D
 var _t := 0.0
 
@@ -27,13 +31,13 @@ func set_area(tex: Texture2D, size_world: Vector2, area_exits: Array, area_title
 	exits = area_exits
 	title = area_title
 	var k := MAX_SIDE / maxf(size_world.x, size_world.y)
-	custom_minimum_size = (size_world * k).round() + Vector2(12, 34)
+	custom_minimum_size = (size_world * k).round() + Vector2(12, 34 + LEGEND_H)
 	size = custom_minimum_size
 	queue_redraw()
 
 
 func _map_rect() -> Rect2:
-	return Rect2(Vector2(6, 28), size - Vector2(12, 34))
+	return Rect2(Vector2(6, 28), size - Vector2(12, 34 + LEGEND_H))
 
 
 func _to_map(p: Vector2) -> Vector2:
@@ -78,12 +82,51 @@ func _draw() -> void:
 	if target_pos != Vector2.INF:
 		var tp := _to_map(target_pos)
 		draw_arc(tp, 4.0 + sin(_t * 6.0) * 1.0, 0, TAU, 16, Color("fff1c9"), 1.5)
+	var pulse := 0.5 + 0.5 * sin(_t * 5.0)
 	for d: Array in dots:
-		var dp := _to_map(d[0])
-		var col: Color = d[1]
-		var rad := 1.6 if col == Color("ffd23a") else 2.6
-		draw_circle(dp, rad + 0.8, Color(0, 0, 0, 0.55))
-		draw_circle(dp, rad, col)
+		_marker(_to_map(d[0]), String(d[1]), pulse)
 	var pp := _to_map(player_pos)
 	draw_circle(pp, 5.5, Color(1, 1, 1, 0.9))
 	draw_circle(pp, 4.0, Color("e0433a"))
+	_legend()
+
+
+func _marker(p: Vector2, kind: String, pulse: float = 0.0) -> void:
+	var dark := Color(0.05, 0.04, 0.02, 0.9)
+	match kind:
+		"moeda":
+			draw_circle(p, 3.4, dark)
+			draw_circle(p, 2.5, Color("ffd23a"))
+			draw_circle(p + Vector2(-0.7, -0.7), 0.9, Color("fff3b0"))
+		"arma":
+			var r := Rect2(p - Vector2(3.5, 3.5), Vector2(7, 7))
+			draw_rect(r.grow(1.0), Color(1, 1, 1, 0.95))
+			draw_rect(r, Color("2f7ff0"))
+			draw_rect(Rect2(p - Vector2(2.5, 0.7), Vector2(5, 1.4)), Color("ff8a1a"))
+		_:
+			var col := Color("ff2e1f") if kind == "vermelho" else Color("ff9a1a")
+			var sz := 4.6 + pulse * 0.8
+			var tri := PackedVector2Array([p + Vector2(0, -sz), p + Vector2(sz * 0.95, sz * 0.75), p + Vector2(-sz * 0.95, sz * 0.75)])
+			var out := PackedVector2Array([p + Vector2(0, -sz - 1.6), p + Vector2(sz * 0.95 + 1.6, sz * 0.75 + 1.0), p + Vector2(-sz * 0.95 - 1.6, sz * 0.75 + 1.0)])
+			draw_colored_polygon(out, dark)
+			draw_colored_polygon(tri, col)
+
+
+func _legend() -> void:
+	if not show_legend:
+		return
+	var font := get_theme_default_font()
+	var y0 := size.y - LEGEND_H - 2.0
+	var col := Color("fff1c9")
+	var dim := Color("cfd8c4")
+	var items := [["moeda", int(counts["moeda"]), int(counts["moeda_total"])],
+		["arma", int(counts["arma"]), int(counts["arma_total"])],
+		["vermelho", int(counts["escorpiao"]), int(counts["escorpiao_total"])]]
+	var w := (size.x - 12.0) / 3.0
+	for k in items.size():
+		var x := 6.0 + w * k
+		_marker(Vector2(x + 6.0, y0 + 10.0), String(items[k][0]))
+		# Nesta tela / no nível inteiro.
+		draw_string(font, Vector2(x + 14.0, y0 + 15.0), str(items[k][1]), HORIZONTAL_ALIGNMENT_LEFT, w - 16.0, 14, col)
+		var tw := font.get_string_size(str(items[k][1]), HORIZONTAL_ALIGNMENT_LEFT, -1, 14).x
+		draw_string(font, Vector2(x + 14.0 + tw, y0 + 15.0), "/%d" % int(items[k][2]), HORIZONTAL_ALIGNMENT_LEFT, w - 16.0 - tw, 11, dim)

@@ -419,5 +419,13 @@ func _adventure_tests(main: Node) -> void:
 	adv.health = 10
 	adv._stung("vermelho")
 	_check(adv.health == 0 and (adv.get("_over_screen") as Control).visible, "vida em 0% mostra fim de jogo")
+	var mm: Minimap = main.get("_minimap")
+	adv._update_minimap()
+	var kinds := {}
+	for d: Array in mm.dots:
+		kinds[String(d[1])] = true
+	_check(mm.show_legend and int(mm.counts["moeda"]) == (adv.get("_coin_nodes") as Array).size(), "minimapa conta as moedas da tela")
+	_check(int(mm.counts["moeda_total"]) == _count(adv, "coins") and int(mm.counts["arma_total"]) == _count(adv, "guns"), "minimapa mostra o total do nível")
+	_check(mm.dots.size() == (adv.get("_coin_nodes") as Array).size() + (adv.get("_gun_nodes") as Array).size() + (adv.get("_scorp_nodes") as Array).size(), "minimapa marca moedas, Nerfs e escorpiões")
 	main.call("_back_to_title")
 	_check(not adv.is_night() and not adv.is_raining() and not adv.active, "voltar ao início desliga noite, chuva e o jogo")

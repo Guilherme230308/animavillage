@@ -111,6 +111,9 @@ func stop() -> void:
 	_apply_night(false)
 	_apply_rain(false)
 	_hide_overlays()
+	if main._minimap != null:
+		main._minimap.dots = []
+		main._minimap.show_legend = false
 	if _stats != null:
 		_stats.visible = false
 
@@ -633,9 +636,18 @@ func _update_minimap() -> void:
 		return
 	var dots: Array = []
 	for c: Pickup in _coin_nodes:
-		dots.append([c.position, Color("ffd23a")])
+		dots.append([c.position, "moeda"])
 	for g: Pickup in _gun_nodes:
-		dots.append([g.position, Color("4aa8ff")])
+		dots.append([g.position, "arma"])
 	for s: Scorpion in _scorp_nodes:
-		dots.append([s.position, Color("ff3a2a") if s.kind == "vermelho" else Color("ff9a2a")])
+		dots.append([s.position, s.kind])
+	var tc := 0
+	var tg := 0
+	for id: String in coins:
+		tc += (coins[id] as Array).size()
+	for id: String in guns:
+		tg += (guns[id] as Array).size()
+	mm.counts = {"moeda": _coin_nodes.size(), "arma": _gun_nodes.size(), "escorpiao": _scorp_nodes.size(),
+		"moeda_total": tc, "arma_total": tg, "escorpiao_total": remaining_scorpions()}
+	mm.show_legend = active
 	mm.dots = dots
