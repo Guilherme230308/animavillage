@@ -14,7 +14,6 @@ const CHARACTERS := [
 ]
 const ZOOM_MIN := 1.25
 const ZOOM_MAX := 4.0
-const ZOOM_DEFAULT := 2.25
 const ACCENT := Color("e9a15b")
 const PANEL_BG := Color(0.07, 0.09, 0.08, 0.88)
 
@@ -33,7 +32,7 @@ var _start_button: Button
 var _resume_button: Button
 var _playing := false
 var _paused := false
-var _target_zoom := ZOOM_DEFAULT
+var _target_zoom := ZOOM_MIN
 var distance_walked := 0.0
 var _towers: Array[Dictionary] = []
 var areas: Dictionary = {}
@@ -69,6 +68,7 @@ var _minimap: Minimap
 var _map_screen: MapScreen
 var _swap_buttons: Dictionary = {}
 var adventure: Adventure
+var _floor_img: Image
 
 
 func _ready() -> void:
@@ -121,7 +121,7 @@ func _build_world() -> void:
 	_world.add_child(_player)
 
 	_camera = Camera2D.new()
-	_camera.zoom = Vector2.ONE * ZOOM_DEFAULT
+	_camera.zoom = Vector2.ONE * ZOOM_MIN
 	_camera.position_smoothing_enabled = true
 	_camera.position_smoothing_speed = 7.0
 	_player.add_child(_camera)
@@ -140,6 +140,9 @@ func load_area(id: String, spawn: String) -> void:
 	_towers.clear()
 	current_area = id
 	var tex := load(String(a["bg"])) as Texture2D
+	_floor_img = tex.get_image()
+	if _floor_img != null and _floor_img.is_compressed():
+		_floor_img.decompress()
 	var bg := Sprite2D.new()
 	bg.texture = tex
 	bg.centered = false
@@ -348,15 +351,44 @@ func _go_through(e: Dictionary, animate: bool = true) -> void:
 	tw.tween_callback(func() -> void: _transitioning = false)
 
 
-func _show_banner(text: String) -> void:
+func _show_banner(text: String, hold: float = 1.6) -> void:
 	_area_banner.text = text
+	_area_banner.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_area_banner.offset_left = 28
+	_area_banner.offset_right = -28
+	_area_banner.offset_top = 78
+	_area_banner.offset_bottom = 188
 	if _area_banner_tween != null:
 		_area_banner_tween.kill()
 	_area_banner.modulate.a = 1.0
 	_area_banner.visible = true
 	_area_banner_tween = create_tween()
-	_area_banner_tween.tween_interval(1.6)
+	_area_banner_tween.tween_interval(hold)
 	_area_banner_tween.tween_property(_area_banner, "modulate:a", 0.0, 0.6)
+
+
+## Piso sob o pé, lido do cenário: grama, bege, terracota ou outro.
+func floor_kind(p: Vector2) -> String:
+	if _floor_img == null:
+		return "outro"
+	var x := clampi(int(p.x), 0, _floor_img.get_width() - 1)
+	var y := clampi(int(p.y), 0, _floor_img.get_height() - 1)
+	return classify_floor(_floor_img.get_pixel(x, y))
+
+
+static func classify_floor(c: Color) -> String:
+	var r := c.r
+	var g := c.g
+	var b := c.b
+	if g > r + 0.08 and g > b + 0.05 and g > 0.22:
+		return "grama"
+	if r > 0.45 and g > 0.28 and r >= g - 0.02 and g >= b and (r - b) > 0.12 and (r - b) < 0.72 and b < r * 0.85:
+		if r > 0.9 and g > 0.9 and b > 0.85:
+			return "outro"
+		if r > 0.82 and g > 0.70 and (r - g) < 0.22:
+			return "bege"
+		return "terracota"
+	return "outro"
 
 
 func _build_towers(path: String) -> void:
@@ -522,7 +554,8 @@ func _build_ui() -> void:
 	var tbox: VBoxContainer = t[1]
 	tbox.add_child(_label("ANIMA VILLAGE", 56, ACCENT))
 	tbox.add_child(_label("Junte as moedas espalhadas pelo condomínio e pelas ruas para passar de nível.", 20))
-	tbox.add_child(_label("Nível 1: dia (fácil) · Nível 2: noite · Nível 3: dia com chuva · Nível 4: noite com chuva. Cuidado com os escorpiões amarelos e vermelhos e pegue os lançadores Nerf para se defender. Desça a escada do lado oeste para ir às ruas e ao estacionamento.", 16, Color("cfd8c4")))
+	tbox.add_child(_label("Armas: Nerf (dardos), Super Soaker (molha e deixa lento) e Espalhadora (cinco dardos em leque).", 16, Color("cfd8c4")))
+	tbox.add_child(_label("Nível 1 · dia fácil: moedas, escorpiões e o Nerf. Nível 2 · noite: a lanterna ilumina pouco e entra a Espalhadora. Nível 3 · chuva de dia: poças deixam 30% mais lento, o chão bege e terracota escorrega (a grama não), dardos molhados perdem alcance, e sob a marquise ou a torre coberta não chove (+5% de vida). Uma capa de chuva. Nível 4 · noite de chuva: escorpiões saem dos ralos — tampe os bueiros. O relâmpago revela os escorpiões e o raio cai no círculo. A escada oeste leva às ruas.", 15, Color("cfd8c4")))
 	_controls_label = _label("", 15, Color("cfd8c4"))
 	tbox.add_child(_controls_label)
 	tbox.add_child(_label("Escolha com quem jogar:", 20, ACCENT))
@@ -771,7 +804,8 @@ func _show_title() -> void:
 	_title_screen.visible = true
 	_pause_screen.visible = false
 	_hud.visible = false
-	_target_zoom = 1.6
+	_target_zoom = ZOOM_MIN
+	_camera.zoom = Vector2.ONE * ZOOM_MIN
 	_refresh_touch_visibility()
 	_start_button.call_deferred("grab_focus")
 
@@ -784,7 +818,8 @@ func _start(char_id: String = "") -> void:
 	_title_screen.visible = false
 	_pause_screen.visible = false
 	_hud.visible = true
-	_target_zoom = ZOOM_DEFAULT
+	_target_zoom = ZOOM_MIN
+	_camera.zoom = Vector2.ONE * ZOOM_MIN
 	adventure.new_game()
 	_refresh_touch_visibility()
 
@@ -909,6 +944,7 @@ func _process(delta: float) -> void:
 	var z := lerpf(_camera.zoom.x, _target_zoom, clamp(delta * 8.0, 0.0, 1.0))
 	_camera.zoom = Vector2(z, z)
 	if not _playing or _paused:
+		_player.set_weather_move(1.0, 0.0)
 		_player.step(Vector2.ZERO, false, delta)
 		return
 	var dir := Input.get_vector("move_left", "move_right", "move_up", "move_down")
@@ -917,8 +953,13 @@ func _process(delta: float) -> void:
 		dir = _joystick.vector
 		running = _joystick.running
 	if _transitioning or adventure.overlay_open:
+		_player.set_weather_move(1.0, 0.0)
 		_player.step(Vector2.ZERO, false, delta)
 		return
+	if adventure != null and adventure.active:
+		adventure.apply_move_modifiers()
+	else:
+		_player.set_weather_move(1.0, 0.0)
 	if dir.length() > 0.2:
 		clear_move()
 	elif not move_path.is_empty():

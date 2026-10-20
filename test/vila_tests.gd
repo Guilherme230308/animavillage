@@ -495,7 +495,11 @@ func _adventure_tests(main: Node) -> void:
 		kinds[String(d[1])] = true
 	_check(mm.show_legend and int(mm.counts["moeda"]) == (adv.get("_coin_nodes") as Array).size(), "minimapa conta as moedas da tela")
 	_check(int(mm.counts["moeda_total"]) == _count(adv, "coins") and int(mm.counts["arma_total"]) == _count(adv, "guns") + _count(adv, "soakers") + _count(adv, "spreaders"), "minimapa mostra o total do nível")
-	_check(mm.dots.size() == (adv.get("_coin_nodes") as Array).size() + (adv.get("_gun_nodes") as Array).size() + (adv.get("_scorp_nodes") as Array).size(), "minimapa marca moedas, Nerfs e escorpiões")
+	var marked := 0
+	for d: Array in mm.dots:
+		if String(d[1]) in ["moeda", "arma", "amarelo", "vermelho"]:
+			marked += 1
+	_check(marked == (adv.get("_coin_nodes") as Array).size() + (adv.get("_gun_nodes") as Array).size() + (adv.get("_scorp_nodes") as Array).size(), "minimapa marca moedas, Nerfs e escorpiões")
 	# Nome da tela e nova ligação estacionamento → rua direita.
 	_check(String(main.areas["condominio"]["title"]) == "Térreo", "tela principal se chama Térreo")
 	_check(main.floor_of("condominio") == 2 and main.floor_of("oeste") == 0 and main.floor_of("estacionamento") == 0, "Térreo fica 2 andares acima das ruas e do estacionamento")
@@ -692,6 +696,213 @@ func _adventure_tests(main: Node) -> void:
 	_check(String((adv.get("_dart_label") as Label).text).begins_with("Água"), "painel mostra a munição da arma atual")
 	var mk: Dictionary = adv.markers_for(String(main.current_area))
 	_check(mk.has("dots"), "minimapa aceita as armas novas")
+	_rain_rule_tests(main, adv, player)
 	adv.start_phase(0)
 	main.call("_back_to_title")
 	_check(not adv.is_night() and not adv.is_raining() and not adv.active, "voltar ao início desliga noite, chuva e o jogo")
+
+
+func _label_text(n: Node) -> String:
+	var blob := ""
+	if n is Label:
+		blob += (n as Label).text + "\n"
+	for c: Node in n.get_children():
+		blob += _label_text(c)
+	return blob
+
+
+func _walk_dist(player: Walker, origin: Vector2, dir: Vector2, frames: int, scale: float) -> float:
+	player.position = origin
+	player.set_weather_move(scale, 0.0)
+	var p0 := player.position
+	for i in frames:
+		player.step(dir, false, 1.0 / 60.0)
+	return player.position.distance_to(p0)
+
+
+func _rain_rule_tests(main: Node, adv: Adventure, player: Walker) -> void:
+	var title := _label_text(main.get("_title_screen"))
+	_check(title.find("Super Soaker") >= 0 and title.find("Espalhadora") >= 0, "título explica as armas")
+	_check(title.find("poça") >= 0 and title.find("capa") >= 0 and title.find("ralos") >= 0, "título explica a chuva e os ralos")
+	_check(adv.level_banner(3) == "Nível 4 — escorpiões saindo dos ralos! Tampe os bueiros", "banner do nível 4")
+	adv.start_phase(0)
+	_check(adv.puddles.is_empty() and adv.drains.is_empty() and not adv.is_raining(), "nível 1 não tem chuva nem ralo")
+	_check((main.get("_area_banner") as Label).text == adv.level_banner(0), "faixa do nível 1 fala do Nerf")
+	adv.start_phase(1)
+	_check(adv.is_night() and not adv.is_raining() and (main.get("_area_banner") as Label).text == adv.level_banner(1), "faixa do nível 2 fala da noite")
+	adv.start_phase(2)
+	_check((main.get("_area_banner") as Label).text == adv.level_banner(2), "banner do nível 3 anuncia a chuva")
+	var puddle_n := 0
+	var coat_n := 0
+	for id: String in adv.puddles:
+		puddle_n += (adv.puddles[id] as Array).size()
+	for id: String in adv.coats:
+		coat_n += (adv.coats[id] as Array).size()
+	_check(puddle_n > 0 and coat_n == 1 and adv.drains.is_empty(), "nível 3: poças e 1 capa, sem ralo (%d/%d)" % [puddle_n, coat_n])
+	var grew: Dictionary = {}
+	for gid: String in adv.puddles:
+		if not (adv.puddles[gid] as Array).is_empty():
+			grew = (adv.puddles[gid] as Array)[0]
+			break
+	var r0 := float(grew["radius"])
+	adv._grow_puddles(1.0)
+	_check(float(grew["radius"]) > r0 and float(grew["radius"]) <= Adventure.PUDDLE_MAX_R, "poça cresce até o limite")
+	var saw_puddle := false
+	for id: String in main.areas:
+		for dot: Array in (adv.markers_for(id)["dots"] as Array):
+			if String(dot[1]) == "poca":
+				saw_puddle = true
+	_check(saw_puddle, "mapa mostra as poças")
+	var grass := Vector2(630, 790)
+	_check(String(main.floor_kind(grass)) == "grama" and not bool(main.call("is_occluded", grass)), "praça é grama e não é abrigo")
+	var wm: WalkMap = main.walk_map
+	adv.puddles["condominio"] = [{"center": grass, "radius": 24.0, "max_radius": 24.0}]
+	player.position = grass
+	adv.coat_t = 0.0
+	adv.apply_move_modifiers()
+	_check(is_equal_approx(player.speed_scale, Adventure.PUDDLE_SLOW) and player.slip_brake == 0.0, "na poça da grama anda 30% mais devagar e não escorrega")
+	var full := _walk_dist(player, grass, Vector2.LEFT, 8, 1.0)
+	var slow := _walk_dist(player, grass, Vector2.LEFT, 8, Adventure.PUDDLE_SLOW)
+	_check(full > 4.0 and slow / full > 0.62 and slow / full < 0.78, "o passo na poça fica em 70% (%.1f/%.1f)" % [slow, full])
+	var outside := grass + Vector2(36, 0)
+	if not wm.is_footprint_walkable(outside, Scorpion.HALF):
+		outside = grass + Vector2(-36, 0)
+	var sc := Scorpion.new()
+	sc.setup("amarelo", wm, main.get("_finder"), player, 1.0)
+	sc.avoid = Callable(adv, "in_puddle")
+	sc.position = outside
+	main.get("_world").add_child(sc)
+	sc._try((grass - outside).normalized() * 48.0)
+	_check(not adv.in_puddle(sc.position), "escorpião não entra na poça")
+	sc.queue_free()
+	var bege := Vector2.INF
+	var cover := Vector2.INF
+	for y in range(0, wm.height * WalkMap.CELL, 12):
+		for x in range(0, wm.width * WalkMap.CELL, 12):
+			var p := Vector2(x, y)
+			if not wm.is_footprint_walkable(p, Walker.FOOT_HALF):
+				continue
+			var on_stair := false
+			for st: Dictionary in player.stairs:
+				if (st["rect"] as Rect2).has_point(p):
+					on_stair = true
+			if on_stair:
+				continue
+			if cover == Vector2.INF and bool(main.call("is_occluded", p)):
+				cover = p
+			if bege == Vector2.INF and String(main.floor_kind(p)) in ["bege", "terracota"] and not bool(main.call("is_occluded", p)):
+				bege = p
+		if bege != Vector2.INF and cover != Vector2.INF:
+			break
+	_check(bege != Vector2.INF, "há piso bege ou terracota caminhável")
+	_check(cover != Vector2.INF, "há abrigo sob a torre")
+	if bege == Vector2.INF or cover == Vector2.INF:
+		return
+	adv.puddles["condominio"] = []
+	player.position = bege
+	adv.coat_t = 0.0
+	adv.apply_move_modifiers()
+	_check(player.slip_brake == Adventure.SLIP_BRAKE, "bege/terracota escorrega na chuva")
+	var slid := 0.0
+	for dir: Vector2 in [Vector2.RIGHT, Vector2.LEFT, Vector2.UP, Vector2.DOWN]:
+		player.position = bege
+		adv.apply_move_modifiers()
+		var before := player.position
+		player.step(dir, false, 0.12)
+		if player.position.distance_to(before) < 3.0:
+			continue
+		var p0 := player.position
+		for i in 18:
+			player.step(Vector2.ZERO, false, 1.0 / 60.0)
+		slid = maxf(slid, player.position.distance_to(p0))
+	_check(slid > 4.0, "no piso escorregadio a personagem demora a parar (%.1f)" % slid)
+	player.position = grass
+	player.set_weather_move(1.0, 0.0)
+	player.step(Vector2.LEFT, false, 0.05)
+	var g0 := player.position
+	player.step(Vector2.ZERO, false, 1.0 / 60.0)
+	_check(player.position.distance_to(g0) < 0.2, "na grama o passo para na hora")
+	player.position = bege
+	adv.coat_t = Adventure.COAT_SECONDS
+	adv.apply_move_modifiers()
+	_check(player.slip_brake == 0.0, "a capa evita o escorregão")
+	player.position = cover
+	adv.coat_t = 0.0
+	adv.apply_move_modifiers()
+	_check(player.slip_brake == 0.0 and adv.in_dry_shelter(cover), "no abrigo não escorrega")
+	adv.darts = 4
+	adv.select_weapon("nerf")
+	adv.set("_fire_cd", 0.0)
+	player.position = grass
+	_check(adv.shoot(grass + Vector2(90, 0)), "atira na chuva")
+	var wet: Dart = (adv.get("_dart_nodes") as Array).back()
+	_check(is_equal_approx(wet.max_range, Dart.RANGE * Adventure.DART_RAIN_RANGE), "dardo molhado perde 30% de alcance")
+	adv.set("_fire_cd", 0.0)
+	player.position = cover
+	_check(adv.shoot(cover + Vector2(90, 0)), "atira no abrigo")
+	var dry: Dart = (adv.get("_dart_nodes") as Array).back()
+	_check(is_equal_approx(dry.max_range, Dart.RANGE), "no abrigo o dardo volta ao alcance normal")
+	adv.health = 40
+	adv.set("_shelter_known", true)
+	adv.set("_in_shelter", false)
+	adv._update_shelter()
+	_check(adv.health == 45, "abrigo seco cura +5%")
+	adv.health = 80
+	adv.set("_invuln", 0.0)
+	adv.coat_t = Adventure.COAT_SECONDS
+	adv._stung("amarelo")
+	_check(adv.health == 75, "capa reduz a picada pela metade")
+	player.position = grass
+	adv._update_weather(Adventure.COAT_SECONDS)
+	_check(adv.coat_t == 0.0, "a capa dura 20 segundos")
+	adv.start_phase(1)
+	adv._phase_complete()
+	var done := String((adv.get("_phase_text") as Label).text)
+	_check(done.find("Super Soaker") >= 0 and done.find("chuva") >= 0, "nível concluído explica armas e a chuva")
+	adv.start_phase(3)
+	_check(adv.is_night() and adv.is_raining() and adv.drains.size() == Adventure.DRAIN_COUNT, "nível 4: noite, chuva e 3 ralos")
+	_check((main.get("_area_banner") as Label).text == adv.level_banner(3), "banner do nível 4 fala dos ralos")
+	var saw_drain := false
+	for id: String in main.areas:
+		for dot: Array in (adv.markers_for(id)["dots"] as Array):
+			if String(dot[1]).begins_with("bueiro"):
+				saw_drain = true
+	_check(saw_drain, "mapa mostra os bueiros")
+	for i in 10:
+		adv._spawn_from_drain()
+	_check(adv.drain_alive() == Adventure.DRAIN_CAP, "ralos param no limite de escorpiões (%d)" % adv.drain_alive())
+	var drain: Dictionary = adv.drains[0]
+	main.load_area(String(drain["area"]), (main.areas[drain["area"]]["spawns"] as Dictionary).keys()[0])
+	player.position = drain["pos"]
+	adv.set("_invuln", 99.0)
+	adv._update_drains(Adventure.DRAIN_SEAL_TIME)
+	_check(bool(drain["sealed"]), "ficar 2s no ralo tampa o bueiro")
+	var bolt_sc := Scorpion.new()
+	bolt_sc.setup("amarelo", main.walk_map, main.get("_finder"), player, 0.0)
+	bolt_sc.position = player.position
+	main.get("_world").add_child(bolt_sc)
+	(adv.get("_scorp_nodes") as Array).append(bolt_sc)
+	adv.set("_kills_to_heart", 99)
+	adv.health = 100
+	adv.coat_t = 0.0
+	adv.set("_bolt", {"pos": player.position, "left": 0.01})
+	adv._update_bolts(0.02)
+	_check(not (adv.get("_scorp_nodes") as Array).has(bolt_sc), "o raio mata o escorpião no círculo")
+	_check(adv.health == 90, "o raio tira 10% da personagem")
+	adv.health = 100
+	adv.coat_t = 5.0
+	adv.set("_bolt", {"pos": player.position, "left": 0.01})
+	adv._update_bolts(0.02)
+	_check(adv.health == 95, "com a capa o raio tira metade")
+	var reveal_sc := Scorpion.new()
+	reveal_sc.setup("vermelho", main.walk_map, main.get("_finder"), player, 0.0)
+	reveal_sc.position = player.position + Vector2(20, 0)
+	main.get("_world").add_child(reveal_sc)
+	(adv.get("_scorp_nodes") as Array).append(reveal_sc)
+	adv.set("_reveal_t", Adventure.REVEAL_TIME)
+	adv.set("_invuln", 99.0)
+	adv.tick(0.02)
+	_check(reveal_sc.revealed and reveal_sc.get("_sprite").material is CanvasItemMaterial, "relâmpago revela o escorpião fora da lanterna")
+	adv.start_phase(2)
+	adv._phase_complete()
+	_check(String((adv.get("_phase_text") as Label).text).find("bueiro") >= 0, "nível concluído avisa dos ralos do nível 4")

@@ -40,6 +40,29 @@ const SPREAD_CD := 0.6
 const CARTRIDGES_PER_PICKUP := 4
 const WEAPONS := ["nerf", "soaker", "espalhadora"]
 const WEAPON_NAMES := {"nerf": "Nerf", "soaker": "Super Soaker", "espalhadora": "Espalhadora"}
+## Chuva (níveis 3 e 4). Números de jogo, no mesmo lugar das outras regras da vila.
+const PUDDLE_SLOW := 0.70
+const DART_RAIN_RANGE := 0.70
+const COAT_SECONDS := 20.0
+const COAT_DAMAGE := 0.5
+const SHELTER_HEAL := 5
+const SLIP_BRAKE := 95.0
+const PUDDLE_COUNT := 5
+const PUDDLE_START_R := 14.0
+const PUDDLE_MAX_R := 38.0
+const PUDDLE_GROW := 1.8
+const DRAIN_COUNT := 3
+const DRAIN_INTERVAL := 8.0
+const DRAIN_CAP := 6
+const DRAIN_SEAL_TIME := 2.0
+const DRAIN_NEAR := 28.0
+const REVEAL_TIME := 1.0
+const REVEAL_GAP := 8.0
+const STRIKE_DELAY := 1.5
+const STRIKE_DAMAGE := 10
+const STRIKE_RADIUS := 46.0
+const STRIKE_GAP := 11.0
+const WEAPON_HELP := "Armas: Nerf (dardos), Super Soaker (molha e deixa lento), Espalhadora (cinco dardos em leque)."
 
 var main: Node
 var active := false
@@ -88,6 +111,20 @@ var _night_mod: CanvasModulate
 var _light: PointLight2D
 var _rain_mod: CanvasModulate
 var _rain: RainLayer
+var _rground: RainGround
+## Poças, capa e bueiros por tela. A capa ativa conta em coat_t.
+var puddles: Dictionary = {}
+var coats: Dictionary = {}
+var _coat_nodes: Array = []
+var coat_t := 0.0
+var drains: Array = []
+var _drain_cd := 8.0
+var _reveal_t := 0.0
+var _reveal_cd := 8.0
+var _bolt_cd := 11.0
+var _bolt: Dictionary = {}
+var _shelter_known := false
+var _in_shelter := false
 # Interface
 var _stats: PanelContainer
 var _phase_label: Label
@@ -158,6 +195,16 @@ func start_phase(idx: int) -> void:
 	_kills_to_heart = heart_every()
 	_darts_at_phase_start = darts
 	_invuln = 0.0
+	coat_t = 0.0
+	_shelter_known = false
+	_in_shelter = false
+	_bolt = {}
+	_reveal_t = 0.0
+	_reveal_cd = REVEAL_GAP
+	_bolt_cd = STRIKE_GAP
+	_drain_cd = DRAIN_INTERVAL
+	if main._player != null:
+		main._player.set_weather_move(1.0, 0.0)
 	_place_everything()
 	_apply_rain(false)
 	_apply_night(bool(PHASES[phase]["night"]))
@@ -168,7 +215,8 @@ func start_phase(idx: int) -> void:
 	on_area_loaded()
 	_invuln = 1.5
 	_refresh_stats()
-	_show_toast("%s — colete as %d moedas!" % [String(PHASES[phase]["name"]), coins_goal()], 3.0)
+	main._show_banner(level_banner(phase), 3.2)
+	_show_toast("Colete as %d moedas!" % coins_goal(), 3.0)
 
 
 func stop() -> void:
@@ -232,6 +280,7 @@ func _place_everything() -> void:
 				sl.append({"kind": k, "pos": p})
 				taken.append(p)
 		scorps[id] = sl
+	_place_rain()
 
 
 ## Reparte poucas armas especiais entre as telas distantes, uma por tela antes de repetir.
@@ -321,8 +370,9 @@ func on_area_leaving() -> void:
 	var sl: Array = []
 	for s: Scorpion in _scorp_nodes:
 		if is_instance_valid(s):
-			sl.append({"kind": s.kind, "pos": s.position, "hp": s.hp})
+			sl.append({"kind": s.kind, "pos": s.position, "hp": s.hp, "from_drain": s.from_drain})
 	scorps[main.current_area] = sl
+	_bolt = {}
 	_clear_nodes()
 
 
@@ -346,12 +396,18 @@ func on_area_loaded() -> void:
 		s.setup(String(d["kind"]), main.walk_map, main._finder, main._player, float(PHASES[phase]["speed"]))
 		s.hp = int(d["hp"]) if d.has("hp") else scorpion_hp(String(d["kind"]))
 		s.aggro_mult = float(PHASES[phase]["aggro"])
+		s.from_drain = bool(d.get("from_drain", false))
+		s.avoid = Callable(self, "in_puddle")
 		s.position = d["pos"]
 		world.add_child(s)
 		_scorp_nodes.append(s)
+	for p: Vector2 in coats.get(id, []):
+		_coat_nodes.append(_spawn_pickup("capa", p, world))
+	_cull_sheltered_puddles(id)
 	for p: Vector2 in hearts.get(id, []):
 		_heart_nodes.append(_spawn_pickup("coracao", p, world))
 	_invuln = maxf(_invuln, 1.0)
+	_sync_rain_ground()
 	_update_minimap()
 
 
@@ -366,7 +422,7 @@ func _spawn_pickup(kind: String, p: Vector2, world: Node2D) -> Pickup:
 func _clear_nodes() -> void:
 	if _jet != null:
 		_jet.visible = false
-	for arr: Array in [_coin_nodes, _gun_nodes, _scorp_nodes, _dart_nodes, _heart_nodes, _soaker_nodes, _spreader_nodes]:
+	for arr: Array in [_coin_nodes, _gun_nodes, _scorp_nodes, _dart_nodes, _heart_nodes, _soaker_nodes, _spreader_nodes, _coat_nodes]:
 		for n: Node in arr:
 			if is_instance_valid(n):
 				n.queue_free()
@@ -383,6 +439,9 @@ func tick(delta: float) -> void:
 	_fire_cd = maxf(0.0, _fire_cd - delta)
 	_invuln = maxf(0.0, _invuln - delta)
 	player.modulate.a = 1.0 if _invuln <= 0.0 or int(_invuln * 12.0) % 2 == 0 else 0.35
+	_update_weather(delta)
+	if overlay_open:
+		return
 	# Moedas
 	for i in range(_coin_nodes.size() - 1, -1, -1):
 		var c: Pickup = _coin_nodes[i]
@@ -438,6 +497,16 @@ func tick(delta: float) -> void:
 			else:
 				_show_toast("Espalhadora: +%d cartuchos" % CARTRIDGES_PER_PICKUP, 1.6)
 			_refresh_stats()
+	# Capa de chuva (uma por nível chuvoso).
+	for i in range(_coat_nodes.size() - 1, -1, -1):
+		var coat: Pickup = _coat_nodes[i]
+		if coat.position.distance_to(player.position) < 15.0:
+			(coats[id] as Array).erase(coat.position)
+			coat.queue_free()
+			_coat_nodes.remove_at(i)
+			coat_t = COAT_SECONDS
+			_refresh_stats()
+			_show_toast("Capa de chuva! %ds sem escorregar e com metade do dano" % int(COAT_SECONDS), 2.4)
 	# Corações
 	for i in range(_heart_nodes.size() - 1, -1, -1):
 		var h: Pickup = _heart_nodes[i]
@@ -452,6 +521,7 @@ func tick(delta: float) -> void:
 	# Escorpiões
 	var hidden: bool = main.is_occluded(player.position)
 	for s: Scorpion in _scorp_nodes:
+		s.set_revealed(_reveal_t > 0.0 and _in_view(s.position))
 		if s.tick(delta, hidden) and _invuln <= 0.0:
 			_stung(s.kind)
 			if overlay_open:
@@ -623,8 +693,14 @@ func _on_kill(where: Vector2) -> void:
 	_show_toast("Um coração apareceu! Pegue para recuperar %d%% de vida" % heart_heal(), 2.0)
 
 
+func _scaled_damage(raw: int) -> int:
+	if coat_t <= 0.0:
+		return raw
+	return maxi(1, roundi(float(raw) * COAT_DAMAGE))
+
+
 func _stung(kind: String) -> void:
-	var dmg := int(PHASES[phase]["dmg_yellow"] if kind == "amarelo" else PHASES[phase]["dmg_red"])
+	var dmg := _scaled_damage(int(PHASES[phase]["dmg_yellow"] if kind == "amarelo" else PHASES[phase]["dmg_red"]))
 	health = maxi(0, health - dmg)
 	_invuln = 1.0
 	_refresh_stats()
@@ -707,6 +783,7 @@ func _shoot_nerf(toward: Vector2) -> bool:
 	var d := Dart.new()
 	d.position = origin
 	d.velocity = dir * Dart.SPEED
+	d.max_range = Dart.RANGE * nerf_range_scale()
 	main._world.add_child(d)
 	_dart_nodes.append(d)
 	darts -= 1
@@ -781,14 +858,21 @@ func _apply_rain(on: bool) -> void:
 			_rain_mod.color = Color(0.68, 0.74, 0.86)
 			main._sub_viewport.add_child(_rain_mod)
 		_rain = RainLayer.new()
+		_rain.scripted = is_night()
 		main.add_child(_rain)
 		main.move_child(_rain, main._viewport_container.get_index() + 1)
+		if _rground == null:
+			_rground = RainGround.new()
+			main._world.add_child(_rground)
 	elif not on and _rain != null:
 		if _rain_mod != null:
 			_rain_mod.queue_free()
 		_rain_mod = null
 		_rain.queue_free()
 		_rain = null
+		if _rground != null:
+			_rground.queue_free()
+			_rground = null
 
 
 func is_raining() -> bool:
@@ -797,6 +881,371 @@ func is_raining() -> bool:
 
 func is_night() -> bool:
 	return _night_mod != null
+
+
+func is_storm() -> bool:
+	return is_raining() and is_night()
+
+
+func level_banner(idx: int) -> String:
+	match idx:
+		0:
+			return "Nível 1 — dia fácil. Junte as moedas e use o lançador Nerf"
+		1:
+			return "Nível 2 — a noite caiu. A lanterna ilumina pouco; a Espalhadora chegou"
+		2:
+			return "Nível 3 — dia de chuva. Poças, chão escorregadio e dardos molhados"
+		3:
+			return "Nível 4 — escorpiões saindo dos ralos! Tampe os bueiros"
+	return ""
+
+
+func level_debrief(idx: int) -> String:
+	match idx:
+		1:
+			return "Muda no nível 2: fica noite (a lanterna não cobre tudo) e aparece a Espalhadora."
+		2:
+			return "Muda no nível 3: chuva. Poças deixam 30% mais lento; o chão bege e terracota escorrega, a grama não. Dardos molhados perdem 30% de alcance fora do abrigo. Sob a marquise e a torre coberta não chove: sem escorregar, alcance normal e +5% de vida. Uma capa de chuva dura 20s (sem escorregar e com metade do dano)."
+		3:
+			return "Muda no nível 4: a chuva segue, de noite. Escorpiões saem dos ralos — fique 2 segundos perto para tampar o bueiro. O relâmpago mostra todo escorpião na tela por 1 segundo, e o raio cai 1,5s depois do círculo (−10% de vida)."
+	return ""
+
+
+## Dentro de uma poça da tela atual.
+func in_puddle(p: Vector2) -> bool:
+	if not is_raining():
+		return false
+	for pud: Dictionary in puddles.get(main.current_area, []):
+		if p.distance_to(pud["center"]) <= float(pud["radius"]):
+			return true
+	return false
+
+
+## Marquise e parte coberta das torres: o sprite da torre já cobre o corpo.
+func in_dry_shelter(p: Vector2) -> bool:
+	if not is_raining():
+		return false
+	return bool(main.is_occluded(p))
+
+
+func nerf_range_scale() -> float:
+	if not is_raining() or in_dry_shelter(main._player.position):
+		return 1.0
+	return DART_RAIN_RANGE
+
+
+## Poça, piso escorregadio, abrigo e capa. O passo lê isso antes de andar.
+func apply_move_modifiers() -> void:
+	var player: Walker = main._player
+	if player == null or not is_raining() or not active:
+		if player != null:
+			player.set_weather_move(1.0, 0.0)
+		return
+	var scale := PUDDLE_SLOW if in_puddle(player.position) else 1.0
+	var floor := String(main.floor_kind(player.position))
+	var slip := coat_t <= 0.0 and not in_dry_shelter(player.position) and floor in ["bege", "terracota"]
+	player.set_weather_move(scale, SLIP_BRAKE if slip else 0.0)
+
+
+func drain_alive() -> int:
+	var n := 0
+	for s: Scorpion in _scorp_nodes:
+		if s.from_drain:
+			n += 1
+	for id: String in scorps:
+		if id == String(main.current_area):
+			continue
+		for d: Dictionary in scorps[id]:
+			if bool(d.get("from_drain", false)):
+				n += 1
+	return n
+
+
+func _update_weather(delta: float) -> void:
+	var had_coat := coat_t > 0.0
+	if had_coat:
+		coat_t = maxf(0.0, coat_t - delta)
+		if coat_t == 0.0:
+			_show_toast("A capa de chuva acabou", 1.4)
+			_refresh_stats()
+	if not is_raining():
+		_shelter_known = false
+		return
+	_grow_puddles(delta)
+	_update_shelter()
+	if is_storm():
+		_update_drains(delta)
+		_update_reveal(delta)
+		_update_bolts(delta)
+	_sync_rain_ground()
+
+
+func _grow_puddles(delta: float) -> void:
+	for id: String in puddles:
+		for pud: Dictionary in puddles[id]:
+			pud["radius"] = minf(float(pud["max_radius"]), float(pud["radius"]) + PUDDLE_GROW * delta)
+
+
+func _update_shelter() -> void:
+	var now := in_dry_shelter(main._player.position)
+	if not _shelter_known:
+		_shelter_known = true
+		_in_shelter = now
+		return
+	if now and not _in_shelter and health < 100 and not overlay_open:
+		var before := health
+		health = mini(100, health + SHELTER_HEAL)
+		if health > before:
+			_refresh_stats()
+			_show_toast("Abrigo seco! +%d%% de vida" % (health - before), 1.4)
+	_in_shelter = now
+
+
+func _update_drains(delta: float) -> void:
+	var player: Walker = main._player
+	for d: Dictionary in drains:
+		if bool(d["sealed"]) or String(d["area"]) != String(main.current_area):
+			continue
+		if player.position.distance_to(d["pos"]) <= DRAIN_NEAR:
+			d["near"] = float(d["near"]) + delta
+			if float(d["near"]) >= DRAIN_SEAL_TIME:
+				d["sealed"] = true
+				_show_toast("Bueiro tampado. Esse ralo não solta mais escorpiões", 1.8)
+		else:
+			d["near"] = 0.0
+	_drain_cd -= delta
+	if _drain_cd <= 0.0:
+		_drain_cd = DRAIN_INTERVAL
+		_spawn_from_drain()
+
+
+func _spawn_from_drain() -> void:
+	if drains.is_empty() or drain_alive() >= DRAIN_CAP:
+		return
+	var open: Array = []
+	for d: Dictionary in drains:
+		if not bool(d["sealed"]):
+			open.append(d)
+	if open.is_empty():
+		return
+	var d: Dictionary = open[randi() % open.size()]
+	var id := String(d["area"])
+	var pos: Vector2 = d["pos"]
+	var kind := "amarelo"
+	if id == String(main.current_area):
+		var s := Scorpion.new()
+		s.setup(kind, main.walk_map, main._finder, main._player, float(PHASES[phase]["speed"]))
+		s.hp = scorpion_hp(kind)
+		s.aggro_mult = float(PHASES[phase]["aggro"])
+		s.from_drain = true
+		s.avoid = Callable(self, "in_puddle")
+		s.position = pos
+		main._world.add_child(s)
+		_scorp_nodes.append(s)
+	else:
+		(scorps[id] as Array).append({"kind": kind, "pos": pos, "hp": scorpion_hp(kind), "from_drain": true})
+	_show_toast("Um escorpião saiu do ralo!", 1.4)
+
+
+func _update_reveal(delta: float) -> void:
+	if _reveal_t > 0.0:
+		_reveal_t = maxf(0.0, _reveal_t - delta)
+		return
+	_reveal_cd -= delta
+	if _reveal_cd > 0.0:
+		return
+	_reveal_t = REVEAL_TIME
+	_reveal_cd = REVEAL_GAP
+	if _rain != null:
+		_rain.pulse(REVEAL_TIME)
+
+
+func _update_bolts(delta: float) -> void:
+	if not _bolt.is_empty():
+		_bolt["left"] = float(_bolt["left"]) - delta
+		if float(_bolt["left"]) <= 0.0:
+			_resolve_bolt()
+			_bolt = {}
+		return
+	_bolt_cd -= delta
+	if _bolt_cd <= 0.0:
+		_bolt_cd = STRIKE_GAP
+		_aim_bolt()
+
+
+func _aim_bolt() -> void:
+	var player: Walker = main._player
+	var wm: WalkMap = main.walk_map
+	var pos := player.position
+	for i in 12:
+		var ang := randf() * TAU
+		var cand := player.position + Vector2(cos(ang), sin(ang)) * randf_range(40.0, 160.0)
+		if wm.is_footprint_walkable(cand, Walker.FOOT_HALF):
+			pos = cand
+			break
+	_bolt = {"pos": pos, "left": STRIKE_DELAY}
+
+
+func _resolve_bolt() -> void:
+	var p: Vector2 = _bolt["pos"]
+	for j in range(_scorp_nodes.size() - 1, -1, -1):
+		var s: Scorpion = _scorp_nodes[j]
+		if not is_instance_valid(s):
+			continue
+		if s.position.distance_to(p) <= STRIKE_RADIUS:
+			_kill_scorpion(j)
+			if overlay_open:
+				return
+	if main._player.position.distance_to(p) <= STRIKE_RADIUS:
+		var dmg := _scaled_damage(STRIKE_DAMAGE)
+		health = maxi(0, health - dmg)
+		_refresh_stats()
+		_show_toast("Raio! −%d%%" % dmg, 1.4)
+		if health <= 0:
+			_game_over()
+	if _rain != null:
+		_rain.pulse(0.25)
+
+
+func _in_view(p: Vector2) -> bool:
+	var cam: Camera2D = main._camera
+	var vp: Vector2 = main._sub_viewport.get_visible_rect().size
+	if cam == null or vp.x < 8.0 or vp.y < 8.0:
+		return p.distance_to(main._player.position) < 420.0
+	var zoom := cam.zoom.x if cam.zoom.x > 0.01 else 1.0
+	var half: Vector2 = vp * 0.5 / zoom
+	return Rect2(cam.global_position - half, half * 2.0).grow(8.0).has_point(p)
+
+
+func _sync_rain_ground() -> void:
+	if _rground == null or not is_instance_valid(_rground):
+		return
+	var id := String(main.current_area)
+	_rground.puddles = puddles.get(id, [])
+	var ds: Array = []
+	for d: Dictionary in drains:
+		if String(d["area"]) == id:
+			ds.append(d)
+	_rground.drains = ds
+	if _bolt.is_empty():
+		_rground.bolt_pos = Vector2.INF
+	else:
+		_rground.bolt_pos = _bolt["pos"]
+		_rground.bolt_r = STRIKE_RADIUS
+		_rground.bolt_k = clampf(1.0 - float(_bolt["left"]) / STRIKE_DELAY, 0.0, 1.0)
+
+
+func _cull_sheltered_puddles(id: String) -> void:
+	if not puddles.has(id):
+		return
+	var kept: Array = []
+	for pud: Dictionary in puddles[id]:
+		if not main.is_occluded(pud["center"]):
+			kept.append(pud)
+	if not kept.is_empty():
+		puddles[id] = kept
+
+
+func _place_rain() -> void:
+	puddles.clear()
+	coats.clear()
+	drains.clear()
+	if not bool(PHASES[phase]["rain"]):
+		return
+	var ids: Array = (main.areas as Dictionary).keys()
+	var weights := {}
+	for id: String in ids:
+		weights[id] = pow(float((_points.get(id, []) as Array).size()), 0.7)
+	var n_coat: Dictionary = _distribute(1, weights, 0)
+	for id: String in ids:
+		var pts: Array = (_points.get(id, []) as Array).duplicate()
+		var rng := RandomNumberGenerator.new()
+		rng.seed = 9100 + phase * 17 + id.hash()
+		for i in range(pts.size() - 1, 0, -1):
+			var j := rng.randi() % (i + 1)
+			var tmp: Variant = pts[i]
+			pts[i] = pts[j]
+			pts[j] = tmp
+		var safe: Array[Vector2] = []
+		for s: Array in ((main.areas[id] as Dictionary)["spawns"] as Dictionary).values():
+			safe.append(Vector2(float(s[0]), float(s[1])))
+		var taken: Array[Vector2] = []
+		var spots: Array[Vector2] = _pick(pts, PUDDLE_COUNT, 90.0, taken, safe, 70.0)
+		var list: Array = []
+		for p: Vector2 in spots:
+			list.append({"center": p, "radius": PUDDLE_START_R, "max_radius": PUDDLE_MAX_R})
+			taken.append(p)
+		puddles[id] = list
+		var coat_spots: Array[Vector2] = []
+		if int(n_coat.get(id, 0)) > 0:
+			coat_spots = _pick(pts, 1, 80.0, taken, safe, 80.0)
+			if coat_spots.is_empty() and not pts.is_empty():
+				var raw: Array = pts[0]
+				coat_spots.append(Vector2(float(raw[0]), float(raw[1])))
+		coats[id] = coat_spots
+	if bool(PHASES[phase]["night"]):
+		_place_drains()
+
+
+func _place_drains() -> void:
+	var cands: Array = []
+	for id: String in (main.areas as Dictionary).keys():
+		var safe: Array[Vector2] = []
+		for s: Array in ((main.areas[id] as Dictionary)["spawns"] as Dictionary).values():
+			safe.append(Vector2(float(s[0]), float(s[1])))
+		var pts: Array = _points.get(id, [])
+		var pool: Array = pts.duplicate()
+		var rng := RandomNumberGenerator.new()
+		rng.seed = 4400 + id.hash()
+		for i in range(pool.size() - 1, 0, -1):
+			var j := rng.randi() % (i + 1)
+			var tmp: Variant = pool[i]
+			pool[i] = pool[j]
+			pool[j] = tmp
+		var none: Array[Vector2] = []
+		var picked: Array[Vector2] = _pick(pool, 4, 140.0, none, safe, 160.0)
+		for p: Vector2 in picked:
+			cands.append({"area": id, "pos": p})
+	var chosen: Array = []
+	var used := {}
+	for c: Dictionary in cands:
+		if chosen.size() >= DRAIN_COUNT:
+			break
+		if used.has(c["area"]):
+			continue
+		used[c["area"]] = true
+		chosen.append({"area": c["area"], "pos": c["pos"], "sealed": false, "near": 0.0})
+	if chosen.size() < DRAIN_COUNT:
+		for c: Dictionary in cands:
+			if chosen.size() >= DRAIN_COUNT:
+				break
+			var dup := false
+			for o: Dictionary in chosen:
+				if o["area"] == c["area"] and (o["pos"] as Vector2).distance_to(c["pos"]) < 80.0:
+					dup = true
+			if not dup:
+				chosen.append({"area": c["area"], "pos": c["pos"], "sealed": false, "near": 0.0})
+	if chosen.size() < DRAIN_COUNT:
+		for id: String in (main.areas as Dictionary).keys():
+			for raw: Array in _points.get(id, []):
+				if chosen.size() >= DRAIN_COUNT:
+					break
+				var pos := Vector2(float(raw[0]), float(raw[1]))
+				var dup := false
+				for o: Dictionary in chosen:
+					if o["area"] == id and (o["pos"] as Vector2).distance_to(pos) < 40.0:
+						dup = true
+				if not dup:
+					chosen.append({"area": id, "pos": pos, "sealed": false, "near": 0.0})
+	drains = chosen
+
+
+func _append_rain_dots(dots: Array, id: String) -> void:
+	for pud: Dictionary in puddles.get(id, []):
+		dots.append([pud["center"], "poca"])
+	for d: Dictionary in drains:
+		if String(d["area"]) == id:
+			dots.append([d["pos"], "bueiro_tampado" if bool(d["sealed"]) else "bueiro"])
 
 
 # ---------------------------------------------------------------- interface
@@ -935,9 +1384,9 @@ func _open_overlay(screen: Control, button: Button) -> void:
 func _phase_complete() -> void:
 	if phase + 1 < PHASES.size():
 		var nx: Dictionary = PHASES[phase + 1]
-		var extra := "Noite com chuva: o desafio final." if bool(nx["night"]) and bool(nx["rain"]) else ("A noite caiu no condomínio." if bool(nx["night"]) else ("Começou a chover." if bool(nx["rain"]) else ""))
-		_phase_text.text = "Você juntou as %d moedas e eliminou %d escorpiões.\n%s Próximo: %s — %d moedas, %d escorpiões amarelos e %d vermelhos; picadas −%d%% e −%d%%; %d lançadores com %d dardos; amarelo cai com %d dardo(s) e vermelho com %d; coração a cada %d escorpiões (+%d%%)." % [
-			coins_goal(), kills, extra, String(nx["name"]), int(nx["coins"]), int(nx["yellow"]), int(nx["red"]),
+		_phase_text.text = "%s\n%s\nVocê juntou as %d moedas e eliminou %d escorpiões.\nPróximo: %s — %d moedas, %d escorpiões amarelos e %d vermelhos; picadas −%d%% e −%d%%; %d lançadores com %d dardos; amarelo cai com %d dardo(s) e vermelho com %d; coração a cada %d escorpiões (+%d%%)." % [
+			WEAPON_HELP, level_debrief(phase + 1),
+			coins_goal(), kills, String(nx["name"]), int(nx["coins"]), int(nx["yellow"]), int(nx["red"]),
 			int(nx["dmg_yellow"]), int(nx["dmg_red"]), int(nx["guns"]), int(nx["darts"]),
 			int(nx["hp_yellow"]), int(nx["hp_red"]), int(nx["heart_every"]), int(nx["heart_heal"])]
 		_phase_button.text = "Começar o %s" % String(nx["short"])
@@ -960,6 +1409,8 @@ func _refresh_stats() -> void:
 	_hp_fill.size.x = 190.0 * health / 100.0
 	_hp_fill.color = Color("e0433a") if health > 30 else Color("ff2a1a")
 	_hp_label.text = "Vida %d%%" % health
+	if coat_t > 0.0:
+		_hp_label.text += "  Capa %ds" % int(ceil(coat_t))
 	_coin_label.text = "Moedas %d/%d" % [coins_got, coins_goal()]
 	_dart_label.text = _ammo_text(weapon)
 	if _weapon_icon != null:
@@ -1026,6 +1477,9 @@ func markers_for(id: String) -> Dictionary:
 			dots.append([w.position, "espalhadora"])
 		for h: Pickup in _heart_nodes:
 			dots.append([h.position, "coracao"])
+		for w: Pickup in _coat_nodes:
+			dots.append([w.position, "capa"])
+		_append_rain_dots(dots, id)
 		for sc: Scorpion in _scorp_nodes:
 			dots.append([sc.position, sc.kind])
 		nc = _coin_nodes.size(); ng = _gun_nodes.size() + _soaker_nodes.size() + _spreader_nodes.size(); ns = _scorp_nodes.size()
@@ -1040,6 +1494,9 @@ func markers_for(id: String) -> Dictionary:
 			dots.append([p, "espalhadora"])
 		for p: Vector2 in hearts.get(id, []):
 			dots.append([p, "coracao"])
+		for p: Vector2 in coats.get(id, []):
+			dots.append([p, "capa"])
+		_append_rain_dots(dots, id)
 		for d: Dictionary in scorps.get(id, []):
 			dots.append([d["pos"], String(d["kind"])])
 		nc = (coins.get(id, []) as Array).size(); ng = (guns.get(id, []) as Array).size() + (soakers.get(id, []) as Array).size() + (spreaders.get(id, []) as Array).size(); ns = (scorps.get(id, []) as Array).size()

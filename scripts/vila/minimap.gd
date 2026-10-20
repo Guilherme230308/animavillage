@@ -133,6 +133,17 @@ func _marker(p: Vector2, kind: String, pulse: float = 0.0) -> void:
 				fan_o.append(p + Vector2(-4.8, 3.2) + Vector2(cos(a), sin(a)) * 8.4 + Vector2(3.2, 0))
 			draw_colored_polygon(fan_o, dark)
 			draw_colored_polygon(fan, Color("6fe03a"))
+		"poca":
+			draw_circle(p, 4.2, Color(0.15, 0.28, 0.48, 0.95))
+			draw_circle(p, 3.0, Color(0.45, 0.72, 0.95, 0.95))
+			draw_circle(p + Vector2(-1.0, -0.8), 1.0, Color(0.85, 0.95, 1.0, 0.8))
+		"capa":
+			draw_colored_polygon(PackedVector2Array([p + Vector2(-3.2, -1.5), p + Vector2(3.2, -1.5), p + Vector2(2.6, 4.2), p + Vector2(-2.6, 4.2)]), dark)
+			draw_colored_polygon(PackedVector2Array([p + Vector2(-2.4, -1.0), p + Vector2(2.4, -1.0), p + Vector2(2.0, 3.4), p + Vector2(-2.0, 3.4)]), Color("f0c43a"))
+		"bueiro", "bueiro_tampado":
+			var lid := Color("c47a3a") if kind == "bueiro_tampado" else Color("8aa0b0")
+			draw_rect(Rect2(p - Vector2(3.6, 2.6), Vector2(7.2, 5.2)), dark)
+			draw_rect(Rect2(p - Vector2(2.8, 1.9), Vector2(5.6, 3.8)), lid)
 		_:
 			var col := Color("ff2e1f") if kind == "vermelho" else Color("ff9a1a")
 			var sz := 4.6 + pulse * 0.8

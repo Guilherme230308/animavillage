@@ -24,6 +24,12 @@ var chasing := false
 ## Molhado pela Super Soaker: anda a 50% enquanto > 0.
 var slow_t := 0.0
 var sting_cd := 0.0
+## Verdadeiro se este escorpião nasceu de um bueiro.
+var from_drain := false
+## Relâmpago: visível mesmo fora da lanterna.
+var revealed := false
+## Devolve verdadeiro se o ponto é poça (o escorpião não entra).
+var avoid: Callable = Callable()
 var _sprite: Sprite2D
 var _anim_t := 0.0
 var _path := PackedVector2Array()
@@ -76,7 +82,12 @@ func tick(delta: float, player_hidden: bool) -> bool:
 	_force_path_t = maxf(0.0, _force_path_t - delta)
 	_flash = maxf(0.0, _flash - delta)
 	slow_t = maxf(0.0, slow_t - delta)
-	_sprite.modulate = Color(3, 3, 3, 1) if _flash > 0.0 else (Color(0.55, 0.8, 1.35, 1) if slow_t > 0.0 else Color(1, 1, 1, 1))
+	if revealed:
+		_show_revealed()
+	else:
+		if _sprite.material != null:
+			_sprite.material = null
+		_sprite.modulate = Color(3, 3, 3, 1) if _flash > 0.0 else (Color(0.55, 0.8, 1.35, 1) if slow_t > 0.0 else Color(1, 1, 1, 1))
 	var cfg: Dictionary = KINDS[kind]
 	var to_p := target.position - position
 	var d := to_p.length()
@@ -108,7 +119,8 @@ func tick(delta: float, player_hidden: bool) -> bool:
 		if _wander_t <= 0.0 or _wander_to == Vector2.INF or position.distance_to(_wander_to) < 3.0:
 			_wander_t = 1.5 + randf() * 2.0
 			var cand := position + Vector2(randf_range(-45, 45), randf_range(-45, 45))
-			_wander_to = cand if walk_map.is_footprint_walkable(cand, HALF) and _clear_line(position, cand) else Vector2.INF
+			var blocked: bool = avoid.is_valid() and bool(avoid.call(cand))
+			_wander_to = cand if not blocked and walk_map.is_footprint_walkable(cand, HALF) and _clear_line(position, cand) else Vector2.INF
 		if _wander_to != Vector2.INF:
 			dir = (_wander_to - position).normalized()
 	if dir != Vector2.ZERO:
@@ -151,13 +163,34 @@ func hit() -> bool:
 	return hp <= 0
 
 
+func set_revealed(on: bool) -> void:
+	revealed = on
+	if revealed:
+		_show_revealed()
+	elif _sprite != null:
+		_sprite.material = null
+
+
+func _show_revealed() -> void:
+	if _sprite == null:
+		return
+	if _sprite.material == null:
+		var mat := CanvasItemMaterial.new()
+		mat.light_mode = CanvasItemMaterial.LIGHT_MODE_UNSHADED
+		_sprite.material = mat
+	_sprite.modulate = Color(1.35, 1.35, 1.35, 1)
+
+
 func _try(m: Vector2) -> void:
 	if m == Vector2.ZERO:
 		return
 	var steps := int(ceil(m.length() / 2.0))
 	var piece := m / steps
 	for i in steps:
-		if walk_map.is_footprint_walkable(position + piece, HALF):
+		var nxt := position + piece
+		if avoid.is_valid() and bool(avoid.call(nxt)) and not bool(avoid.call(position)):
+			break
+		if walk_map.is_footprint_walkable(nxt, HALF):
 			position += piece
 		else:
 			break

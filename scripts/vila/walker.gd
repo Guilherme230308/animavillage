@@ -31,6 +31,21 @@ var _stair_t := 0.0
 var _stair_bob := 0.0
 var _sprite: AnimatedSprite2D
 var _shadow: Polygon2D
+## 1 = passo normal. A chuva reduz dentro da poça.
+var speed_scale := 1.0
+## Desaceleração ao soltar o passo (px/s²). 0 = para na hora.
+var slip_brake := 0.0
+var _coast := Vector2.ZERO
+
+
+## Ajusta o passo do clima. Sem freio, o escorregão acaba na hora.
+func set_weather_move(scale: float, brake: float) -> void:
+	if brake <= 0.0:
+		_coast = Vector2.ZERO
+	elif speed_scale > 0.01 and scale < speed_scale and _coast != Vector2.ZERO:
+		_coast *= scale / speed_scale
+	speed_scale = scale
+	slip_brake = brake
 
 
 func _ready() -> void:
@@ -85,13 +100,27 @@ static func _build_frames(path: String) -> SpriteFrames:
 ## Move tentando cada eixo separadamente para deslizar junto às bordas.
 func step(direction: Vector2, running: bool, delta: float) -> Vector2:
 	var before := position
-	moving = direction.length() > 0.01
-	if moving:
+	var input := direction.length() > 0.01
+	var speed := (RUN_SPEED if running else WALK_SPEED) * speed_scale
+	if on_stairs():
+		speed *= STAIR_SPEED
+	var wish := Vector2.ZERO
+	if input:
 		var dir := direction.normalized() if direction.length() > 1.0 else direction
-		var speed := RUN_SPEED if running else WALK_SPEED
-		if on_stairs():
-			speed *= STAIR_SPEED
-		var motion := dir * speed * delta
+		wish = dir * speed
+	# Chão escorregadio: o passo segue enquanto a tecla está presa e demora a parar.
+	if slip_brake > 0.0 and not input:
+		var drop := slip_brake * delta
+		if _coast.length() <= drop:
+			_coast = Vector2.ZERO
+		else:
+			_coast -= _coast.normalized() * drop
+		wish = _coast
+	else:
+		_coast = wish
+	moving = wish.length() > 0.01
+	if moving:
+		var motion := wish * delta
 		_try_axis(Vector2(motion.x, 0))
 		_try_axis(Vector2(0, motion.y))
 		if abs(motion.x) > 0.01 and abs(position.x - before.x) < abs(motion.x) * 0.3:
@@ -110,10 +139,11 @@ func step(direction: Vector2, running: bool, delta: float) -> Vector2:
 				if (position - p0).dot(rest.normalized()) > rest.length() * 0.05:
 					break
 				position = p0
-		if abs(direction.x) > abs(direction.y):
-			facing = "right" if direction.x > 0 else "left"
-		else:
-			facing = "down" if direction.y > 0 else "up"
+		if input:
+			if abs(direction.x) > abs(direction.y):
+				facing = "right" if direction.x > 0 else "left"
+			else:
+				facing = "down" if direction.y > 0 else "up"
 	moving = moving and position.distance_to(before) > 0.001
 	var anim := ("walk_" if moving else "idle_") + facing
 	if _sprite != null and _sprite.animation != anim:

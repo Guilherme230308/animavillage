@@ -30,6 +30,9 @@ func _process(delta: float) -> void:
 
 
 func _draw() -> void:
+	if kind == "capa":
+		_draw_coat()
+		return
 	if kind == "coracao":
 		_draw_heart()
 		return
@@ -78,3 +81,16 @@ func _draw_heart() -> void:
 			if rows[y][x] == "1":
 				draw_rect(Rect2(o + Vector2(x, y) * px, Vector2(px, px)), Color("ff3b5c"))
 	draw_rect(Rect2(o + Vector2(1, 1) * px, Vector2(px, px)), Color("ffc2cc"))
+
+
+## Capa de chuva amarela, balançando no chão.
+func _draw_coat() -> void:
+	var bob := sin(_t * 3.0) * 1.2
+	var c := Vector2(0, -8 + bob)
+	draw_circle(Vector2(0, 2), 4.0, Color(0, 0, 0, 0.25))
+	draw_circle(c, 11.0, Color(1.0, 0.85, 0.2, 0.16))
+	draw_colored_polygon(PackedVector2Array([c + Vector2(-6, -2), c + Vector2(6, -2), c + Vector2(5, 8), c + Vector2(-5, 8)]), Color("f0c43a"))
+	draw_colored_polygon(PackedVector2Array([c + Vector2(-7, -1), c + Vector2(-4, -1), c + Vector2(-5, 6), c + Vector2(-8, 5)]), Color("e0a820"))
+	draw_colored_polygon(PackedVector2Array([c + Vector2(4, -1), c + Vector2(7, -1), c + Vector2(8, 5), c + Vector2(5, 6)]), Color("e0a820"))
+	draw_rect(Rect2(c + Vector2(-2.5, -6), Vector2(5, 4)), Color("ffe27a"))
+	draw_arc(c + Vector2(0, -6), 3.2, PI, TAU, 8, Color("5b4630"), 1.4)

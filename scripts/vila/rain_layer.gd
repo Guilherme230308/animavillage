@@ -8,7 +8,10 @@ const SLANT := Vector2(-0.22, 1.0)
 var _drops: Array = []
 var _splashes: Array = []
 var _flash := 0.0
+var _flash_hold := 0.0
 var _next_flash := 8.0
+## No temporal o jogo dispara o clarão (revelar / raio). Sem isso, o clarão é só visual.
+var scripted := false
 var _rng := RandomNumberGenerator.new()
 
 
@@ -47,12 +50,23 @@ func _process(delta: float) -> void:
 		_splashes[i]["t"] += delta
 		if float(_splashes[i]["t"]) > 0.25:
 			_splashes.remove_at(i)
-	_next_flash -= delta
-	if _next_flash <= 0.0:
+	if not scripted:
+		_next_flash -= delta
+		if _next_flash <= 0.0:
+			_flash = 1.0
+			_next_flash = _rng.randf_range(9.0, 18.0)
+	if _flash_hold > 0.0:
+		_flash_hold = maxf(0.0, _flash_hold - delta)
 		_flash = 1.0
-		_next_flash = _rng.randf_range(9.0, 18.0)
-	_flash = maxf(0.0, _flash - delta * 3.5)
+	else:
+		_flash = maxf(0.0, _flash - delta * 3.5)
 	queue_redraw()
+
+
+## Clareia a tela por `hold` segundos (relâmpago que revela, ou o impacto do raio).
+func pulse(hold: float) -> void:
+	_flash = 1.0
+	_flash_hold = maxf(_flash_hold, hold)
 
 
 func _draw() -> void:
