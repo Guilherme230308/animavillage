@@ -248,9 +248,9 @@
         "assets/game/areas.json"
       ],
       "regions": [],
-      "sha256": "sha256:f83135555801b93653113090a688cdcbe87aaab45c15d9d3c0efc17cc857f961",
+      "sha256": "sha256:8d31d44e1b0bf8471ff31510ef059455d182e64628834db25cbb783bd6bab408",
       "shipped": true,
-      "size": 7236323,
+      "size": 6172576,
       "source": {},
       "status": "present",
       "transformations": [],
@@ -258,7 +258,21 @@
         "assets/game/areas.json"
       ],
       "used": true,
-      "usedBy": []
+      "usedBy": [],
+      "versions": {
+        "sha256:f83135555801b93653113090a688cdcbe87aaab45c15d9d3c0efc17cc857f961": {
+          "generator": {},
+          "inputs": [],
+          "license": {},
+          "origin": "unknown",
+          "regions": [],
+          "sha256": "sha256:f83135555801b93653113090a688cdcbe87aaab45c15d9d3c0efc17cc857f961",
+          "size": 7236323,
+          "source": {},
+          "transformations": [],
+          "usedBy": []
+        }
+      }
     },
     "assets/game/areas/direita/walk.png": {
       "declaredUseEvidence": [],
@@ -270,9 +284,9 @@
         "assets/game/areas.json"
       ],
       "regions": [],
-      "sha256": "sha256:9d7e363b013663062e0f0f32a6bdefbc156ea1cc05eaa33a16d60454b0646fe9",
+      "sha256": "sha256:1c97f79590651f77911dd0f329c00a681d8aff3801e52ed8b1ce64cf7b9fe857",
       "shipped": true,
-      "size": 2149,
+      "size": 2311,
       "source": {},
       "status": "present",
       "transformations": [],
@@ -282,6 +296,18 @@
       "used": true,
       "usedBy": [],
       "versions": {
+        "sha256:9d7e363b013663062e0f0f32a6bdefbc156ea1cc05eaa33a16d60454b0646fe9": {
+          "generator": {},
+          "inputs": [],
+          "license": {},
+          "origin": "unknown",
+          "regions": [],
+          "sha256": "sha256:9d7e363b013663062e0f0f32a6bdefbc156ea1cc05eaa33a16d60454b0646fe9",
+          "size": 2149,
+          "source": {},
+          "transformations": [],
+          "usedBy": []
+        },
         "sha256:ad07c1a08ba5bb1c7abf723ac74ee928a725507634a65a3dfc69e50238540519": {
           "generator": {},
           "inputs": [],
@@ -306,9 +332,9 @@
         "assets/game/areas.json"
       ],
       "regions": [],
-      "sha256": "sha256:edde6732e2674e4c88812f819f13cf036c4afa690c0a801406add0961501b5bf",
+      "sha256": "sha256:d923f289fc917619e017be6785804cb8daee313038dcedc5f7f62fd2d0059678",
       "shipped": true,
-      "size": 7345329,
+      "size": 5998149,
       "source": {},
       "status": "present",
       "transformations": [],
@@ -329,6 +355,18 @@
           "source": {},
           "transformations": [],
           "usedBy": []
+        },
+        "sha256:edde6732e2674e4c88812f819f13cf036c4afa690c0a801406add0961501b5bf": {
+          "generator": {},
+          "inputs": [],
+          "license": {},
+          "origin": "unknown",
+          "regions": [],
+          "sha256": "sha256:edde6732e2674e4c88812f819f13cf036c4afa690c0a801406add0961501b5bf",
+          "size": 7345329,
+          "source": {},
+          "transformations": [],
+          "usedBy": []
         }
       }
     },
@@ -342,9 +380,9 @@
         "assets/game/areas.json"
       ],
       "regions": [],
-      "sha256": "sha256:21db82110241028f67cb1518042263bdbc0346291df2c8f8f9b9a97ebd779882",
+      "sha256": "sha256:f1919e250f792959b5d01f45b6b095dd2c7ee309e6de31fa1ed72e95568d80c5",
       "shipped": true,
-      "size": 2685,
+      "size": 3614,
       "source": {},
       "status": "present",
       "transformations": [],
@@ -354,6 +392,18 @@
       "used": true,
       "usedBy": [],
       "versions": {
+        "sha256:21db82110241028f67cb1518042263bdbc0346291df2c8f8f9b9a97ebd779882": {
+          "generator": {},
+          "inputs": [],
+          "license": {},
+          "origin": "unknown",
+          "regions": [],
+          "sha256": "sha256:21db82110241028f67cb1518042263bdbc0346291df2c8f8f9b9a97ebd779882",
+          "size": 2685,
+          "source": {},
+          "transformations": [],
+          "usedBy": []
+        },
         "sha256:65dea30d318d93fe75168547312961b296b75137c2b92c4db2200bce27db0f6c": {
           "generator": {},
           "inputs": [],
@@ -378,9 +428,9 @@
         "assets/game/areas.json"
       ],
       "regions": [],
-      "sha256": "sha256:81ef92bcf00a2fe794f91366162626c5ee46936d5e1a04ede507a82f7dc3f8ec",
+      "sha256": "sha256:0048b8c88f0403b1b4d0e13b864cfca3981ca7d856ec9206efe6345d2085ad3e",
       "shipped": true,
-      "size": 6675721,
+      "size": 6490650,
       "source": {},
       "status": "present",
       "transformations": [],
@@ -388,7 +438,21 @@
         "assets/game/areas.json"
       ],
       "used": true,
-      "usedBy": []
+      "usedBy": [],
+      "versions": {
+        "sha256:81ef92bcf00a2fe794f91366162626c5ee46936d5e1a04ede507a82f7dc3f8ec": {
+          "generator": {},
+          "inputs": [],
+          "license": {},
+          "origin": "unknown",
+          "regions": [],
+          "sha256": "sha256:81ef92bcf00a2fe794f91366162626c5ee46936d5e1a04ede507a82f7dc3f8ec",
+          "size": 6675721,
+          "source": {},
+          "transformations": [],
+          "usedBy": []
+        }
+      }
     },
     "assets/game/areas/fundos/walk.png": {
       "declaredUseEvidence": [],
@@ -400,9 +464,9 @@
         "assets/game/areas.json"
       ],
       "regions": [],
-      "sha256": "sha256:9d9a9335764bc83a89ae5948942988f3f75875a0b784b5e9484ec52e4d3e952c",
+      "sha256": "sha256:1f0ed01b79b6409fa52dab1bf1e3f0f79afd192a0b07fb5753e23c59994242b7",
       "shipped": true,
-      "size": 2232,
+      "size": 2034,
       "source": {},
       "status": "present",
       "transformations": [],
@@ -412,6 +476,18 @@
       "used": true,
       "usedBy": [],
       "versions": {
+        "sha256:9d9a9335764bc83a89ae5948942988f3f75875a0b784b5e9484ec52e4d3e952c": {
+          "generator": {},
+          "inputs": [],
+          "license": {},
+          "origin": "unknown",
+          "regions": [],
+          "sha256": "sha256:9d9a9335764bc83a89ae5948942988f3f75875a0b784b5e9484ec52e4d3e952c",
+          "size": 2232,
+          "source": {},
+          "transformations": [],
+          "usedBy": []
+        },
         "sha256:a8a071b09b03c60d2edb85bca4a68add1716ad79519fc3ac58a80ebb00d2c3c1": {
           "generator": {},
           "inputs": [],
@@ -436,9 +512,9 @@
         "assets/game/areas.json"
       ],
       "regions": [],
-      "sha256": "sha256:a7c258f4bc7728322f94389b4ed45938182178cf34127adf264264ad2ce177a3",
+      "sha256": "sha256:1ba52c1d0ddece0a885d851749c87309423a08289163f5a5338e4db789601607",
       "shipped": true,
-      "size": 7332057,
+      "size": 6432795,
       "source": {},
       "status": "present",
       "transformations": [],
@@ -446,7 +522,21 @@
         "assets/game/areas.json"
       ],
       "used": true,
-      "usedBy": []
+      "usedBy": [],
+      "versions": {
+        "sha256:a7c258f4bc7728322f94389b4ed45938182178cf34127adf264264ad2ce177a3": {
+          "generator": {},
+          "inputs": [],
+          "license": {},
+          "origin": "unknown",
+          "regions": [],
+          "sha256": "sha256:a7c258f4bc7728322f94389b4ed45938182178cf34127adf264264ad2ce177a3",
+          "size": 7332057,
+          "source": {},
+          "transformations": [],
+          "usedBy": []
+        }
+      }
     },
     "assets/game/areas/oeste/walk.png": {
       "declaredUseEvidence": [],
@@ -458,9 +548,9 @@
         "assets/game/areas.json"
       ],
       "regions": [],
-      "sha256": "sha256:40837ce4269b864953d388f1e13cd4a46c369e20a8320e4aa5ce0a6e35eb67ad",
+      "sha256": "sha256:8ea440df8afae4fe483a4cce66777fd9a593aad5ff5721126d881958310fbd83",
       "shipped": true,
-      "size": 2136,
+      "size": 1868,
       "source": {},
       "status": "present",
       "transformations": [],
@@ -470,6 +560,18 @@
       "used": true,
       "usedBy": [],
       "versions": {
+        "sha256:40837ce4269b864953d388f1e13cd4a46c369e20a8320e4aa5ce0a6e35eb67ad": {
+          "generator": {},
+          "inputs": [],
+          "license": {},
+          "origin": "unknown",
+          "regions": [],
+          "sha256": "sha256:40837ce4269b864953d388f1e13cd4a46c369e20a8320e4aa5ce0a6e35eb67ad",
+          "size": 2136,
+          "source": {},
+          "transformations": [],
+          "usedBy": []
+        },
         "sha256:a1420f9ef00927df2fcae2f11c4297b31e9dd592dd78e6951cb3e0262549ccd7": {
           "generator": {},
           "inputs": [],
@@ -512,9 +614,9 @@
         "scripts/vila/vila_main.gd"
       ],
       "regions": [],
-      "sha256": "sha256:f8b213c1c34acfa81deec6896b29461809284538942d8ed46d4a0401ccc187f8",
+      "sha256": "sha256:621f8cda2f25264c435c1078d389a38c142fc0dccea55b90fda2c19375c0543f",
       "shipped": true,
-      "size": 28680,
+      "size": 217900,
       "source": {},
       "status": "present",
       "transformations": [],
@@ -522,7 +624,21 @@
         "scripts/vila/vila_main.gd"
       ],
       "used": true,
-      "usedBy": []
+      "usedBy": [],
+      "versions": {
+        "sha256:f8b213c1c34acfa81deec6896b29461809284538942d8ed46d4a0401ccc187f8": {
+          "generator": {},
+          "inputs": [],
+          "license": {},
+          "origin": "unknown",
+          "regions": [],
+          "sha256": "sha256:f8b213c1c34acfa81deec6896b29461809284538942d8ed46d4a0401ccc187f8",
+          "size": 28680,
+          "source": {},
+          "transformations": [],
+          "usedBy": []
+        }
+      }
     },
     "assets/game/scene.png": {
       "declaredUseEvidence": [],
@@ -567,9 +683,9 @@
         "scripts/vila/walker.gd"
       ],
       "regions": [],
-      "sha256": "sha256:55c97fe0aca15ea7a8b4246138d0821240ebcab10e0d1102f6be1e65f1eca2d9",
+      "sha256": "sha256:dcba03da9e9e4c9152f45e1370fe634f5bd494c9c9e67a9df0f60149cf2f1113",
       "shipped": true,
-      "size": 28147,
+      "size": 210107,
       "source": {},
       "status": "present",
       "transformations": [],
@@ -578,7 +694,21 @@
         "scripts/vila/walker.gd"
       ],
       "used": true,
-      "usedBy": []
+      "usedBy": [],
+      "versions": {
+        "sha256:55c97fe0aca15ea7a8b4246138d0821240ebcab10e0d1102f6be1e65f1eca2d9": {
+          "generator": {},
+          "inputs": [],
+          "license": {},
+          "origin": "unknown",
+          "regions": [],
+          "sha256": "sha256:55c97fe0aca15ea7a8b4246138d0821240ebcab10e0d1102f6be1e65f1eca2d9",
+          "size": 28147,
+          "source": {},
+          "transformations": [],
+          "usedBy": []
+        }
+      }
     },
     "assets/game/tower_01.png": {
       "declaredUseEvidence": [],
@@ -1197,9 +1327,9 @@
         ]
       }
     ],
-    "pckSha256": "sha256:c960a5a5665b4565c65dc6bec1a70c50b2e62e5f4dc59760a3784755682e16de",
+    "pckSha256": "sha256:155064911069d3001a136f67f27dd7c273a9dfbf249efbb9163fc45c3002cafd",
     "profile": "release",
-    "sourceFingerprint": "sha256:ca9aa6dcc5abace9e0629b3a73c4a939480a9bffbb89261e98f08800d65748af"
+    "sourceFingerprint": "sha256:ecdf3459ad9e0bea83847ef67ac0b0ef91c5452df983601ffa384a3cd84d24ab"
   },
   "procedures": {},
   "summary": {

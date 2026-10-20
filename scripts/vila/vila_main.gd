@@ -135,6 +135,7 @@ func load_area(id: String, spawn: String) -> void:
 	if String(a.get("towers", "")) != "":
 		_build_towers(String(a["towers"]))
 	var size := tex.get_size()
+	_build_exit_signs(a, size)
 	_camera.limit_left = 0
 	_camera.limit_top = 0
 	_camera.limit_right = int(size.x)
@@ -146,6 +147,63 @@ func load_area(id: String, spawn: String) -> void:
 		_area_label.text = String(a["title"])
 	if _hint_label != null:
 		_update_hint()
+
+
+## Placa no chão de cada saída: seta para fora e o nome da tela seguinte.
+func _build_exit_signs(a: Dictionary, size: Vector2) -> void:
+	for e: Dictionary in a["exits"]:
+		var r: Array = e["rect"]
+		var rect := Rect2(float(r[0]), float(r[1]), float(r[2]), float(r[3]))
+		var c := rect.get_center()
+		var dir := Vector2.LEFT
+		if e.has("dir"):
+			var d: Array = e["dir"]
+			dir = Vector2(float(d[0]), float(d[1])).normalized()
+		elif rect.position.x <= 1.0:
+			dir = Vector2.LEFT
+		elif rect.end.x >= size.x - 1.0:
+			dir = Vector2.RIGHT
+		elif rect.position.y <= 1.0:
+			dir = Vector2.UP
+		elif rect.end.y >= size.y - 1.0:
+			dir = Vector2.DOWN
+		var sign := Node2D.new()
+		sign.position = c - dir * 22.0
+		sign.z_index = 30
+		var arrow := Polygon2D.new()
+		arrow.polygon = PackedVector2Array([Vector2(14, 0), Vector2(-6, -11), Vector2(-2, 0), Vector2(-6, 11)])
+		arrow.rotation = dir.angle()
+		arrow.color = Color(1.0, 0.86, 0.35, 0.95)
+		var outline := Line2D.new()
+		outline.points = arrow.polygon
+		outline.add_point(arrow.polygon[0])
+		outline.width = 1.5
+		outline.default_color = Color(0.15, 0.1, 0.05, 0.9)
+		outline.rotation = arrow.rotation
+		sign.add_child(arrow)
+		sign.add_child(outline)
+		var lbl := Label.new()
+		lbl.text = String((areas[String(e["to"])] as Dictionary)["title"])
+		lbl.add_theme_font_size_override("font_size", 13)
+		lbl.add_theme_color_override("font_color", Color("fff1c9"))
+		lbl.add_theme_constant_override("outline_size", 5)
+		lbl.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.9))
+		lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		lbl.size = Vector2(170, 20)
+		lbl.position = Vector2(-85, 14) if dir.y >= 0.0 else Vector2(-85, -34)
+		if abs(dir.y) < 0.5:
+			lbl.position = Vector2(-85, -32)
+		# Mantém o texto dentro do mapa nas saídas de borda.
+		lbl.position.x = clampf(lbl.position.x, 4.0 - sign.position.x, size.x - 4.0 - sign.position.x - lbl.size.x)
+		lbl.position.y = clampf(lbl.position.y, 4.0 - sign.position.y, size.y - 24.0 - sign.position.y)
+		sign.add_child(lbl)
+		_ground.add_child(sign)
+		_area_nodes.append(sign)
+		var tw := sign.create_tween().set_loops()
+		tw.tween_property(arrow, "position", dir * 6.0, 0.5).set_trans(Tween.TRANS_SINE)
+		tw.parallel().tween_property(outline, "position", dir * 6.0, 0.5).set_trans(Tween.TRANS_SINE)
+		tw.tween_property(arrow, "position", Vector2.ZERO, 0.5).set_trans(Tween.TRANS_SINE)
+		tw.parallel().tween_property(outline, "position", Vector2.ZERO, 0.5).set_trans(Tween.TRANS_SINE)
 
 
 ## Saída em que o personagem está pisando, se houver.
@@ -363,10 +421,10 @@ func _build_ui() -> void:
 		atlas.atlas = load(String(c["sheet"])) as Texture2D
 		atlas.region = Rect2(0, 0, Walker.FRAME_W, Walker.FRAME_H)
 		prev.texture = atlas
-		prev.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		prev.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
 		prev.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		prev.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		prev.custom_minimum_size = Vector2(Walker.FRAME_W, Walker.FRAME_H) * 3.0
+		prev.custom_minimum_size = Vector2(Walker.FRAME_W, Walker.FRAME_H)
 		card.add_child(prev)
 		var b := _make_button("Jogar com " + String(c["name"]))
 		b.custom_minimum_size = Vector2(210, 52)
