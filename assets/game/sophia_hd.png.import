@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dswphocpfkbis"
-path="res://.godot/imported/tower_09.png-9c91213e6e3080fa2c25dfe61db60522.ctex"
+uid="uid://bp5e8to13j62w"
+path="res://.godot/imported/sophia_hd.png-2327ff2cc7e531098383f65597a51a55.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/game/tower_09.png"
-dest_files=["res://.godot/imported/tower_09.png-9c91213e6e3080fa2c25dfe61db60522.ctex"]
+source_file="res://assets/game/sophia_hd.png"
+dest_files=["res://.godot/imported/sophia_hd.png-2327ff2cc7e531098383f65597a51a55.ctex"]
 
 [params]
 

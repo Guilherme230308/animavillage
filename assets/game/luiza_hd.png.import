@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://sn6dmnsooy2y"
-path="res://.godot/imported/tower_06.png-225e9aa321a8e4dfb37d80313430dac0.ctex"
+uid="uid://dm0jv3av8wjqg"
+path="res://.godot/imported/luiza_hd.png-a473d23919e94c69a467657a50f7f3af.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/game/tower_06.png"
-dest_files=["res://.godot/imported/tower_06.png-225e9aa321a8e4dfb37d80313430dac0.ctex"]
+source_file="res://assets/game/luiza_hd.png"
+dest_files=["res://.godot/imported/luiza_hd.png-a473d23919e94c69a467657a50f7f3af.ctex"]
 
 [params]
 

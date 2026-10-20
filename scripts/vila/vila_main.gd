@@ -5,8 +5,8 @@ const AREAS_PATH := "res://assets/game/areas.json"
 const START_AREA := "condominio"
 const START_SPAWN := "inicio"
 const CHARACTERS := [
-	{"id": "sophia", "name": "Sophia", "sheet": "res://assets/game/sophia.png"},
-	{"id": "luiza", "name": "Luiza", "sheet": "res://assets/game/luiza.png"},
+	{"id": "sophia", "name": "Sophia", "sheet": "res://assets/game/sophia.png", "sheet_hd": "res://assets/game/sophia_hd.png"},
+	{"id": "luiza", "name": "Luiza", "sheet": "res://assets/game/luiza.png", "sheet_hd": "res://assets/game/luiza_hd.png"},
 ]
 const ZOOM_MIN := 1.25
 const ZOOM_MAX := 4.0
@@ -50,6 +50,13 @@ var _touch_buttons: Dictionary = {}
 var _wrap_labels: Array[Label] = []
 var _panels: Array[PanelContainer] = []
 var _controls_label: Label
+var _finder := PathFinder.new()
+var _finder_area := ""
+var move_path := PackedVector2Array()
+var _path_i := 0
+var _stuck_t := 0.0
+var _marker: Node2D
+var _minimap: Minimap
 
 
 func _ready() -> void:
@@ -143,6 +150,11 @@ func load_area(id: String, spawn: String) -> void:
 	var sp: Array = (a["spawns"] as Dictionary)[spawn]
 	_player.position = walk_map.nearest_walkable(Vector2(float(sp[0]), float(sp[1])), Walker.FOOT_HALF)
 	_camera.reset_smoothing()
+	clear_move()
+	if _minimap != null:
+		var mm_path := String(a["walk"]).get_base_dir() + "/minimap.png"
+		_minimap.set_area(load(mm_path) as Texture2D, size, a["exits"], String(a["title"]))
+		_relayout()
 	if _area_label != null:
 		_area_label.text = String(a["title"])
 	if _hint_label != null:
@@ -418,13 +430,13 @@ func _build_ui() -> void:
 		row.add_child(card)
 		var prev := TextureRect.new()
 		var atlas := AtlasTexture.new()
-		atlas.atlas = load(String(c["sheet"])) as Texture2D
-		atlas.region = Rect2(0, 0, Walker.FRAME_W, Walker.FRAME_H)
+		atlas.atlas = load(String(c["sheet_hd"])) as Texture2D
+		atlas.region = Rect2(0, 0, Walker.HD_FRAME_W, Walker.HD_FRAME_H)
 		prev.texture = atlas
 		prev.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
 		prev.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		prev.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		prev.custom_minimum_size = Vector2(Walker.FRAME_W, Walker.FRAME_H)
+		prev.custom_minimum_size = Vector2(Walker.HD_FRAME_W, Walker.HD_FRAME_H)
 		card.add_child(prev)
 		var b := _make_button("Jogar com " + String(c["name"]))
 		b.custom_minimum_size = Vector2(210, 52)
@@ -446,6 +458,18 @@ func _build_ui() -> void:
 	restart.pressed.connect(_back_to_title)
 	pbox.add_child(restart)
 
+	_minimap = Minimap.new()
+	_minimap.picked.connect(func(wp: Vector2) -> void: go_to(wp))
+	add_child(_minimap)
+	var a0: Dictionary = areas[current_area]
+	_minimap.set_area(load(String(a0["walk"]).get_base_dir() + "/minimap.png") as Texture2D,
+		(load(String(a0["bg"])) as Texture2D).get_size(), a0["exits"], String(a0["title"]))
+	_marker = Node2D.new()
+	_marker.z_index = 40
+	_marker.visible = false
+	_marker.set_script(load("res://scripts/vila/move_marker.gd"))
+	_world.add_child(_marker)
+
 	_fade = ColorRect.new()
 	_fade.color = Color(0, 0, 0, 0)
 	_fade.set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -457,18 +481,18 @@ func _update_hint() -> void:
 	var on := _paths_overlay != null and _paths_overlay.visible
 	var paths := "ligado" if on else "desligado"
 	if touch_mode:
-		_hint_label.text = "Arraste à esquerda para andar · até a borda para correr"
+		_hint_label.text = "Toque onde quiser ir · ou arraste à esquerda"
 	else:
-		_hint_label.text = "Setas/WASD andar · Shift correr · M caminhos (%s) · Esc pausar" % paths
+		_hint_label.text = "Clique para andar · Setas/WASD · Shift correr · M caminhos (%s) · Esc" % paths
 	if _touch_buttons.has("paths"):
 		var b: TouchButton = _touch_buttons["paths"]
 		b.text = "Ocultar" if on else "Caminhos"
 		b.queue_redraw()
 	if _controls_label != null:
 		if touch_mode:
-			_controls_label.text = "No celular: toque e arraste na metade esquerda da tela para andar; empurre até a borda para correr. Use os botões à direita para mostrar os caminhos, aproximar ou afastar, e pausar."
+			_controls_label.text = "No celular: toque no lugar para onde quer ir (no cenário ou no minimapa), ou arraste na metade esquerda da tela para andar. Use os botões à direita para mostrar os caminhos, aproximar ou afastar, e pausar."
 		else:
-			_controls_label.text = "Setas ou WASD: andar  ·  Shift: correr  ·  M: mostrar caminhos\nRoda do mouse ou +/−: zoom  ·  Esc: pausar  ·  No celular, use os controles de toque."
+			_controls_label.text = "Clique no cenário ou no minimapa: andar até lá  ·  Setas ou WASD: andar  ·  Shift: correr\nM: mostrar caminhos  ·  Roda do mouse ou +/−: zoom  ·  Esc: pausar"
 
 
 func _build_touch_ui() -> void:
@@ -517,6 +541,8 @@ func _relayout() -> void:
 		if sb != null:
 			sb.set_content_margin_all(28.0 if vs.x > 700.0 else 16.0)
 	_hint_label.add_theme_font_size_override("font_size", 14 if vs.x < 700.0 else 16)
+	if _minimap != null:
+		_minimap.position = vs - _minimap.size - Vector2(18, 18)
 	_layout_touch_buttons(vs)
 	_update_hint()
 	_refresh_touch_visibility()
@@ -526,12 +552,13 @@ func _layout_touch_buttons(vs: Vector2) -> void:
 	if _touch_buttons.is_empty():
 		return
 	var m := 24.0
+	var ox := (_minimap.size.x + 16.0) if _minimap != null else 0.0
 	var paths: TouchButton = _touch_buttons["paths"]
 	var zin: TouchButton = _touch_buttons["zoom_in"]
 	var zout: TouchButton = _touch_buttons["zoom_out"]
 	var pause: TouchButton = _touch_buttons["pause"]
-	paths.position = Vector2(vs.x - m - paths.size.x, vs.y - m - paths.size.y)
-	zin.position = Vector2(vs.x - m - zin.size.x, paths.position.y - 16 - zin.size.y)
+	paths.position = Vector2(vs.x - m - ox - paths.size.x, vs.y - m - paths.size.y)
+	zin.position = Vector2(vs.x - m - ox - zin.size.x, paths.position.y - 16 - zin.size.y)
 	zout.position = Vector2(zin.position.x - 14 - zout.size.x, zin.position.y)
 	pause.position = Vector2(vs.x - m - pause.size.x, m)
 	for b in _touch_buttons.values():
@@ -543,6 +570,8 @@ func _refresh_touch_visibility() -> void:
 	if _touch_layer == null:
 		return
 	_touch_layer.visible = touch_mode and _playing and not _paused
+	if _minimap != null:
+		_minimap.visible = _playing and not _paused
 	if not _touch_layer.visible and _joystick != null:
 		_joystick.release()
 
@@ -637,7 +666,10 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif event.is_action_pressed("zoom_out"):
 		_target_zoom = clamp(_target_zoom / 1.2, ZOOM_MIN, ZOOM_MAX)
 	elif event is InputEventMouseButton and event.pressed:
-		if event.button_index == MOUSE_BUTTON_WHEEL_UP:
+		if event.button_index == MOUSE_BUTTON_LEFT and not _transitioning:
+			go_to(screen_to_world(event.position))
+			get_viewport().set_input_as_handled()
+		elif event.button_index == MOUSE_BUTTON_WHEEL_UP:
 			_target_zoom = clamp(_target_zoom * 1.1, ZOOM_MIN, ZOOM_MAX)
 		elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
 			_target_zoom = clamp(_target_zoom / 1.1, ZOOM_MIN, ZOOM_MAX)
@@ -657,11 +689,93 @@ func _process(delta: float) -> void:
 	if _transitioning:
 		_player.step(Vector2.ZERO, false, delta)
 		return
+	if dir.length() > 0.2:
+		clear_move()
+	elif not move_path.is_empty():
+		dir = _follow_dir()
 	var moved := _player.step(dir, running, delta)
+	if not move_path.is_empty():
+		_stuck_t = _stuck_t + delta if moved.length() < 0.15 else 0.0
+		if _stuck_t > 0.5:
+			clear_move()
+	if _minimap != null:
+		_minimap.player_pos = _player.position
 	distance_walked += moved.length()
 	var e := exit_at(_player.position)
 	if not e.is_empty():
 		_go_through(e)
+
+
+## Converte uma posição da tela para o mapa da tela atual.
+func screen_to_world(screen_pos: Vector2) -> Vector2:
+	return _sub_viewport.get_canvas_transform().affine_inverse() * screen_pos
+
+
+## Anda até o ponto (clique, toque ou minimapa) por um caminho que contorna obstáculos.
+func go_to(world_pos: Vector2) -> bool:
+	if _finder_area != current_area:
+		_finder.build(walk_map)
+		_finder_area = current_area
+	# Clique numa saída: mira o ponto caminhável dentro dela mais próximo do clique.
+	var ex := exit_at(world_pos)
+	if not ex.is_empty() and not walk_map.is_footprint_walkable(world_pos, Walker.FOOT_HALF):
+		var r: Array = ex["rect"]
+		var best := Vector2.INF
+		for yy in range(int(r[1]), int(r[1]) + int(r[3]) + 1, 3):
+			for xx in range(int(r[0]), int(r[0]) + int(r[2]) + 1, 3):
+				var q := Vector2(xx, yy)
+				if walk_map.is_footprint_walkable(q, Walker.FOOT_HALF) and (best == Vector2.INF or q.distance_to(world_pos) < best.distance_to(world_pos)):
+					best = q
+		if best != Vector2.INF:
+			world_pos = best
+	var path := _finder.find(_player.position, world_pos)
+	if path.size() < 2:
+		clear_move()
+		return false
+	# Termina no ponto clicado (se for chão caminhável ou uma saída), não só no centro da célula.
+	if walk_map.is_footprint_walkable(world_pos, Walker.FOOT_HALF):
+		path.append(world_pos)
+	move_path = path
+	_path_i = 1
+	_stuck_t = 0.0
+	_marker.position = path[path.size() - 1]
+	_marker.visible = true
+	if _minimap != null:
+		_minimap.target_pos = _marker.position
+	return true
+
+
+func clear_move() -> void:
+	move_path = PackedVector2Array()
+	_path_i = 0
+	if _marker != null:
+		_marker.visible = false
+	if _minimap != null:
+		_minimap.target_pos = Vector2.INF
+
+
+func _follow_dir() -> Vector2:
+	while _path_i < move_path.size() and _player.position.distance_to(move_path[_path_i]) < 3.0:
+		_path_i += 1
+	if _path_i >= move_path.size():
+		clear_move()
+		return Vector2.ZERO
+	return (move_path[_path_i] - _player.position).normalized()
+
+
+## Usado pelos testes: segue a rota do clique por alguns segundos, como no jogo.
+func simulate_click_walk(world_pos: Vector2, seconds: float) -> bool:
+	if not go_to(world_pos):
+		return false
+	var t := 0.0
+	var start_area := current_area
+	while t < seconds and not move_path.is_empty() and current_area == start_area:
+		_player.step(_follow_dir(), false, 1.0 / 60.0)
+		var e := exit_at(_player.position)
+		if not e.is_empty():
+			_go_through(e, false)
+		t += 1.0 / 60.0
+	return true
 
 
 ## Usado pelos testes automatizados.

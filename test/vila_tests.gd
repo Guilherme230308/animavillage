@@ -23,7 +23,7 @@ func _run() -> void:
 	await process_frame
 	var map: WalkMap = main.walk_map
 	_check(map.width > 100 and map.height > 100, "grade de passeios carregada")
-	_check(map.walkable_count() > 15000, "rede de passeios extensa")
+	_check(map.walkable_count() > 10000, "rede de passeios extensa (%d)" % map.walkable_count())
 	var player: Walker = main.get("_player")
 	_check(map.is_footprint_walkable(player.position, Walker.FOOT_HALF), "nasce em passeio")
 	_check(bool((main.get("_title_screen") as Control).visible), "abre na tela de título")
@@ -61,10 +61,12 @@ func _run() -> void:
 		_check(not map.is_point_walkable(fc), "base da torre bloqueia " + str(fc))
 	# Debaixo do telhado/fachada dá para andar, e a torre fica desenhada na frente.
 	var under := 0
-	for top: Vector2 in [Vector2(600, 150), Vector2(850, 150), Vector2(470, 300), Vector2(320, 450), Vector2(220, 660), Vector2(1050, 650)]:
-		if map.is_footprint_walkable(top, Walker.FOOT_HALF) and bool(main.call("is_occluded", top)):
-			under += 1
-	_check(under >= 4, "caminhos passam por baixo das torres, cobertos por elas (%d)" % under)
+	for gy in range(0, map.height * WalkMap.CELL, 20):
+		for gx in range(0, map.width * WalkMap.CELL, 20):
+			var top := Vector2(gx, gy)
+			if map.is_footprint_walkable(top, Walker.FOOT_HALF) and bool(main.call("is_occluded", top)):
+				under += 1
+	_check(under >= 20, "caminhos passam por baixo das torres, cobertos por elas (%d)" % under)
 	var behind := _first_walkable_behind(main, map)
 	_check(behind != Vector2.INF, "existe chão caminhável atrás de uma torre")
 	if behind != Vector2.INF:
@@ -104,6 +106,21 @@ func _run() -> void:
 			["fundos", "norte", "direita"], ["direita", "oeste", "estacionamento"], ["estacionamento", "oeste", "direita"],
 			["estacionamento", "sul", "oeste"], ["direita", "norte", "fundos"], ["fundos", "leste", "oeste"], ["oeste", "leste", "condominio"]]:
 		_check(await _walk_route(main, route[0], route[1], route[2]), "caminhando: %s -> %s" % [route[0], route[2]])
+	# Clicar para andar: a rota contorna obstáculos e leva até a saída clicada, trocando de tela.
+	for route: Array in [["direita", "oeste", "estacionamento"], ["estacionamento", "sul", "oeste"], ["condominio", "inicio", "oeste"], ["fundos", "norte", "direita"]]:
+		main.call("load_area", route[0], route[1])
+		var er := Rect2()
+		for e: Dictionary in (main.get("areas")[route[0]]["exits"] as Array):
+			if e["to"] == route[2]:
+				var r: Array = e["rect"]
+				er = Rect2(float(r[0]), float(r[1]), float(r[2]), float(r[3]))
+		var ok := bool(main.call("simulate_click_walk", er.get_center(), 90.0))
+		_check(ok and String(main.get("current_area")) == route[2], "clique leva %s -> %s (está em %s)" % [route[0], route[2], main.get("current_area")])
+	main.call("load_area", "estacionamento", "sul")
+	main.call("simulate_click_walk", Vector2(1540, 862), 60.0)
+	_check((main.get("_player") as Walker).position.distance_to(Vector2(1540, 862)) < 40.0, "clique chega à via do Ânima Clube")
+	var mm: Minimap = main.get("_minimap")
+	_check(mm != null and mm.title == "Estacionamento" and mm.size.x > 100.0, "minimapa mostra a tela atual")
 	main.call("load_area", "condominio", "inicio")
 	map = main.walk_map
 

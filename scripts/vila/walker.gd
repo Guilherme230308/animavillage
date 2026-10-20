@@ -3,10 +3,13 @@ extends Node2D
 ## Personagem caminhável. A posição do nó é o ponto dos pés.
 
 const SHEET_PATH := "res://assets/game/sophia.png"
-const FRAME_W := 75
-const FRAME_H := 120
+const FRAME_W := 25
+const FRAME_H := 40
 ## Quadros em alta resolução (3x), desenhados em 1/3: mesmo tamanho no mundo, mais detalhe.
-const SPRITE_SCALE := 1.0 / 3.0
+const SPRITE_SCALE := 1.0
+## Folha em alta resolução, usada só na tela de escolha de personagem.
+const HD_FRAME_W := 75
+const HD_FRAME_H := 120
 const ROWS := {"down": 0, "left": 1, "right": 2, "up": 3}
 const WALK_SPEED := 70.0
 const RUN_SPEED := 125.0
@@ -35,7 +38,6 @@ func _ready() -> void:
 	_sprite.sprite_frames = _build_frames(sheet_path)
 	_sprite.offset = Vector2(0, -FRAME_H / 2.0 + 3)
 	_sprite.scale = Vector2.ONE * SPRITE_SCALE
-	_sprite.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
 	add_child(_sprite)
 	_sprite.play("idle_down")
 

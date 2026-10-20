@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://ce05uid6cr06h"
-path="res://.godot/imported/tower_07.png-6db40d6292c7d0121295c5c03e9789c4.ctex"
+uid="uid://rhwyijh3ygrk"
+path="res://.godot/imported/minimap.png-21419b04259bb2faa0c4226e7f242b53.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/game/tower_07.png"
-dest_files=["res://.godot/imported/tower_07.png-6db40d6292c7d0121295c5c03e9789c4.ctex"]
+source_file="res://assets/game/areas/oeste/minimap.png"
+dest_files=["res://.godot/imported/minimap.png-21419b04259bb2faa0c4226e7f242b53.ctex"]
 
 [params]
 
