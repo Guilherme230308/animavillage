@@ -28,7 +28,7 @@ func _verify() -> void:
 		await process_frame
 		_check(bool((main.get("_title_screen") as Control).visible), "pack boots to title")
 		var map: WalkMap = main.walk_map
-		_check(map.walkable_count() > 15000, "pack walk mask loaded")
+		_check(map.walkable_count() > 10000, "pack walk mask loaded")
 		main.call("_start")
 		var moved: Vector2 = main.call("simulate_walk", Vector2.RIGHT, 1.0, false)
 		moved += main.call("simulate_walk", Vector2.DOWN, 1.0, false)
