@@ -16,10 +16,10 @@ const PHASES := [
 		"dmg_yellow": 10, "dmg_red": 15, "night": true, "rain": false, "speed": 1.0, "aggro": 1.0,
 		"hp_yellow": 2, "hp_red": 3, "heart_every": 3, "heart_heal": 20},
 	{"name": "Nível 3 · Dia com chuva", "soakers": 2, "spreaders": 1, "short": "nível 3", "coins": 100, "yellow": 10, "red": 5, "guns": 10, "darts": 10,
-		"dmg_yellow": 10, "dmg_red": 15, "night": false, "rain": true, "speed": 1.15, "aggro": 1.1,
+		"dmg_yellow": 10, "dmg_red": 15, "night": false, "rain": true, "speed": 1.0, "aggro": 1.1,
 		"hp_yellow": 2, "hp_red": 4, "heart_every": 4, "heart_heal": 15},
 	{"name": "Nível 4 · Noite com chuva", "soakers": 1, "spreaders": 2, "short": "nível 4", "coins": 100, "yellow": 15, "red": 10, "guns": 12, "darts": 12,
-		"dmg_yellow": 15, "dmg_red": 20, "night": true, "rain": true, "speed": 1.3, "aggro": 1.25,
+		"dmg_yellow": 15, "dmg_red": 20, "night": true, "rain": true, "speed": 1.0, "aggro": 1.25,
 		"hp_yellow": 3, "hp_red": 5, "heart_every": 5, "heart_heal": 10},
 ]
 const FIRE_COOLDOWN := 0.28

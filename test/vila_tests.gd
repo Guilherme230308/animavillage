@@ -14,6 +14,18 @@ func _check(ok: bool, label: String) -> void:
 		printerr("[vila-tests] FAIL: " + label)
 
 
+## Verdadeiro se um botão, o minimapa ou outro controle com STOP cobre o ponto.
+func _click_blocked(node: Node, pos: Vector2) -> bool:
+	if node is Control:
+		var c := node as Control
+		if c.is_visible_in_tree() and c.mouse_filter == Control.MOUSE_FILTER_STOP and not (c is SubViewportContainer) and c.get_parent() != null and c.get_global_rect().has_point(pos):
+			return true
+	for child in node.get_children():
+		if _click_blocked(child, pos):
+			return true
+	return false
+
+
 func _run() -> void:
 	var packed := load("res://scenes/main.tscn") as PackedScene
 	_check(packed != null, "cena principal carrega")
@@ -179,8 +191,7 @@ func _run() -> void:
 	var adv_ui: Adventure = main.get("adventure")
 	var stats: Control = adv_ui.get("_stats")
 	_check(stats.visible and stats.position.x < 40.0 and stats.position.y < 30.0, "status no canto superior esquerdo")
-	var hud_top := int((main.get("_hud") as Control).get_theme_constant("margin_top"))
-	_check(hud_top >= int(stats.position.y + stats.size.y), "nome da área fica abaixo do status")
+	_check(not (main.get("_hud") as Control).visible, "a faixa de lugar e controles não fica na tela")
 	_check(mm.visible and mm.position.x < 40.0 and mm.position.y > stats.position.y, "minimapa fica à esquerda, abaixo do status, e continua visível")
 	var weapon_r := Rect2(weapon_b.position, weapon_b.size)
 	var shoot_r := Rect2(shoot_b.position, shoot_b.size)
@@ -506,6 +517,27 @@ func _adventure_tests(main: Node) -> void:
 			break
 	_check(walked and not bool(main.get("_paused")), "clique no chão caminha e não abre o mapa")
 	main.call("clear_move")
+	var mouse_walked := false
+	for step: Vector2 in [Vector2(180, 0), Vector2(-180, 0), Vector2(0, 180), Vector2(0, -180), Vector2(120, 80), Vector2(-100, 140)]:
+		var spot: Vector2 = map.nearest_walkable(player.position + step, Walker.FOOT_HALF)
+		if spot.distance_to(player.position) < 50.0:
+			continue
+		var screen: Vector2 = main.call("world_to_screen", spot)
+		if _click_blocked(main, screen):
+			continue
+		var ev := InputEventMouseButton.new()
+		ev.button_index = MOUSE_BUTTON_LEFT
+		ev.pressed = true
+		ev.position = screen
+		ev.global_position = screen
+		main.get_viewport().push_input(ev, true)
+		await process_frame
+		if not (main.get("move_path") as PackedVector2Array).is_empty() and not bool(main.get("_paused")):
+			mouse_walked = true
+			break
+		main.call("clear_move")
+	_check(mouse_walked, "o clique do mouse atravessa a interface e caminha")
+	main.call("clear_move")
 	adv.darts = 0
 	# Coletar todas as moedas do nível: abre o próximo.
 	adv.coins_got = adv.coins_goal() - 1
@@ -535,7 +567,7 @@ func _adventure_tests(main: Node) -> void:
 	# Dificuldade por nível: dardos para matar, velocidade e coração.
 	var P: Array = Adventure.PHASES
 	_check(int(P[0]["hp_yellow"]) < int(P[2]["hp_yellow"]) or int(P[0]["hp_red"]) < int(P[2]["hp_red"]), "níveis difíceis pedem mais dardos")
-	_check(float(P[0]["speed"]) < float(P[1]["speed"]) and float(P[1]["speed"]) < float(P[2]["speed"]), "escorpiões ficam mais rápidos a cada nível")
+	_check(float(P[0]["speed"]) < float(P[1]["speed"]) and float(P[2]["speed"]) <= float(P[1]["speed"]) and float(P[3]["speed"]) <= float(P[1]["speed"]), "níveis 3 e 4 não deixam o escorpião mais rápido que no nível 2")
 	_check(int(P[0]["heart_every"]) < int(P[2]["heart_every"]) and int(P[0]["heart_heal"]) > int(P[2]["heart_heal"]), "coração mais raro e fraco nos níveis difíceis")
 	var hp_ok := true
 	for scx: Scorpion in adv.get("_scorp_nodes"):
@@ -550,9 +582,9 @@ func _adventure_tests(main: Node) -> void:
 	_check(adv.scorpion_hp("amarelo") == 3 and adv.scorpion_hp("vermelho") == 5 and adv.heart_every() == 5 and adv.heart_heal() == 10, "nível 4: 3/5 dardos e coração a cada 5 (+10%)")
 	var ag_ok := true
 	for scy: Scorpion in adv.get("_scorp_nodes"):
-		if absf(scy.aggro_mult - 1.25) > 0.001 or absf(scy.speed_mult - 1.3) > 0.001:
+		if absf(scy.aggro_mult - 1.25) > 0.001 or absf(scy.speed_mult - 1.0) > 0.001:
 			ag_ok = false
-	_check(ag_ok, "nível 4: escorpiões 130% mais velozes e perseguem de mais longe")
+	_check(ag_ok, "nível 4: escorpiões na velocidade do nível 2 e perseguem de mais longe")
 	_check(adv.get("_rain") != null and adv.get("_night_mod") != null and adv.get("_rain_mod") == null, "noite com chuva usa a escuridão da noite e a chuva por cima")
 	adv._invuln = 0.0
 	var hb := adv.health

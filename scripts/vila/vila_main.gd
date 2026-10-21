@@ -86,6 +86,9 @@ var _floor_img: Image
 
 
 func _ready() -> void:
+	# O clique no chão tem de chegar em _unhandled_input. Com o filtro padrão
+	# (STOP) o Control raiz consome o mouse no GUI e o personagem não anda.
+	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_ensure_actions()
 	areas = JSON.parse_string(FileAccess.get_file_as_string(AREAS_PATH))
 	_build_world()
@@ -910,7 +913,7 @@ func _settle_touch_minimap(vs: Vector2) -> void:
 	var top := 8.0
 	if adventure != null and adventure._stats != null and adventure._stats.visible:
 		top = adventure._stats.position.y + adventure._stats.size.y + 8.0
-	if _hud != null:
+	if _hud != null and _hud.visible:
 		top = maxf(top, _hud.get_combined_minimum_size().y + 8.0)
 	var bottom := _action_row_top() - 8.0
 	var room_h := maxf(110.0, bottom - top)
@@ -1181,7 +1184,7 @@ func _start(char_id: String = "", phase_idx: int = 0) -> void:
 	_paused = false
 	_title_screen.visible = false
 	_pause_screen.visible = false
-	_hud.visible = true
+	_hud.visible = false
 	_target_zoom = ZOOM_MIN
 	_camera.zoom = Vector2.ONE * ZOOM_MIN
 	adventure.new_game(phase_idx)
@@ -1309,6 +1312,9 @@ func _unhandled_input(event: InputEvent) -> void:
 			_target_zoom = clamp(_target_zoom * 1.1, ZOOM_MIN, ZOOM_MAX)
 		elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
 			_target_zoom = clamp(_target_zoom / 1.1, ZOOM_MIN, ZOOM_MAX)
+	elif event is InputEventScreenTouch and (event as InputEventScreenTouch).pressed and not _transitioning:
+		click_screen(event.position)
+		get_viewport().set_input_as_handled()
 
 
 func _process(delta: float) -> void:
