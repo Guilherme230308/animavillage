@@ -537,7 +537,30 @@ func _adventure_tests(main: Node) -> void:
 			break
 		main.call("clear_move")
 	_check(mouse_walked, "o clique do mouse atravessa a interface e caminha")
+	_check(not bool(main.get("move_running")), "um clique só caminha")
+	var run_ok := false
+	for step2: Vector2 in [Vector2(180, 0), Vector2(-180, 0), Vector2(0, 180), Vector2(0, -180), Vector2(120, 80), Vector2(-100, 140)]:
+		var spot2: Vector2 = map.nearest_walkable(player.position + step2, Walker.FOOT_HALF)
+		if spot2.distance_to(player.position) < 50.0:
+			continue
+		var screen2: Vector2 = main.call("world_to_screen", spot2)
+		if _click_blocked(main, screen2):
+			continue
+		var ev2 := InputEventMouseButton.new()
+		ev2.button_index = MOUSE_BUTTON_LEFT
+		ev2.pressed = true
+		ev2.double_click = true
+		ev2.position = screen2
+		ev2.global_position = screen2
+		main.get_viewport().push_input(ev2, true)
+		await process_frame
+		if not (main.get("move_path") as PackedVector2Array).is_empty() and bool(main.get("move_running")):
+			run_ok = true
+			break
+		main.call("clear_move")
+	_check(run_ok, "clique duplo no chão corre até lá")
 	main.call("clear_move")
+	_check(not bool(main.get("move_running")), "parar a rota para de correr")
 	adv.darts = 0
 	# Coletar todas as moedas do nível: abre o próximo.
 	adv.coins_got = adv.coins_goal() - 1
@@ -650,7 +673,20 @@ func _adventure_tests(main: Node) -> void:
 	var lot_red: Array = main.areas["estacionamento"]["spawns"]["elev_vermelho"]
 	_check(Vector2(float(lot_red[0]), float(lot_red[1])).distance_to(Vector2(53, 358)) < 90.0, "elevador vermelho do estacionamento fica na lateral esquerda")
 	var lot_blue: Array = main.areas["estacionamento"]["spawns"]["elev_azul"]
-	_check(Vector2(float(lot_blue[0]), float(lot_blue[1])).distance_to(Vector2(506, 533)) < 90.0, "elevador azul do estacionamento fica na faixa de pedestres")
+	_check(Vector2(float(lot_blue[0]), float(lot_blue[1])).distance_to(Vector2(506, 533)) < 90.0, "elevador azul do estacionamento fica junto da faixa de pedestres")
+	var blue_rect := Rect2()
+	for e4: Dictionary in main.areas["estacionamento"]["exits"]:
+		if String(e4.get("elevator", "")) == "azul":
+			var r4: Array = e4["rect"]
+			blue_rect = Rect2(float(r4[0]), float(r4[1]), float(r4[2]), float(r4[3]))
+	_check(not blue_rect.intersects(Rect2(470, 516, 50, 30)), "entrada do elevador azul fica na calçada, fora da faixa")
+	var area_before: String = main.current_area
+	main.call("load_area", "estacionamento", "elev_azul")
+	var lot_map: WalkMap = main.walk_map
+	_check(lot_map.is_footprint_walkable(player.position, Walker.FOOT_HALF) and not blue_rect.has_point(player.position), "quem chega pelo elevador azul pisa na calçada, fora da entrada")
+	main.call("simulate_click_walk", blue_rect.get_center(), 4.0)
+	_check(main.current_area == "condominio", "dá para entrar no elevador azul andando pela calçada")
+	main.call("load_area", area_before, "inicio")
 	var t_red: Array = main.areas["condominio"]["spawns"]["elev_vermelho"]
 	_check(Vector2(float(t_red[0]), float(t_red[1])).distance_to(Vector2(738, 466)) < 90.0, "elevador vermelho do Térreo fica no ponto marcado")
 	var t_blue: Array = main.areas["condominio"]["spawns"]["elev_azul"]

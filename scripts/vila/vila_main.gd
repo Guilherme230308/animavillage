@@ -68,6 +68,8 @@ var _controls_label: Label
 var _finder := PathFinder.new()
 var _finder_area := ""
 var move_path := PackedVector2Array()
+## Rota do clique duplo: segue correndo.
+var move_running := false
 var _path_i := 0
 var _stuck_t := 0.0
 var _marker: Node2D
@@ -753,9 +755,9 @@ func _update_hint() -> void:
 		b.queue_redraw()
 	if _controls_label != null:
 		if touch_mode:
-			_controls_label.text = "No celular: toque no chão para ir até lá, ou toque num escorpião para atirar nele. Arraste na metade direita para andar com o direcional. O botão Atirar mira no escorpião mais próximo."
+			_controls_label.text = "No celular: toque no chão para ir até lá (dois toques: correr), ou toque num escorpião para atirar nele. Arraste na metade direita para andar com o direcional. O botão Atirar mira no escorpião mais próximo."
 		else:
-			_controls_label.text = "Clique no chão para andar  ·  Clique num escorpião para atirar nele  ·  Setas/WASD: andar  ·  Shift: correr\nEspaço ou F: atirar no escorpião mais próximo  ·  Botão direito: atirar para onde apontar\nM: caminhos  ·  Roda do mouse ou +/−: zoom  ·  Esc: pausar"
+			_controls_label.text = "Clique no chão para andar (duplo: correr)  ·  Clique num escorpião para atirar nele  ·  Setas/WASD: andar  ·  Shift: correr\nEspaço ou F: atirar no escorpião mais próximo  ·  Botão direito: atirar para onde apontar\nM: caminhos  ·  Roda do mouse ou +/−: zoom  ·  Esc: pausar"
 
 
 func _build_touch_ui() -> void:
@@ -1008,9 +1010,9 @@ func arm_play_tips() -> void:
 func _tip_lines() -> PackedStringArray:
 	var lines: PackedStringArray = PackedStringArray()
 	if touch_mode:
-		lines.append("Toque no chão para caminhar até lá. Toque num escorpião para atirar nele.")
+		lines.append("Toque no chão para caminhar até lá; toque duas vezes para correr. Toque num escorpião para atirar nele.")
 	else:
-		lines.append("Clique no chão para caminhar até lá. Clique num escorpião para atirar nele.")
+		lines.append("Clique no chão para caminhar até lá; clique duas vezes para correr. Clique num escorpião para atirar nele.")
 	lines.append("Junte as moedas da fase. A vida, a arma e as moedas ficam no canto superior esquerdo.")
 	lines.append("O Nerf dispara um dardo. Pegue outro lançador no mapa para recarregar.")
 	lines.append("A Super Soaker molha e deixa o escorpião lento. Encha o tanque na piscina ou na fonte do Térreo.")
@@ -1303,7 +1305,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		_target_zoom = clamp(_target_zoom / 1.2, ZOOM_MIN, ZOOM_MAX)
 	elif event is InputEventMouseButton and event.pressed:
 		if event.button_index == MOUSE_BUTTON_LEFT and not _transitioning:
-			click_screen(event.position)
+			click_screen(event.position, (event as InputEventMouseButton).double_click)
 			get_viewport().set_input_as_handled()
 		elif event.button_index == MOUSE_BUTTON_RIGHT and not _transitioning:
 			adventure.shoot(screen_to_world(event.position))
@@ -1313,7 +1315,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
 			_target_zoom = clamp(_target_zoom / 1.1, ZOOM_MIN, ZOOM_MAX)
 	elif event is InputEventScreenTouch and (event as InputEventScreenTouch).pressed and not _transitioning:
-		click_screen(event.position)
+		click_screen(event.position, (event as InputEventScreenTouch).double_tap)
 		get_viewport().set_input_as_handled()
 
 
@@ -1350,6 +1352,7 @@ func _process(delta: float) -> void:
 	if dir.length() > 0.2:
 		clear_move()
 	elif not move_path.is_empty():
+		running = running or move_running
 		dir = _follow_dir()
 	var moved := _player.step(dir, running, delta)
 	if not move_path.is_empty():
@@ -1393,8 +1396,8 @@ func scorpion_at_screen(screen_pos: Vector2) -> Scorpion:
 	return best
 
 
-## Clique ou toque: no chão caminha; num escorpião atira nele. O mapa só abre pelo minimapa.
-func click_screen(screen_pos: Vector2) -> void:
+## Clique ou toque: no chão caminha (clique duplo corre); num escorpião atira nele. O mapa só abre pelo minimapa.
+func click_screen(screen_pos: Vector2, run: bool = false) -> void:
 	if not _playing or _paused or _transitioning:
 		return
 	if adventure != null and adventure.overlay_open:
@@ -1404,7 +1407,8 @@ func click_screen(screen_pos: Vector2) -> void:
 		clear_move()
 		adventure.shoot(sc.position + Vector2(0, -4))
 		return
-	go_to(screen_to_world(screen_pos))
+	if go_to(screen_to_world(screen_pos)):
+		move_running = run
 
 
 ## Anda até o ponto (clique, toque ou minimapa) por um caminho que contorna obstáculos.
@@ -1441,6 +1445,7 @@ func go_to(world_pos: Vector2) -> bool:
 
 func clear_move() -> void:
 	move_path = PackedVector2Array()
+	move_running = false
 	_path_i = 0
 	if _marker != null:
 		_marker.visible = false
