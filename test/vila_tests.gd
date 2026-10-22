@@ -38,6 +38,24 @@ func _run() -> void:
 	_check(map.walkable_count() > 10000, "rede de passeios extensa (%d)" % map.walkable_count())
 	var player: Walker = main.get("_player")
 	_check(map.is_footprint_walkable(player.position, Walker.FOOT_HALF), "nasce em passeio")
+	# Térreo: passeios bege/terracota ao redor da grama (faixa marrom ao lado do prédio).
+	var brown_ok := 0
+	for p: Vector2 in [Vector2(900, 740), Vector2(920, 740), Vector2(880, 700), Vector2(942, 650), Vector2(910, 722)]:
+		var q: Vector2 = map.nearest_walkable(p, Walker.FOOT_HALF)
+		if map.is_footprint_walkable(q, Walker.FOOT_HALF) and q.distance_to(p) < 8.0:
+			brown_ok += 1
+	_check(brown_ok == 5, "passeio marrom/bege do Térreo ao redor da grama é caminhável (%d/5)" % brown_ok)
+	_check(not map.is_footprint_walkable(Vector2(860, 620), Walker.FOOT_HALF), "grama do Térreo continua bloqueada")
+	# Frente e entre torres: caminhável mesmo sob o sprite (a oclusão esconde a personagem).
+	var tower_ok := 0
+	for p: Vector2 in [Vector2(606, 290), Vector2(453, 440), Vector2(316, 580), Vector2(359, 940), Vector2(737, 1110), Vector2(380, 500)]:
+		var q2: Vector2 = map.nearest_walkable(p, Walker.FOOT_HALF)
+		if map.is_footprint_walkable(q2, Walker.FOOT_HALF) and q2.distance_to(p) < 16.0:
+			tower_ok += 1
+	_check(tower_ok >= 5, "passeio na frente e entre as torres é caminhável (%d/6)" % tower_ok)
+	main.ensure_finder()
+	var through: PackedVector2Array = (main.get("_finder") as PathFinder).find(Vector2(606, 290), Vector2(453, 440))
+	_check(through.size() >= 2, "dá para ir de uma torre à outra pelo passeio da frente")
 	_check(bool((main.get("_title_screen") as Control).visible), "abre na tela de título")
 	# Escolha de personagem.
 	var cbuttons: Dictionary = main.get("_character_buttons")
@@ -92,12 +110,13 @@ func _run() -> void:
 	_check(after_block.x < before.x or before.x - after_block.x == 0.0, "andou até a borda")
 	_check(map.is_footprint_walkable(player.position, Walker.FOOT_HALF), "bloqueio mantém o personagem no passeio")
 
-	# Torres: a base (prédio) bloqueia; o chão logo atrás é caminhável e fica escondido.
+	# Torres: na frente e entre elas o passeio é caminhável; a torre desenha por cima e esconde.
 	_check(not map.is_point_walkable(Vector2(700, 620)), "piscina bloqueada")
 	_check(not map.is_point_walkable(Vector2(30, 600)), "mata externa bloqueada")
 	for fc: Vector2 in [Vector2(606, 277), Vector2(859, 278), Vector2(453, 423), Vector2(316, 567), Vector2(228, 782), Vector2(359, 923), Vector2(504, 1068), Vector2(737, 1091), Vector2(891, 933), Vector2(1060, 777)]:
-		_check(not map.is_point_walkable(fc), "base da torre bloqueia " + str(fc))
-	# Debaixo do telhado/fachada dá para andar, e a torre fica desenhada na frente.
+		var near_fc: Vector2 = map.nearest_walkable(fc, Walker.FOOT_HALF)
+		_check(near_fc.distance_to(fc) < 20.0 and map.is_footprint_walkable(near_fc, Walker.FOOT_HALF), "passeio na frente da torre em " + str(fc))
+		_check(bool(main.call("is_occluded", near_fc)), "personagem fica oculta na frente da torre em " + str(fc))
 	var under := 0
 	for gy in range(0, map.height * WalkMap.CELL, 20):
 		for gx in range(0, map.width * WalkMap.CELL, 20):
